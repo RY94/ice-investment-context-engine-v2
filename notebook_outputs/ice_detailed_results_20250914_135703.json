@@ -1,0 +1,336 @@
+{
+  "processing_results": [
+    {
+      "document_id": "nvda_q3_2024",
+      "source": "NVIDIA Q3 2024 Earnings Call",
+      "type": "earnings_transcript",
+      "processing_time": 0,
+      "result": {
+        "status": "error",
+        "message": "Batch processing error"
+      }
+    },
+    {
+      "document_id": "tsmc_10k_2024",
+      "source": "TSMC 10-K Annual Report 2024",
+      "type": "sec_filing",
+      "processing_time": 0,
+      "result": {
+        "status": "error",
+        "message": "Batch processing error"
+      }
+    },
+    {
+      "document_id": "semi_industry_2024",
+      "source": "Semiconductor Industry Association Report 2024",
+      "type": "industry_analysis",
+      "processing_time": 0,
+      "result": {
+        "status": "error",
+        "message": "Batch processing error"
+      }
+    },
+    {
+      "document_id": "ai_market_2024",
+      "source": "AI Infrastructure Market Analysis 2024",
+      "type": "market_research",
+      "processing_time": 0,
+      "result": {
+        "status": "error",
+        "message": "Batch processing error"
+      }
+    }
+  ],
+  "query_results": [
+    {
+      "id": "nvda_risks",
+      "query": "What are the main business risks facing NVIDIA?",
+      "mode": "fallback",
+      "relevant_docs": [
+        {
+          "source": "NVIDIA Q3 2024 Earnings Call",
+          "matches": 2
+        },
+        {
+          "source": "TSMC 10-K Annual Report 2024",
+          "matches": 4
+        },
+        {
+          "source": "Semiconductor Industry Association Report 2024",
+          "matches": 2
+        }
+      ]
+    },
+    {
+      "id": "export_controls",
+      "query": "How do export controls impact semiconductor companies in China?",
+      "mode": "fallback",
+      "relevant_docs": [
+        {
+          "source": "NVIDIA Q3 2024 Earnings Call",
+          "matches": 5
+        },
+        {
+          "source": "TSMC 10-K Annual Report 2024",
+          "matches": 4
+        },
+        {
+          "source": "Semiconductor Industry Association Report 2024",
+          "matches": 6
+        },
+        {
+          "source": "AI Infrastructure Market Analysis 2024",
+          "matches": 5
+        }
+      ]
+    },
+    {
+      "id": "tsmc_relationships",
+      "query": "What companies depend on TSMC for manufacturing?",
+      "mode": "fallback",
+      "relevant_docs": [
+        {
+          "source": "NVIDIA Q3 2024 Earnings Call",
+          "matches": 3
+        },
+        {
+          "source": "TSMC 10-K Annual Report 2024",
+          "matches": 5
+        },
+        {
+          "source": "Semiconductor Industry Association Report 2024",
+          "matches": 5
+        },
+        {
+          "source": "AI Infrastructure Market Analysis 2024",
+          "matches": 3
+        }
+      ]
+    },
+    {
+      "id": "ai_market_leaders",
+      "query": "Which companies dominate the AI infrastructure market?",
+      "mode": "fallback",
+      "relevant_docs": [
+        {
+          "source": "NVIDIA Q3 2024 Earnings Call",
+          "matches": 3
+        },
+        {
+          "source": "TSMC 10-K Annual Report 2024",
+          "matches": 3
+        },
+        {
+          "source": "Semiconductor Industry Association Report 2024",
+          "matches": 3
+        },
+        {
+          "source": "AI Infrastructure Market Analysis 2024",
+          "matches": 3
+        }
+      ]
+    },
+    {
+      "id": "asml_importance",
+      "query": "Why is ASML critical to semiconductor manufacturing?",
+      "mode": "fallback",
+      "relevant_docs": [
+        {
+          "source": "NVIDIA Q3 2024 Earnings Call",
+          "matches": 3
+        },
+        {
+          "source": "TSMC 10-K Annual Report 2024",
+          "matches": 5
+        },
+        {
+          "source": "Semiconductor Industry Association Report 2024",
+          "matches": 5
+        },
+        {
+          "source": "AI Infrastructure Market Analysis 2024",
+          "matches": 3
+        }
+      ]
+    },
+    {
+      "id": "portfolio_exposures",
+      "query": "What are the key risks for companies NVDA and TSMC and ASML?",
+      "mode": "fallback",
+      "relevant_docs": [
+        {
+          "source": "NVIDIA Q3 2024 Earnings Call",
+          "matches": 6
+        },
+        {
+          "source": "TSMC 10-K Annual Report 2024",
+          "matches": 7
+        },
+        {
+          "source": "Semiconductor Industry Association Report 2024",
+          "matches": 6
+        },
+        {
+          "source": "AI Infrastructure Market Analysis 2024",
+          "matches": 4
+        }
+      ]
+    }
+  ],
+  "portfolio_intelligence": {
+    "NVDA": {
+      "ticker": "NVDA",
+      "type": "Holding",
+      "document_coverage": [],
+      "knowledge_graph_queries": [],
+      "key_relationships": [],
+      "risk_factors": [],
+      "opportunities": [],
+      "auto_insights": []
+    },
+    "TSMC": {
+      "ticker": "TSMC",
+      "type": "Holding",
+      "document_coverage": [
+        {
+          "document": "NVIDIA Q3 2024 Earnings Call",
+          "type": "earnings_transcript",
+          "id": "nvda_q3_2024"
+        },
+        {
+          "document": "TSMC 10-K Annual Report 2024",
+          "type": "sec_filing",
+          "id": "tsmc_10k_2024"
+        },
+        {
+          "document": "Semiconductor Industry Association Report 2024",
+          "type": "industry_analysis",
+          "id": "semi_industry_2024"
+        }
+      ],
+      "knowledge_graph_queries": [],
+      "key_relationships": [],
+      "risk_factors": [
+        "CEO Jensen Huang highlighted supply constraints from TSMC affecting 4nm and 5nm advanced process nodes critical for H100 and A100 GPU production",
+        "Management emphasized geographical diversification efforts, working with TSMC on Arizona fab development to reduce supply chain concentration risks",
+        "TSMC's Arizona fabrication facilities represent a $40 billion investment to diversify geographic risk, with initial 4nm production targeted for 2025 and 3nm production by 2026"
+      ],
+      "opportunities": [],
+      "auto_insights": [
+        "ASML Holdings maintains monopolistic control over extreme ultraviolet (EUV) lithography systems essential for advanced node manufacturing, serving Samsung, TSMC, and Intel as primary customers",
+        "Advanced Micro Devices (AMD) and Intel Corporation compete intensively in CPU markets while both depending on TSMC for leading-edge process technologies"
+      ]
+    },
+    "ASML": {
+      "ticker": "ASML",
+      "type": "Holding",
+      "document_coverage": [
+        {
+          "document": "TSMC 10-K Annual Report 2024",
+          "type": "sec_filing",
+          "id": "tsmc_10k_2024"
+        },
+        {
+          "document": "Semiconductor Industry Association Report 2024",
+          "type": "industry_analysis",
+          "id": "semi_industry_2024"
+        }
+      ],
+      "knowledge_graph_queries": [],
+      "key_relationships": [],
+      "risk_factors": [],
+      "opportunities": [],
+      "auto_insights": [
+        "The company maintains technology leadership in extreme ultraviolet (EUV) lithography processes, exclusively sourcing EUV equipment from ASML Holdings",
+        "ASML Holdings maintains monopolistic control over extreme ultraviolet (EUV) lithography systems essential for advanced node manufacturing, serving Samsung, TSMC, and Intel as primary customers"
+      ]
+    },
+    "AMD": {
+      "ticker": "AMD",
+      "type": "Holding",
+      "document_coverage": [
+        {
+          "document": "NVIDIA Q3 2024 Earnings Call",
+          "type": "earnings_transcript",
+          "id": "nvda_q3_2024"
+        },
+        {
+          "document": "TSMC 10-K Annual Report 2024",
+          "type": "sec_filing",
+          "id": "tsmc_10k_2024"
+        },
+        {
+          "document": "Semiconductor Industry Association Report 2024",
+          "type": "industry_analysis",
+          "id": "semi_industry_2024"
+        },
+        {
+          "document": "AI Infrastructure Market Analysis 2024",
+          "type": "market_research",
+          "id": "ai_market_2024"
+        }
+      ],
+      "knowledge_graph_queries": [],
+      "key_relationships": [],
+      "risk_factors": [],
+      "opportunities": [],
+      "auto_insights": [
+        "Competition intensifies with AMD's MI300 series and Intel's Gaudi accelerators targeting similar AI workloads.",
+        "Advanced process technologies including 3nm, 4nm, and 5nm nodes serve critical customers: Apple (23% of revenue), NVIDIA (11% of revenue), AMD (7% of revenue), and Qualcomm (5% of revenue)",
+        "Advanced Micro Devices (AMD) and Intel Corporation compete intensively in CPU markets while both depending on TSMC for leading-edge process technologies",
+        "NVIDIA dominates with 80% market share in AI training chips, while AMD's MI300 series and Intel's Gaudi platforms target inference workloads",
+        "Software ecosystem advantages favor NVIDIA's CUDA platform over AMD's ROCm and Intel's oneAPI frameworks"
+      ]
+    },
+    "QCOM": {
+      "ticker": "QCOM",
+      "type": "Watchlist",
+      "document_coverage": [],
+      "knowledge_graph_queries": [],
+      "key_relationships": [],
+      "risk_factors": [],
+      "opportunities": [],
+      "auto_insights": []
+    },
+    "INTC": {
+      "ticker": "INTC",
+      "type": "Watchlist",
+      "document_coverage": [],
+      "knowledge_graph_queries": [],
+      "key_relationships": [],
+      "risk_factors": [],
+      "opportunities": [],
+      "auto_insights": []
+    }
+  },
+  "documents_processed": [
+    {
+      "id": "nvda_q3_2024",
+      "type": "earnings_transcript",
+      "source": "NVIDIA Q3 2024 Earnings Call",
+      "date": "2024-11-20",
+      "content": "NVIDIA Corporation reported record Q3 2024 revenue of $18.12 billion, up 206% year-over-year, driven primarily by Data Center revenue of $14.51 billion. CEO Jensen Huang highlighted supply constraints from TSMC affecting 4nm and 5nm advanced process nodes critical for H100 and A100 GPU production. CFO Colette Kress noted that export controls targeting China impact approximately 20-25% of potential Data Center revenue, creating headwinds for AI infrastructure sales. Gaming revenue declined to $2.86 billion, down 33% sequentially due to channel inventory corrections. The company expects continued strong demand for AI training workloads through 2024, with new partnerships with cloud service providers including Microsoft Azure, Amazon AWS, and Google Cloud Platform. Management emphasized geographical diversification efforts, working with TSMC on Arizona fab development to reduce supply chain concentration risks. Competition intensifies with AMD's MI300 series and Intel's Gaudi accelerators targeting similar AI workloads."
+    },
+    {
+      "id": "tsmc_10k_2024",
+      "type": "sec_filing",
+      "source": "TSMC 10-K Annual Report 2024",
+      "date": "2024-04-15",
+      "content": "Taiwan Semiconductor Manufacturing Company Limited faces significant geopolitical and operational risks due to concentrated manufacturing in Taiwan. Cross-strait tensions with mainland China pose business continuity risks affecting 92% of production capacity. Advanced process technologies including 3nm, 4nm, and 5nm nodes serve critical customers: Apple (23% of revenue), NVIDIA (11% of revenue), AMD (7% of revenue), and Qualcomm (5% of revenue). Export control regulations implemented by the United States limit technology transfers to Chinese entities including Huawei, SMIC, and other semiconductor companies, constraining market opportunities. TSMC's Arizona fabrication facilities represent a $40 billion investment to diversify geographic risk, with initial 4nm production targeted for 2025 and 3nm production by 2026. The company maintains technology leadership in extreme ultraviolet (EUV) lithography processes, exclusively sourcing EUV equipment from ASML Holdings. Supply chain dependencies include specialty chemicals from Japan, silicon wafers from Shin-Etsu and SUMCO, and process gases from Air Products and Linde."
+    },
+    {
+      "id": "semi_industry_2024",
+      "type": "industry_analysis",
+      "source": "Semiconductor Industry Association Report 2024",
+      "date": "2024-08-30",
+      "content": "The global semiconductor industry demonstrates critical supply chain interdependencies across the AI acceleration ecosystem. ASML Holdings maintains monopolistic control over extreme ultraviolet (EUV) lithography systems essential for advanced node manufacturing, serving Samsung, TSMC, and Intel as primary customers. U.S. export controls targeting China's semiconductor capabilities have disrupted traditional supply patterns, affecting companies including Huawei, ByteDance, and Alibaba's cloud divisions. Advanced Micro Devices (AMD) and Intel Corporation compete intensively in CPU markets while both depending on TSMC for leading-edge process technologies. The artificial intelligence boom has dramatically shifted demand patterns, benefiting GPU manufacturers like NVIDIA while creating supply constraints for traditional PC and server processors. Memory manufacturers including Samsung, SK Hynix, and Micron Technology face cyclical pricing pressures amid inventory corrections. China's domestic semiconductor development through companies like SMIC, HiSilicon, and Unisoc aims to reduce foreign technology dependence, though EUV equipment restrictions limit advanced capability development. Qualcomm maintains leadership in mobile processors, while Intel struggles with manufacturing execution at 7nm and below nodes."
+    },
+    {
+      "id": "ai_market_2024",
+      "type": "market_research",
+      "source": "AI Infrastructure Market Analysis 2024",
+      "date": "2024-09-15",
+      "content": "Artificial intelligence infrastructure markets show explosive growth with hyperscale data center investments reaching $250 billion globally. Microsoft Azure, Amazon Web Services, Google Cloud Platform, and Meta's infrastructure division drive primary demand for AI accelerators. NVIDIA dominates with 80% market share in AI training chips, while AMD's MI300 series and Intel's Gaudi platforms target inference workloads. Memory bandwidth requirements favor High Bandwidth Memory (HBM) from Samsung and SK Hynix, creating supply bottlenecks. Software ecosystem advantages favor NVIDIA's CUDA platform over AMD's ROCm and Intel's oneAPI frameworks. Edge AI deployment drives demand for specialized processors from Qualcomm, MediaTek, and Apple's custom silicon. Regulatory concerns emerge around AI capability concentration, with national security implications for advanced semiconductor exports. Cloud service providers invest in custom silicon including Google's TPU, Amazon's Trainium, and Microsoft's Maia chips to reduce NVIDIA dependence."
+    }
+  ]
+}

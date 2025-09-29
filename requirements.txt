@@ -1,0 +1,243 @@
+# ICE (Investment Context Engine) - Unified Requirements
+# Single requirements file for the entire project (production + development)
+# Install with: pip install -r requirements.txt
+
+# ============================================================================
+# CORE DEPENDENCIES
+# ============================================================================
+
+python-dotenv>=1.0.0
+requests>=2.31.0
+pandas>=2.0.0
+numpy>=1.24.0
+
+# ============================================================================
+# AI/ML CORE - CRITICAL (with specific versions for stability)
+# ============================================================================
+
+lightrag>=0.1.0  # Core knowledge graph engine
+openai>=1.0.0  # OpenAI API client
+
+# ============================================================================
+# ASYNC/SYNC COMPATIBILITY - CRITICAL
+# ============================================================================
+
+nest_asyncio>=1.5.8  # Required for Jupyter notebook compatibility
+asyncio-mqtt>=0.16.0  # Async message handling
+
+# ============================================================================
+# GRAPH AND DATA PROCESSING
+# ============================================================================
+
+networkx>=3.1
+scipy>=1.11.0
+pyvis>=0.3.0  # Graph visualization
+
+# ============================================================================
+# WEB FRAMEWORK
+# ============================================================================
+
+streamlit>=1.28.0
+ipywidgets>=8.0.0  # Jupyter widgets support
+
+# ============================================================================
+# DATA SOURCES AND APIS
+# ============================================================================
+
+yfinance>=0.2.18
+aiohttp>=3.8.0
+urllib3>=2.0.0
+
+# ============================================================================
+# TESTING FRAMEWORK
+# ============================================================================
+
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0  # Async test support
+pytest-mock>=3.11.0
+pytest-timeout>=2.1.0
+pytest-xdist>=3.3.0  # Parallel test execution
+
+# ============================================================================
+# CODE QUALITY TOOLS
+# ============================================================================
+
+black>=23.0.0  # Code formatting
+isort>=5.12.0  # Import sorting
+flake8>=6.0.0  # Linting
+mypy>=1.5.0  # Type checking
+pylint>=2.17.0  # Additional linting
+bandit>=1.7.0  # Security linting
+
+# ============================================================================
+# DATA VALIDATION
+# ============================================================================
+
+pydantic>=2.0.0
+
+# ============================================================================
+# UTILITIES
+# ============================================================================
+
+python-dateutil>=2.8.2
+pytz>=2023.3
+orjson>=3.9.0
+
+# ============================================================================
+# LOGGING AND MONITORING
+# ============================================================================
+
+loguru>=0.7.0  # Better logging with colors
+structlog>=23.1.0  # Structured logging
+
+# ============================================================================
+# SYSTEM MONITORING AND HEALTH CHECKS
+# ============================================================================
+
+psutil>=5.9.0  # System resource monitoring
+
+# ============================================================================
+# ENHANCED ERROR HANDLING AND OUTPUT
+# ============================================================================
+
+colorama>=0.4.6  # Colored terminal output
+rich>=13.0.0  # Rich text formatting for better error display
+
+# ============================================================================
+# JUPYTER NOTEBOOK SUPPORT
+# ============================================================================
+
+jupyter>=1.0.0
+ipykernel>=6.25.0
+notebook>=7.0.0
+
+# ============================================================================
+# DOCUMENTATION
+# ============================================================================
+
+sphinx>=7.0.0  # Documentation generation
+sphinx-rtd-theme>=1.3.0  # ReadTheDocs theme
+sphinx-autodoc-typehints>=1.24.0  # Type hints in docs
+myst-parser>=2.0.0  # Markdown support in Sphinx
+
+# ============================================================================
+# DEVELOPMENT TOOLS
+# ============================================================================
+
+ipdb>=0.13.13  # Interactive debugger
+pre-commit>=3.3.0  # Git hooks
+watchdog>=3.0.0  # File system watching
+
+# ============================================================================
+# PERFORMANCE PROFILING
+# ============================================================================
+
+memory-profiler>=0.61.0  # Memory profiling
+line-profiler>=4.1.0  # Line-by-line profiling
+py-spy>=0.3.14  # Sampling profiler
+
+# ============================================================================
+# API DEVELOPMENT AND TESTING
+# ============================================================================
+
+httpx>=0.24.0  # HTTP client for testing
+responses>=0.23.0  # Mock HTTP responses
+faker>=19.0.0  # Generate fake data for testing
+
+# ============================================================================
+# NOTEBOOK DEVELOPMENT
+# ============================================================================
+
+nbqa>=1.7.0  # Run linters on notebooks
+nbstripout>=0.6.0  # Strip outputs from notebooks
+papermill>=2.4.0  # Parameterize and execute notebooks
+
+# ============================================================================
+# DEBUGGING AND MONITORING
+# ============================================================================
+
+sentry-sdk>=1.32.0  # Error tracking
+
+# ============================================================================
+# BUILD AND DEPLOYMENT
+# ============================================================================
+
+build>=1.0.0  # Build packages
+twine>=4.0.0  # Upload to PyPI
+wheel>=0.41.0  # Wheel packaging
+
+# ============================================================================
+# ADVANCED TESTING (Optional)
+# ============================================================================
+
+hypothesis>=6.82.0  # Property-based testing
+tox>=4.6.0  # Test automation
+nox>=2023.4.22  # Task automation
+
+# ============================================================================
+# MCP SUPPORT
+# ============================================================================
+
+mcp>=1.2.0
+
+# ============================================================================
+# OPTIONAL: EMAIL PROCESSING (uncomment if using email pipeline)
+# ============================================================================
+# imaplib2>=3.6
+# email-validator>=2.0.0
+# PyPDF2>=3.0.1
+# openpyxl>=3.1.2
+
+# ============================================================================
+# OPTIONAL: ENHANCED DOCUMENT PROCESSING (uncomment if needed)
+# ============================================================================
+
+beautifulsoup4>=4.12.0  # HTML parsing for web documents
+feedparser>=6.0.10  # RSS feed parsing
+# pdfplumber>=0.10.3  # Advanced PDF processing
+
+# ============================================================================
+# OPTIONAL: VISUALIZATION (uncomment if using UI components)
+# ============================================================================
+
+matplotlib>=3.5.0  # Basic plotting
+plotly>=5.0.0  # Interactive visualizations
+# seaborn>=0.11.0  # Statistical visualizations
+
+# ============================================================================
+# OPTIONAL: OCR AND IMAGE PROCESSING (uncomment if using document analysis)
+# ============================================================================
+# Pillow>=10.0.1
+# opencv-python>=4.8.1.78
+# pytesseract>=0.3.10
+
+# ============================================================================
+# OPTIONAL: ADVANCED FINANCIAL DATA SOURCES
+# ============================================================================
+
+finnhub-python>=2.4.0  # Finnhub financial data
+alpha-vantage>=2.3.1  # Alpha Vantage market data
+polygon-api-client>=1.12.0  # Polygon.io data
+
+# ============================================================================
+# OPTIONAL: DATABASE SUPPORT (for persistent storage)
+# ============================================================================
+
+sqlalchemy>=2.0.0  # Database ORM
+alembic>=1.12.0  # Database migrations
+
+# ============================================================================
+# OPTIONAL: BACKGROUND TASKS AND SCHEDULING
+# ============================================================================
+
+apscheduler>=3.10.0  # Task scheduling
+celery>=5.3.0  # Distributed task queue
+
+# ============================================================================
+# OPTIONAL: SECURITY AND AUTHENTICATION
+# ============================================================================
+
+cryptography>=41.0.0  # Encryption utilities
+python-jose>=3.3.0  # JWT tokens
+passlib>=1.7.4  # Password hashing

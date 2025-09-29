@@ -1,0 +1,42 @@
+[
+  [
+    "NVDA",
+    "TSMC",
+    "depends_on",
+    0.9,
+    1,
+    false
+  ],
+  [
+    "TSMC",
+    "China",
+    "operates_in",
+    0.85,
+    2,
+    false
+  ],
+  [
+    "China",
+    "Export Controls",
+    "implements",
+    0.8,
+    1,
+    false
+  ],
+  [
+    "Export Controls",
+    "Semiconductor Industry",
+    "affects",
+    0.75,
+    3,
+    true
+  ],
+  [
+    "NVDA",
+    "Data Center Revenue",
+    "drives",
+    0.88,
+    1,
+    true
+  ]
+]

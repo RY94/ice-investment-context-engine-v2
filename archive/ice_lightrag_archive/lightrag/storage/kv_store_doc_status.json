@@ -1,0 +1,37 @@
+{
+  "doc-ef840333e7064fbb77a50d4325143da4": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-ef840333e7064fbb77a50d4325143da4"
+    ],
+    "content_summary": "[EARNINGS_REPORT] \n    Apple Inc. (AAPL) reported strong Q4 2023 results with iPhone revenue of $43.8 billion.\n    The company faces challenges in China market due to increased competition.\n    Services revenue grew to $22.3 billion, showing strong r...",
+    "content_length": 274,
+    "created_at": "2025-08-29T13:07:54.707337+00:00",
+    "updated_at": "2025-08-29T13:08:19.152214+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20250829_210754_9d3c532e",
+    "metadata": {
+      "processing_start_time": 1756472874,
+      "processing_end_time": 1756472899
+    }
+  },
+  "doc-3c7544fab26e2a92e39eac7da3f5e4fe": {
+    "status": "processed",
+    "chunks_count": 2,
+    "chunks_list": [
+      "chunk-0bf63c4eddd43a7d7a2a64f2ee4bd3ec",
+      "chunk-d6da20873f0d8f17f014468e73441a56"
+    ],
+    "content_summary": "[SEC_FILING] Skip Navigation\nBREAKING\nAlibaba shares jump 6% in premarket trading as AI drives cloud unit acceleration\n\nCNBC\n\nlogo\nAlibaba shares jump 6% in premarket trading as AI drives cloud unit acceleration\nLivestream\nCREATE FREE ACCOUNT\n\n\nTech\n...",
+    "content_length": 8159,
+    "created_at": "2025-08-29T13:19:43.442593+00:00",
+    "updated_at": "2025-08-29T13:28:05.595137+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20250829_211943_9059977a",
+    "metadata": {
+      "processing_start_time": 1756474059,
+      "processing_end_time": 1756474085
+    }
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "doc-ef840333e7064fbb77a50d4325143da4": {
+    "relation_pairs": [
+      [
+        "$43.8 Billion",
+        "Q4 2023"
+      ],
+      [
+        "Apple Inc.",
+        "China"
+      ],
+      [
+        "$22.3 Billion",
+        "Apple Inc."
+      ],
+      [
+        "Q4 2023 Results",
+        "iPhone Revenue"
+      ],
+      [
+        "Apple Inc.",
+        "Q4 2023 Results"
+      ],
+      [
+        "$22.3 Billion",
+        "Q4 2023"
+      ],
+      [
+        "$43.8 Billion",
+        "Apple Inc."
+      ],
+      [
+        "Q4 2023 Results",
+        "Services Revenue"
+      ]
+    ],
+    "count": 8,
+    "create_time": 1756472899,
+    "update_time": 1756472899,
+    "_id": "doc-ef840333e7064fbb77a50d4325143da4"
+  },
+  "doc-3c7544fab26e2a92e39eac7da3f5e4fe": {
+    "relation_pairs": [
+      [
+        "New York City",
+        "Retail Panic"
+      ],
+      [
+        "Alibaba",
+        "Taobao"
+      ],
+      [
+        "Instant Commerce",
+        "JD.com"
+      ],
+      [
+        "Alibaba",
+        "Trendyol"
+      ],
+      [
+        "Alibaba",
+        "New York Stock Exchange"
+      ],
+      [
+        "Alibaba",
+        "JD.com"
+      ],
+      [
+        "Alibaba",
+        "Instant Commerce"
+      ],
+      [
+        "instant commerce",
+        "quick commerce division"
+      ],
+      [
+        "Jinhua",
+        "instant commerce"
+      ],
+      [
+        "AI-related Revenue",
+        "Cloud Computing Unit"
+      ],
+      [
+        "Alibaba",
+        "Hong Kong Stock Exchange"
+      ],
+      [
+        "Alibaba",
+        "Meituan"
+      ],
+      [
+        "Alibaba",
+        "Eddie Wu"
+      ],
+      [
+        "Instant Commerce",
+        "Meituan"
+      ],
+      [
+        "Employees of a cross-border e-commerce enterprise",
+        "Jinhua"
+      ],
+      [
+        "Container Cargo Ship",
+        "Thailand"
+      ],
+      [
+        "Alibaba",
+        "Nanjing"
+      ]
+    ],
+    "count": 17,
+    "create_time": 1756474085,
+    "update_time": 1756474085,
+    "_id": "doc-3c7544fab26e2a92e39eac7da3f5e4fe"
+  },
+  "doc-7a2bb96c31f1a32fe762f7ad215bb79e": {
+    "relation_pairs": [
+      [
+        "Q4 2023",
+        "Q4 2023 Results"
+      ],
+      [
+        "Apple Inc.",
+        "Competition"
+      ]
+    ],
+    "count": 2,
+    "create_time": 1756616206,
+    "update_time": 1756616206,
+    "_id": "doc-7a2bb96c31f1a32fe762f7ad215bb79e"
+  },
+  "doc-39059428c5c7d1f3a4a2359c0833dd0a": {
+    "relation_pairs": [
+      [
+        "NVIDIA Corporation",
+        "Strong AI Chip Demand"
+      ],
+      [
+        "Gaming Sector",
+        "NVIDIA Corporation"
+      ],
+      [
+        "NVIDIA Corporation",
+        "Q3 2024"
+      ],
+      [
+        "AI Chips",
+        "NVIDIA Corporation"
+      ],
+      [
+        "NVIDIA Corporation",
+        "Q3 2024 Revenue Report"
+      ],
+      [
+        "China",
+        "NVIDIA Corporation"
+      ],
+      [
+        "NVIDIA Corporation",
+        "TSMC"
+      ]
+    ],
+    "count": 7,
+    "create_time": 1756617222,
+    "update_time": 1756617222,
+    "_id": "doc-39059428c5c7d1f3a4a2359c0833dd0a"
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "NVDA": {
+    "ticker": "NVDA",
+    "type": "Holding",
+    "document_coverage": [],
+    "knowledge_graph_queries": [],
+    "key_relationships": [],
+    "risk_factors": [],
+    "opportunities": [],
+    "auto_insights": []
+  },
+  "TSMC": {
+    "ticker": "TSMC",
+    "type": "Holding",
+    "document_coverage": [
+      {
+        "document": "NVIDIA Q3 2024 Earnings Call",
+        "type": "earnings_transcript",
+        "id": "nvda_q3_2024"
+      },
+      {
+        "document": "TSMC 10-K Annual Report 2024",
+        "type": "sec_filing",
+        "id": "tsmc_10k_2024"
+      },
+      {
+        "document": "Semiconductor Industry Association Report 2024",
+        "type": "industry_analysis",
+        "id": "semi_industry_2024"
+      }
+    ],
+    "knowledge_graph_queries": [],
+    "key_relationships": [],
+    "risk_factors": [
+      "CEO Jensen Huang highlighted supply constraints from TSMC affecting 4nm and 5nm advanced process nodes critical for H100 and A100 GPU production",
+      "Management emphasized geographical diversification efforts, working with TSMC on Arizona fab development to reduce supply chain concentration risks",
+      "TSMC's Arizona fabrication facilities represent a $40 billion investment to diversify geographic risk, with initial 4nm production targeted for 2025 and 3nm production by 2026"
+    ],
+    "opportunities": [],
+    "auto_insights": [
+      "ASML Holdings maintains monopolistic control over extreme ultraviolet (EUV) lithography systems essential for advanced node manufacturing, serving Samsung, TSMC, and Intel as primary customers",
+      "Advanced Micro Devices (AMD) and Intel Corporation compete intensively in CPU markets while both depending on TSMC for leading-edge process technologies"
+    ]
+  },
+  "ASML": {
+    "ticker": "ASML",
+    "type": "Holding",
+    "document_coverage": [
+      {
+        "document": "TSMC 10-K Annual Report 2024",
+        "type": "sec_filing",
+        "id": "tsmc_10k_2024"
+      },
+      {
+        "document": "Semiconductor Industry Association Report 2024",
+        "type": "industry_analysis",
+        "id": "semi_industry_2024"
+      }
+    ],
+    "knowledge_graph_queries": [],
+    "key_relationships": [],
+    "risk_factors": [],
+    "opportunities": [],
+    "auto_insights": [
+      "The company maintains technology leadership in extreme ultraviolet (EUV) lithography processes, exclusively sourcing EUV equipment from ASML Holdings",
+      "ASML Holdings maintains monopolistic control over extreme ultraviolet (EUV) lithography systems essential for advanced node manufacturing, serving Samsung, TSMC, and Intel as primary customers"
+    ]
+  },
+  "AMD": {
+    "ticker": "AMD",
+    "type": "Holding",
+    "document_coverage": [
+      {
+        "document": "NVIDIA Q3 2024 Earnings Call",
+        "type": "earnings_transcript",
+        "id": "nvda_q3_2024"
+      },
+      {
+        "document": "TSMC 10-K Annual Report 2024",
+        "type": "sec_filing",
+        "id": "tsmc_10k_2024"
+      },
+      {
+        "document": "Semiconductor Industry Association Report 2024",
+        "type": "industry_analysis",
+        "id": "semi_industry_2024"
+      },
+      {
+        "document": "AI Infrastructure Market Analysis 2024",
+        "type": "market_research",
+        "id": "ai_market_2024"
+      }
+    ],
+    "knowledge_graph_queries": [],
+    "key_relationships": [],
+    "risk_factors": [],
+    "opportunities": [],
+    "auto_insights": [
+      "Competition intensifies with AMD's MI300 series and Intel's Gaudi accelerators targeting similar AI workloads.",
+      "Advanced process technologies including 3nm, 4nm, and 5nm nodes serve critical customers: Apple (23% of revenue), NVIDIA (11% of revenue), AMD (7% of revenue), and Qualcomm (5% of revenue)",
+      "Advanced Micro Devices (AMD) and Intel Corporation compete intensively in CPU markets while both depending on TSMC for leading-edge process technologies",
+      "NVIDIA dominates with 80% market share in AI training chips, while AMD's MI300 series and Intel's Gaudi platforms target inference workloads",
+      "Software ecosystem advantages favor NVIDIA's CUDA platform over AMD's ROCm and Intel's oneAPI frameworks"
+    ]
+  },
+  "QCOM": {
+    "ticker": "QCOM",
+    "type": "Watchlist",
+    "document_coverage": [],
+    "knowledge_graph_queries": [],
+    "key_relationships": [],
+    "risk_factors": [],
+    "opportunities": [],
+    "auto_insights": []
+  },
+  "INTC": {
+    "ticker": "INTC",
+    "type": "Watchlist",
+    "document_coverage": [],
+    "knowledge_graph_queries": [],
+    "key_relationships": [],
+    "risk_factors": [],
+    "opportunities": [],
+    "auto_insights": []
+  }
+}

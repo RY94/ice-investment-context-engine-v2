@@ -1,0 +1,360 @@
+Return-Path: <010001991333fecf-96ff33c3-2cee-41f5-bff1-fb67cf184997-000000@return.news-alerts.factset.com>
+Delivered-To: roy@agtpartners.com.sg
+Received: from web107.vodien.com
+	by web107.vodien.com with LMTP
+	id AB9VLPEjuWhh5ycAZ3xOiA
+	(envelope-from <010001991333fecf-96ff33c3-2cee-41f5-bff1-fb67cf184997-000000@return.news-alerts.factset.com>)
+	for <roy@agtpartners.com.sg>; Thu, 04 Sep 2025 13:30:25 +0800
+Return-path: <010001991333fecf-96ff33c3-2cee-41f5-bff1-fb67cf184997-000000@return.news-alerts.factset.com>
+Envelope-to: roy@agtpartners.com.sg
+Delivery-date: Thu, 04 Sep 2025 13:30:25 +0800
+Received: from e228-180.smtp-out.amazonses.com ([23.251.228.180]:37893)
+	by web107.vodien.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+	(Exim 4.96.1)
+	(envelope-from <010001991333fecf-96ff33c3-2cee-41f5-bff1-fb67cf184997-000000@return.news-alerts.factset.com>)
+	id 1uu2Y1-00B12a-0x
+	for roy@agtpartners.com.sg;
+	Thu, 04 Sep 2025 13:30:25 +0800
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw; d=amazonses.com; t=1756963798;
+	h=From:To:Subject:MIME-Version:Content-Type:Message-ID:Date:Feedback-ID;
+	bh=CA/HMCnKDNo49f9OMm8mwlr+IPzm32ybJKHVqy1eRZQ=;
+	b=c5KDYpXoDjoFLeC8Zf+iJe+5uks5ULNx32OLnOB//Qu/3XMsl0Yjsh4OPOUvvhCj
+	nIG5UtGFX7mLie9iQVkgNXtd6HzsG9lY8QQZQ5fVTD2rNFKEhQVqxl9cPrCaHMo0X8o
+	Yd1HtQ3fjFZcQ8H0wq0mRzvUW6tC7L/66FLqzbac=
+From: FactSet Alerts <FactSet_Alerts@factset.com>
+To: roy@agtpartners.com.sg
+Subject: SA: Tariff revenue was containing yields before sentiment turned
+ following court ruling:
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_597554_1311120495.1756963798735"
+Message-ID: <010001991333fecf-96ff33c3-2cee-41f5-bff1-fb67cf184997-000000@email.amazonses.com>
+Date: Thu, 4 Sep 2025 05:29:58 +0000
+Feedback-ID: ::1.us-east-1.pWImXW9FCZzsCM8XlKdesXjehPwzPpKbMMsGPJITzQE=:AmazonSES
+X-SES-Outgoing: 2025.09.04-23.251.228.180
+X-Spam-Status: No, score=0.4
+X-Spam-Score: 4
+X-Spam-Bar: /
+X-Spam-Flag: NO
+
+------=_Part_597554_1311120495.1756963798735
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+FactSet News Alert for:=20
+
+
+
+Headline: Tariff revenue was containing yields before sentiment turned foll=
+owing court ruling:
+Source:=20
+Identifier(s):=20
+
+Date & Time: 1:29 AM 4 Sep '25
+
+     *=C2=A0US federal appeals court decision upholding Court of Internatio=
+nal Trade decision in May that deemed reciprocal
+       tariffs illegal is focusing more attention on implications for bond =
+markets, particularly risk of upward pressure on
+       longer-term yields from a decline in projected revenue if decision i=
+s upheld by SCOTUS and administration is forced to
+       return duties already collected (FT). While President Trump voiced c=
+onfidence of a SCOTUS win he also acknowledged
+       Wednesday that an unfavorable decision could prove costly (Reuters).=
+ With CBO estimating tariff revenue reducing
+       cumulative deficits by $4T through 2035 (link), fixed income traders=
+ agued projected tariff revenue was helping to
+       contain bond yields by offsetting cost of Trump's tax cut legislatio=
+n. This week's backup in yields was attributed in
+       part to concerns reduced tariff revenue from an unfavorable court ru=
+ling will worsen Treasury supply glut. S&P's
+       decision to reaffirm US credit rating also rested in part on tariff =
+revenue offsetting budget deficit. Trump expected
+       to lean on separate authority in event of an unfavorable court rulin=
+g, though markets will have to wade through fresh
+       uncertainty until an alternative tariff regime is established.
+     *=C2=A0For the latest updates on this story and all top news, please v=
+isit the Asia Today's Top News page.
+
+   Subjects: Emerging Topics, News - Asia, News - US, Top News Summaries - =
+Asia
+
+
+
+ =20
+
+
+
+
+
+
+
+
+
+View more in FactSet: https://company-security.apps.factset.com/news-all/ |=
+ https://company-security.apps.factset.com/ic_price/ | https://time-sales-a=
+pp.apps.factset.com/
+
+
+
+Please do not reply to this e-mail
+
+
+DISCLAIMER: This email and/or attachment are confidential and intended sole=
+ly=20
+for the use of the individual to whom they are addressed.  Disclosing, copy=
+ing=20
+or distributing the contents of this email is prohibited.  FactSet Research=
+ Systems=20
+Inc. does not accept liability for the content of this email, or for the co=
+nsequences=20
+of any actions or inactions taken on the basis of the information provided.=
+ The=20
+content of this email is not investment advice and any opinions or assertio=
+n contained=20
+in this email do not represent the opinions or beliefs of FactSet Research =
+Systems Inc. or=20
+its affiliates or any of their respective employees.
+
+If you are not entitled to receive this e-mail or have questions regarding =
+news and research=20
+services in FactSet, please contact FactSet at=20
+Support@FactSet.com
+or 1-877-FACTSET (North America), +44.(0)20.7374.4445 (Europe),=20
+or +81.3.6268.5200 (Asia Pacific).
+
+------=_Part_597554_1311120495.1756963798735
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div syle=3D"font-family:Arial;max-width:660px;color:#646464;font-size:11px=
+;margin:0;padding:0;">
+ =20
+ =20
+ =20
+
+ =20
+
+ =20
+
+ =20
+    <font style=3D"color:#3399CC;font-size:13px;font-family:Arial;">
+      1:29 AM 4 Sep '25
+    </font>
+    <font style=3D"font-size:13px;font-family:Arial;">
+      <font color=3D"#2F6CA8"><strong></strong></font><font color=3D"#00000=
+0"></font>
+    </font>
+    <font style=3D"color:#000000;font-size:13px;font-family:Arial;font-weig=
+ht:bold;">
+      Tariff revenue was containing yields before sentiment turned followin=
+g court ruling:
+    </font>
+ =20
+
+ =20
+
+  <p>
+    <script>
+// Utility function to add an event listener
+function dd2addEvent(o,e,f){
+    if (o.addEventListener){ o.addEventListener(e,f,true); return true; }
+    else if (o.attachEvent){ return o.attachEvent("on"+e,f); }
+    else { return false; }
+}
+
+
+function point_links_external()
+{
+    if (!document.getElementsByTagName) return false;
+    var links =3D document.getElementsByTagName("a");
+    for (var i=3D0; i<links.length; i++)
+    {
+        if (links[i].getAttribute("href", 2) !=3D=3D null) {
+            if ((links[i].getAttribute("href", 2).length >=3D 4 && (links[i=
+].getAttribute("href", 2).substring(0,4).toLowerCase() =3D=3D "http" || lin=
+ks[i].getAttribute("href", 2).substring(0,4).toLowerCase() =3D=3D "file")) =
+|| (links[i].getAttribute("href", 2).length >=3D 3 && links[i].getAttribute=
+("href", 2).substring(0,3).toLowerCase() =3D=3D "www"))
+            {
+                if (links[i].getAttribute("target") =3D=3D null || (links[i=
+].getAttribute("target").toLowerCase() !=3D "blank" && links[i].getAttribut=
+e("target").toLowerCase() !=3D "_blank")) {
+                    if (links[i].getAttribute("rel") =3D=3D null || links[i=
+].getAttribute("rel").length < 7 || links[i].getAttribute("rel").substring(=
+0,7).toLowerCase() !=3D "milkbox") {
+                        links[i].onclick =3D function()
+                        {
+                            if(this.fds_click_dest =3D=3D undefined) {
+                                this.fds_click_dest =3D this.href;
+                                this.href =3D 'javascript:void(0);';
+                            }
+                            return !window.open(this.fds_click_dest, '_blan=
+k');
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+dd2addEvent(window, 'load', point_links_external);
+
+</script>
+<style>
+
+.related_container{margin-left:0;padding-left:25px;padding-top:10px}.relate=
+d_content{padding-left:0}.fds_reference_heading{padding-left:25px}
+
+#story_text ul{padding-left:20px}
+
+.dd_highlight{background-color:yellow}{height:1em}.fds_headline{font-weight=
+:bold}.fds_date_time{font-weight:bold}.fds_subheadline{font-weight:bold}.fd=
+s_footer_heading{font-weight:bold}.fds_footer{top:2px}.fds_copyright{top:2p=
+x}.fds_disclaimer_footer{font-size:smaller}body{background-color:white}
+
+div{display:block;width:auto}#story_text pre{font-family:Courier New;font-s=
+ize:10pt;font-weight:normal;font-style:normal;word-wrap:break-word;white-sp=
+ace:pre-wrap;line-height:normal}#story_text,#story_text table{font-family:A=
+rial;font-size:10pt;font-weight:normal;font-style:normal;background-color:w=
+hite !important;color:black !important;line-height:normal}#story_text{top:0=
+;left:0;right:0;bottom:0;padding:10px;overflow:auto;line-height:normal}
+
+</style>
+
+<div id=3D"story_text">
+<!-- DD HEADLINE MARKER --><!-- DD DATETIME MARKER -->
+<ul>
+<li>US federal appeals court decision upholding Court of International Trad=
+e decision in May that deemed reciprocal tariffs illegal is focusing more a=
+ttention on implications for bond markets, particularly <b>risk of upward p=
+ressure on longer-term yields</b> from a decline in projected revenue if de=
+cision is upheld by SCOTUS and administration is forced to return duties al=
+ready collected (<a href=3D"https://www.ft.com/content/1fe9664a-4cb8-409a-9=
+3d4-653d4c7329a2" target=3D"_blank">FT</a>). While President Trump voiced c=
+onfidence of a SCOTUS win he also acknowledged Wednesday that an <b>unfavor=
+able decision could prove costly</b> (<a href=3D"https://www.reuters.com/wo=
+rld/asia-pacific/trump-says-us-may-have-unwind-trade-deals-will-suffer-grea=
+tly-if-it-loses-tariff-2025-09-03/" target=3D"_blank">Reuters</a>). With <a=
+ href=3D"https://www.cbo.gov/publication/61697" target=3D"_blank">CBO</a> e=
+stimating <b>tariff revenue reducing cumulative deficits by $4T through 203=
+5</b> (<a href=3D"https://urldefense.com/v3/__https:/finance.yahoo.com/m/2f=
+a4e163-3a42-354d-a243-7568dd620003/how-an-appeals-court**Bs-ruling.html__;4=
+oCZ!!PBKjc0U4!M02DHxUYV_THedbQoH6_QExLXvqaVH7O1ZG8sAJJluI6uFTsiMiXbOUIDWk-0=
+NIRCV-HAdOQuH6-lBT1NBA$" target=3D"_blank">link</a>), fixed income traders =
+agued <b>projected tariff revenue was helping to contain bond yields</b> by=
+ offsetting cost of Trump's tax cut legislation. This week's backup in yiel=
+ds was attributed in part to concerns <b>reduced tariff revenue from an unf=
+avorable court ruling will worsen Treasury supply glut</b>. S&P's decision =
+to reaffirm US credit rating also rested in part on tariff revenue offsetti=
+ng budget deficit. Trump expected to lean on separate authority in event of=
+ an unfavorable court ruling, though markets will have to wade through fres=
+h uncertainty until an alternative tariff regime is established.</li>
+<li class=3D"ttn-bullet">For the latest updates on this story and all top n=
+ews, please visit the Asia Today's Top News page.</li></ul>
+<br ><br >
+<span class=3D"fds_footer metaentry" id=3D"fds_subjects">
+
+        <b>Subjects: </b> Emerging Topics, News - Asia, News - US, Top News=
+ Summaries - Asia
+
+        </span>
+<br >
+</div>
+  </p>
+
+  <br>
+  <table cellspacing=3D"0" cellpadding=3D"1" style=3D"font-size:11px;font-f=
+amily:Arial;padding-left:30px;padding-right:30px;">
+   =20
+  </table>
+  <br>
+
+  <table cellspacing=3D"0" cellpadding=3D"0" border=3D"0" style=3D"color:#4=
+B4B4B;font-size:12px;font-family:Arial;font-weight:bold;">
+    <tr>
+      <td>FactSet News Alert for: <strong>Macro News</strong></td>
+    </tr>
+   =20
+  </table>
+
+ =20
+
+ =20
+  <table cellspacing=3D"0" cellpadding=3D"0" border=3D"0" style=3D"color:co=
+lor:#000000;font-size:12px;font-family:Arial;">
+    <tr>
+      <td>
+        Disable this alert in <a href=3D"fdsup://factset/Alerts?_TAB=3Dacti=
+veAlerts&_UNSUB=3D18C40B2AAE9B4C4BBD49999F33C957E3&_FDSUPID=3D3e75ebad-c166=
+-4caf-bf37-83b2bc1b77d7">Workstation</a> <a href=3D"https://my.apps.factset=
+.com/alert-manager/?tab=3DactiveAlerts&unsub_id=3D18C40B2AAE9B4C4BBD49999F3=
+3C957E3">Web</a>
+      </td>
+    </tr>
+  </table>
+ =20
+
+ =20
+  <table cellspacing=3D"0" cellpadding=3D"0" border=3D"0" style=3D"color:co=
+lor:#000000;font-size:12px;font-family:Arial;">
+    <tr>
+      <td>
+        <br><strong>View more in FactSet:</strong><br>
+        <a href=3D"https://company-security.apps.factset.com/news-all/">New=
+s</a> | <a href=3D"https://company-security.apps.factset.com/ic_price/">Cha=
+rt</a> | <a href=3D"https://time-sales-app.apps.factset.com/">Time &amp; Sa=
+les</a></td>
+    </tr>
+  </table>
+ =20
+
+  <br>
+
+ =20
+  <hr>
+ =20
+
+ =20
+
+ =20
+
+  <div style=3D"color:#646464;font-size:11px;font-family:Arial;">
+   =20
+   =20
+    <font size=3D-2>
+     =20
+      <i>**Please do not reply to this e-mail. </i>
+      <br>
+      <br>
+     =20
+     =20
+      DISCLAIMER: This email and/or attachment are confidential and intende=
+d solely
+      for the use of the individual to whom they are addressed.  Disclosing=
+, copying
+      or distributing the contents of this email is prohibited.  FactSet Re=
+search Systems
+      Inc. does not accept liability for the content of this email, or for =
+the consequences
+      of any actions or inactions taken on the basis of the information pro=
+vided. The
+      content of this email is not investment advice and any opinions or as=
+sertion contained
+      in this email do not represent the opinions or beliefs of FactSet Res=
+earch Systems Inc. or
+      its affiliates or any of their respective employees.
+      <br>
+      If you are not entitled to receive this e-mail or have questions rega=
+rding news and research
+      services in FactSet, please contact FactSet at
+      <a href=3D"mailto:Support@FactSet.com">Support@FactSet.com</a>
+      or 1-877-FACTSET (North America), +44.(0)20.7374.4445 (Europe),
+      or +81.3.6268.5200 (Asia Pacific).
+    </font>
+  </div>
+</div>
+
+------=_Part_597554_1311120495.1756963798735--

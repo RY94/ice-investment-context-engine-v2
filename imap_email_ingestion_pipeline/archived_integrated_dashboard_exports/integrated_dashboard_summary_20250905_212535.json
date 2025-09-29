@@ -1,0 +1,21 @@
+{
+  "export_metadata": {
+    "timestamp": "2025-09-05T21:25:35.529113",
+    "dashboard_version": "integrated_v1.0",
+    "data_sources": {
+      "pipeline_data_available": false,
+      "sample_data_available": true,
+      "asymmetric_components_available": true
+    }
+  },
+  "summary_statistics": {
+    "pipeline_emails": 0,
+    "sample_emails": 15,
+    "total_emails": 15,
+    "attachments_processed": 0,
+    "ice_integrations": 0,
+    "signals_extracted": 29,
+    "emails_with_signals": 5
+  },
+  "signals_export": "./integrated_dashboard_exports/trading_signals_20250905_212535.json"
+}

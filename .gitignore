@@ -1,0 +1,92 @@
+# .gitignore
+# ICE Investment Context Engine - Files to ignore in git
+
+# Environment variables (contains API keys)
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# LightRAG storage (contains processed documents and caches)
+lightrag/storage/
+ice_lightrag/lightrag/storage/
+*.db
+*.sqlite
+*.graphml
+
+# Cache and storage directories
+storage/cache/
+*_cache/
+cache/
+
+# Private human-only files
+private/
+
+# Streamlit
+.streamlit/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+temp/
+tmp/
+
+# Configuration files that might contain sensitive data
+ice_config.json
+config.json
+
+# MCP server files
+mcp_servers/*/node_modules/
+mcp_servers/*/.env
+
+# Lock files (OneDrive sync issues)
+*.lock
+*.pid
+uv.lock
+requirements-dev.lock
+
+# OneDrive ignore file
+.onedriveignore

@@ -1,0 +1,5 @@
+Ticker,Name,Sector,Alert Priority,What Changed,Top Causal Path,Themes,KPIs,Soft Signal,Recency,Confidence
+COIN,Coinbase,Crypto,81,SEC lawsuit update → fee model risk (cited),COIN → SEC Action → Fee Revenue (2 src),Regulatory • .7 • 1d,Volume • 2d,⚠️ legal risk in internal memo,14h,0.85 (2 src)
+TSLA,Tesla,Auto,78,Recall filing → Delivery disruption risk,TSLA → Recall → Q3 ASP (3 src),EV demand • .6 • 2d,Deliveries • 1d,⚠️ social sentiment down,8h,0.83 (3 src)
+BABA,Alibaba,China E-com,85,New export regs → Logistics bottleneck,BABA → CN Exports → Revenue Risk (4 src),China macro • .9 • 1d,GMV • 1d,⚠️ mgmt guided lower,6h,0.90 (4 src)
+SNOW,Snowflake,SaaS,67,Consumption softness → FY guide at risk,SNOW → Cloud budgets → Usage (2 src),Cloud slowdown • .6 • 2d,DBNRR • 3d,⚠️ layoffs rumor,20h,0.75 (2 src)

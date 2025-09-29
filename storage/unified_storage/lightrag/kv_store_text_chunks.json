@@ -1,0 +1,16 @@
+{
+  "chunk-c5bdff0ed612c01e47745d138bb691f3": {
+    "tokens": 83,
+    "content": "[FINANCIAL] \n    NVIDIA Corporation is a multinational technology company incorporated in Delaware and based in Santa Clara, California. \n    The company designs graphics processing units (GPUs) for the gaming and professional markets, as well as system on a chip units (SoCs) for the mobile computing and automotive market.\n    NVIDIA is a leading artificial intelligence (AI) company with significant exposure to data center demand.",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-c5bdff0ed612c01e47745d138bb691f3",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:8a02631790c4b570a30fb5866dced2b6",
+      "default:extract:417ce33dc457020a50f10e47d2f42597"
+    ],
+    "create_time": 1757345067,
+    "update_time": 1757345080,
+    "_id": "chunk-c5bdff0ed612c01e47745d138bb691f3"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "session_id": "29439b8c-ce3c-4688-b47a-55b093ac5a7d",
+  "prompts": [
+    "are you connected to github",
+    "given my working directory and this github repo, what git command should we use?",
+    "if we choose stage everything, what does it mean? Does it mean that the updated github repo will contain exactly this CAPSTONE PROJECT project directory?",
+    "should we create another github repo to store this project directory so that we can still refer to this old github repo?",
+    "option 2"
+  ]
+}

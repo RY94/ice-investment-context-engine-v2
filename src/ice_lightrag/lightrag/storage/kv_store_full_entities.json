@@ -1,0 +1,79 @@
+{
+  "doc-ef840333e7064fbb77a50d4325143da4": {
+    "entity_names": [
+      "$43.8 Billion",
+      "iPhone Revenue",
+      "$22.3 Billion",
+      "China",
+      "Q4 2023",
+      "Services Revenue",
+      "Apple Inc.",
+      "Q4 2023 Results"
+    ],
+    "count": 8,
+    "create_time": 1756472899,
+    "update_time": 1756472899,
+    "_id": "doc-ef840333e7064fbb77a50d4325143da4"
+  },
+  "doc-3c7544fab26e2a92e39eac7da3f5e4fe": {
+    "entity_names": [
+      "New York Stock Exchange",
+      "Trendyol",
+      "Retail Panic",
+      "Cloud Computing Unit",
+      "Alibaba",
+      "Jiangsu",
+      "AI-related Revenue",
+      "New York City",
+      "Eddie Wu",
+      "Zhejiang Province",
+      "instant commerce",
+      "Nanjing",
+      "Employees of a cross-border e-commerce enterprise",
+      "Meituan",
+      "Hong Kong Stock Exchange",
+      "Thailand",
+      "Jinhua",
+      "Container Cargo Ship",
+      "Instant Commerce",
+      "JD.com",
+      "Taobao",
+      "quick commerce division"
+    ],
+    "count": 22,
+    "create_time": 1756474085,
+    "update_time": 1756474085,
+    "_id": "doc-3c7544fab26e2a92e39eac7da3f5e4fe"
+  },
+  "doc-7a2bb96c31f1a32fe762f7ad215bb79e": {
+    "entity_names": [
+      "Apple Inc.",
+      "Competition",
+      "Q4 2023 Results",
+      "Services revenue",
+      "Q4 2023",
+      "iPhone revenue",
+      "China"
+    ],
+    "count": 7,
+    "create_time": 1756616206,
+    "update_time": 1756616206,
+    "_id": "doc-7a2bb96c31f1a32fe762f7ad215bb79e"
+  },
+  "doc-39059428c5c7d1f3a4a2359c0833dd0a": {
+    "entity_names": [
+      "AI Chips",
+      "China",
+      "Q3 2024",
+      "Gaming Sector",
+      "Strong AI Chip Demand",
+      "Q3 2024 Revenue Report",
+      "TSMC",
+      "NVIDIA Corporation"
+    ],
+    "count": 8,
+    "create_time": 1756617222,
+    "update_time": 1756617222,
+    "_id": "doc-39059428c5c7d1f3a4a2359c0833dd0a"
+  }
+}

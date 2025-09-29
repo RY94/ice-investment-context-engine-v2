@@ -1,0 +1,34 @@
+{
+  "doc-c5bdff0ed612c01e47745d138bb691f3": {
+    "relation_pairs": [
+      [
+        "California",
+        "NVIDIA Corporation"
+      ],
+      [
+        "NVIDIA Corporation",
+        "System on a Chip Units (SoCs)"
+      ],
+      [
+        "Artificial Intelligence (AI)",
+        "NVIDIA Corporation"
+      ],
+      [
+        "Data Center Demand",
+        "NVIDIA Corporation"
+      ],
+      [
+        "Delaware",
+        "NVIDIA Corporation"
+      ],
+      [
+        "Graphics Processing Units (GPUs)",
+        "NVIDIA Corporation"
+      ]
+    ],
+    "count": 6,
+    "create_time": 1757345085,
+    "update_time": 1757345085,
+    "_id": "doc-c5bdff0ed612c01e47745d138bb691f3"
+  }
+}

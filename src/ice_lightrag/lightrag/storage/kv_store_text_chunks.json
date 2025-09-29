@@ -1,0 +1,72 @@
+{
+  "chunk-ef840333e7064fbb77a50d4325143da4": {
+    "tokens": 63,
+    "content": "[EARNINGS_REPORT] \n    Apple Inc. (AAPL) reported strong Q4 2023 results with iPhone revenue of $43.8 billion.\n    The company faces challenges in China market due to increased competition.\n    Services revenue grew to $22.3 billion, showing strong recurring revenue growth.",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-ef840333e7064fbb77a50d4325143da4",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:0063c361e657c1f50efa55ec1b0c5630",
+      "default:extract:d9b607b0fbeedce98ab3fbfc7883fbe3"
+    ],
+    "create_time": 1756472874,
+    "update_time": 1756472890,
+    "_id": "chunk-ef840333e7064fbb77a50d4325143da4"
+  },
+  "chunk-0bf63c4eddd43a7d7a2a64f2ee4bd3ec": {
+    "tokens": 1200,
+    "content": "[SEC_FILING] Skip Navigation\nBREAKING\nAlibaba shares jump 6% in premarket trading as AI drives cloud unit acceleration\n\nCNBC\n\nlogo\nAlibaba shares jump 6% in premarket trading as AI drives cloud unit acceleration\nLivestream\nCREATE FREE ACCOUNT\n\n\nTech\nAlibaba shares jump 6% in premarket trading as AI drives cloud unit acceleration\nPublished Fri, Aug 29 20255:53 AM EDTUpdated 10 Min Ago\nthumbnail\nArjun Kharpal\n@ArjunKharpal\nShare\nShare Article via Facebook\nShare Article via Twitter\nShare Article via LinkedIn\nShare Article via Email\nKey Points\nAlibaba said revenue rose 2% year-on-year to 247.65 billion Chinese yuan, coming in below analyst expectations.\nGrowth at Alibaba’s cloud computing unit accelerated, while the company said AI-related revenue “maintained triple-digit year-over-year growth.”\nAdjusted profit at Alibaba’s core e-commerce business came under pressure, as the company invests heavily in the “instant commerce” battle in China.\nIn this article\n\nBABA\n+8.12 (+6.79%)\nAfter Hours\n\n9988-HK\n-0.10 (-0.09%)\n\n\nFollow your favorite stocks\nCREATE FREE ACCOUNT\nNANJING, CHINA - AUGUST 28,  2024 - The Alibaba office building is seen in Nanjing, Jiangsu province, China, Aug 28, 2024. On the same day, Alibaba announced in the Hong Kong Stock Exchange that the conversion of the company's voluntary secondary listing status on the Hong Kong Stock Exchange to the primary listing status took effect on the same day, and the company is now a dual primary listed company on the Hong Kong Stock Exchange and the New York Stock Exchange. (Photo credit should read CFOTO/Future Pu\nThe Alibaba office building in Nanjing, Jiangsu province, China, on Aug. 28, 2024.\nCFOTO | Future Publishing | Getty Images\nAlibaba\n posted a better-than-expected bottom line in the June quarter fueled by accelerated sales at its cloud computing unit and a continued revival of its e-commerce business.\n\nStill, the Chinese giant’s revenues came in under analyst forecasts.\n\nAlibaba’s stock was up more than 6% in premarket trading in the U.S. after initially dipping.\n\nHere’s how Alibaba did in its fiscal first quarter ended June, compared with LSEG estimates:\n\nRevenue: 247.65 billion Chinese yuan ($34.6 billion), versus 252.9 billion yuan expected.\nNet income: 43.11 billion yuan, compared with 28.5 billion yuan expected.\nRevenue rose 2% year-on-year, while the company’s net income was up 78%. Alibaba attributed the increase in profit to gains in some of its equity investments and the disposal of Turkish e-commerce firm Trendyol. This was offset by a decrease in income from operations.\n\nHowever, excluding investment gains, Alibaba’s net income would have decreased 18% year-on-year as it continues to invest in the cut-throat instant commerce space in China.\n\nAlibaba is carrying out a delicate balancing act between investing areas such as artificial intelligence and new e-commerce models, while showing that it can continue to grow in China’s competitive market. So far, investors have rewarded Alibaba with a 40% rally in its U.S.-listed stock this year.\n\nThat’s partly thanks a continued growth acceleration at its key cloud computing division as well as improvements at both its China and international e-commerce businesses.\n\nCloud accelerates\nCloud computing was one of the bright spots.\n\nAlibaba said revenue at the division totaled 33.4 billion yuan, up 26% year-on-year. That was faster than the 18% growth rate seen in the previous quarter. Alibaba’s cloud unit is seen as key to the company monetizing artificial intelligence, much like Microsoft or Google.\n\n“Driven by robust AI demand, Cloud Intelligence Group experienced accelerated revenue growth, and AI-related product revenue is now a significant portion of revenue from external customers,” Alibaba CEO Eddie Wu said in a statement.\n\nInvestors are focused on Alibaba’s investments in artificial intelligence, where it has become a major global player. The company has aggressively launched various AI models and is selling services through its cloud computing division.\n\nWhile Alibaba has focused open source AI — meaning its models can be used for free and built on by developers — it also sells AI services through its cloud unit.\n\nAlibaba said AI-related product revenue “maintained triple-digit year-over-year growth for the eighth consecutive quarter.”\n\nAdjusted earnings before interest, taxes, and amortization (EBITA), a measure of profitability, jumped 26% year-on-year in the cloud unit.\n\nAlibaba management said on Friday that the aim for the company is to keep the cloud growth rate above the market average, rather than to raise gross margins in the near term.\n\n‘Quick commerce’ wars\nAlibaba’s core e-commerce business, which accounts for more than 50% of revenue, had mixed results.\n\nOverall, revenue rose 10% year-on-year to 19.6 billion yuan. Customer management revenue, which Alibaba makes off of selling marketing and other services to merchants on its platform, jumped 10%. CMR accounts for the bulk of e-commerce revenue.\n\nHowever, adjusted earnings in the division fell 21% in the quarter on an annual basis. That’s because Alibaba has been investing heavily in so-called quick or instant commerce. This is a feature introduced on Taobao, one of Alibaba’s main Chinese e-commerce apps, this year that provides deliveries of certain products in China within an hour\n\nCompetition is intense in China, with rivals including food delivery giant Meituan and JD.com, all involved. And the rivalry is already taking its toll on some of these firms, with Meituan this week posting an 89% plunge in second-quarter adjusted net profit.\n\nAlibaba’s own quick commerce division",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-3c7544fab26e2a92e39eac7da3f5e4fe",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:5f0afd049a524bfd1c3f8fbd0a3d89bf",
+      "default:extract:1d39fcde72d8118e893575cb641cd3ff"
+    ],
+    "create_time": 1756474059,
+    "update_time": 1756474078,
+    "_id": "chunk-0bf63c4eddd43a7d7a2a64f2ee4bd3ec"
+  },
+  "chunk-d6da20873f0d8f17f014468e73441a56": {
+    "tokens": 677,
+    "content": "-called quick or instant commerce. This is a feature introduced on Taobao, one of Alibaba’s main Chinese e-commerce apps, this year that provides deliveries of certain products in China within an hour\n\nCompetition is intense in China, with rivals including food delivery giant Meituan and JD.com, all involved. And the rivalry is already taking its toll on some of these firms, with Meituan this week posting an 89% plunge in second-quarter adjusted net profit.\n\nAlibaba’s own quick commerce division brought in revenue of more than 14.8 billion yuan, or $2 billion, rising 12% year-on-year. On an earnings call on Friday, the Alibaba management said instant commerce would add 1 trillion yuan in annualized incremental gross merchandise value (GMV) within the next three years. GMV is the amount of money transacted across Alibaba’s platforms but does not translate into direct revenue.\n\nStill, investors appear okay with Alibaba’s instant commerce investments, because its cloud computing business continues to grow, while its international online shopping unit — which includes AliExpress — saw a 19% jump in revenue in the quarter as losses narrowed.\n\nWATCH LIVESTREAM\nPrefer to Listen?\nNOW\nSquawk on the Street\nUP NEXT\nMoney Movers\nTrending Now\nPeople shop at a Manhattan retail store on July 15, 2025 in New York City. \nCore inflation rose to 2.9% in July, highest since February\nTraders work at the New York Stock Exchange on August 20, 2025.\nS&P 500 futures retreat from record as traders assess new inflation data into long weekend\nJINHUA, CHINA - JUNE 16: Employees of a cross-border e-commerce enterprise sort and package express parcels in Jinhua, Zhejiang Province of China.\nEnd of de minimis shipping could be biggest Trump tariff of all for many U.S. businesses\nA container cargo ship at a port terminal in Thailand.\nRetail panic: What the end of the ‘de minimis’ exemption means for brands across the globe\nSponsored Links\nFROM THE WEB\nGold Is Surging in 2025 — Smart Traders Are Already In\nIC Markets\nThis Could Be the Best Time to Trade Gold in 5 Years\nIC Markets\nCNBC logo\nSubscribe to CNBC PRO\nSubscribe to Investing Club\nLicensing & Reprints\nCNBC Councils\nSupply Chain Values\nCNBC on Peacock\nJoin the CNBC Panel\nDigital Products\nNews Releases\nClosed Captioning\nCorrections\nAbout CNBC\nInternships\nSite Map\nAd Choices\nCareers\nHelp\nContact\nNews Tips\nGot a confidential news tip? We want to hear from you.\n\nGet In Touch\nCNBC Newsletters\nSign up for free newsletters and get more CNBC delivered to your inbox\n\nSign Up Now\nGet this delivered to your inbox, and more info about our products and services.\n\nAdvertise With Us\nPlease Contact Us\nPrivacy Policy\nCookie Notice\nCA Notice\nTerms of Service\n© 2025 CNBC LLC. All Rights Reserved. \nA Division of NBCUniversal\n\nData is a real-time snapshot *Data is delayed at least 15 minutes. Global Business and Financial News, Stock Quotes, and Market Data and Analysis.\n\nMarket Data Terms of Use and Disclaimers\nData also provided by\nReuters logo",
+    "chunk_order_index": 1,
+    "full_doc_id": "doc-3c7544fab26e2a92e39eac7da3f5e4fe",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:2e5e0366038b0dfefe7714d5d463338e",
+      "default:extract:03dab93cad247294ef8cb8aa938ee117"
+    ],
+    "create_time": 1756474059,
+    "update_time": 1756474078,
+    "_id": "chunk-d6da20873f0d8f17f014468e73441a56"
+  },
+  "chunk-7a2bb96c31f1a32fe762f7ad215bb79e": {
+    "tokens": 61,
+    "content": "[EARNINGS_REPORT] Apple Inc. (AAPL) reported strong Q4 2023 results with iPhone revenue of $43.8 billion.\n    The company faces challenges in China market due to increased competition.\n    Services revenue grew to $22.3 billion, showing strong recurring revenue growth.",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-7a2bb96c31f1a32fe762f7ad215bb79e",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:8418010584f2d2a5ed62f77cd0a05cda",
+      "default:extract:68519181ba86a1fbb237e6a41c02dc21"
+    ],
+    "create_time": 1756616192,
+    "update_time": 1756616203,
+    "_id": "chunk-7a2bb96c31f1a32fe762f7ad215bb79e"
+  },
+  "chunk-39059428c5c7d1f3a4a2359c0833dd0a": {
+    "tokens": 81,
+    "content": "[EARNINGS_REPORT] NVIDIA Corporation reported Q3 2024 revenue of $18.1 billion, up 206% year-over-year.\n    Data center revenue reached $14.5 billion, driven by strong AI chip demand.\n    Key risks include dependency on TSMC manufacturing and China export restrictions.\n    Gaming revenue was $2.9 billion, down from previous quarters due to market conditions.",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-39059428c5c7d1f3a4a2359c0833dd0a",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:f59d213525f8dc0b3b04a8f2ba744ab6",
+      "default:extract:d76fff1f3e2c660b8c79186bb07d9d14"
+    ],
+    "create_time": 1756617204,
+    "update_time": 1756617216,
+    "_id": "chunk-39059428c5c7d1f3a4a2359c0833dd0a"
+  }
+}

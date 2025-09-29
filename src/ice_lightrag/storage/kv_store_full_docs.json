@@ -1,0 +1,44 @@
+{
+  "doc-024d04512c17f290e4f5d9de4b0a7160": {
+    "content": "[EARNINGS_TRANSCRIPT] [EARNINGS_TRANSCRIPT] NVIDIA Q3 2024 Earnings Call (2024-11-20)\n\nNVIDIA Corporation reported record Q3 2024 revenue of $18.12 billion, up 206% year-over-year, driven primarily by Data Center revenue of $14.51 billion. CEO Jensen Huang highlighted supply constraints from TSMC affecting 4nm and 5nm advanced process nodes critical for H100 and A100 GPU production. CFO Colette Kress noted that export controls targeting China impact approximately 20-25% of potential Data Center revenue, creating headwinds for AI infrastructure sales. Gaming revenue declined to $2.86 billion, down 33% sequentially due to channel inventory corrections. The company expects continued strong demand for AI training workloads through 2024, with new partnerships with cloud service providers including Microsoft Azure, Amazon AWS, and Google Cloud Platform. Management emphasized geographical diversification efforts, working with TSMC on Arizona fab development to reduce supply chain concentration risks. Competition intensifies with AMD's MI300 series and Intel's Gaudi accelerators targeting similar AI workloads.\n\nDocument Metadata:\n- Document ID: nvda_q3_2024\n- Document Type: earnings_transcript\n- Source: NVIDIA Q3 2024 Earnings Call\n- Date: 2024-11-20",
+    "create_time": 1757829422,
+    "update_time": 1757829422,
+    "_id": "doc-024d04512c17f290e4f5d9de4b0a7160"
+  },
+  "doc-c0b70ffd35084183828fcc722e9af3ee": {
+    "content": "[SEC_FILING] [SEC_FILING] TSMC 10-K Annual Report 2024 (2024-04-15)\n\nTaiwan Semiconductor Manufacturing Company Limited faces significant geopolitical and operational risks due to concentrated manufacturing in Taiwan. Cross-strait tensions with mainland China pose business continuity risks affecting 92% of production capacity. Advanced process technologies including 3nm, 4nm, and 5nm nodes serve critical customers: Apple (23% of revenue), NVIDIA (11% of revenue), AMD (7% of revenue), and Qualcomm (5% of revenue). Export control regulations implemented by the United States limit technology transfers to Chinese entities including Huawei, SMIC, and other semiconductor companies, constraining market opportunities. TSMC's Arizona fabrication facilities represent a $40 billion investment to diversify geographic risk, with initial 4nm production targeted for 2025 and 3nm production by 2026. The company maintains technology leadership in extreme ultraviolet (EUV) lithography processes, exclusively sourcing EUV equipment from ASML Holdings. Supply chain dependencies include specialty chemicals from Japan, silicon wafers from Shin-Etsu and SUMCO, and process gases from Air Products and Linde.\n\nDocument Metadata:\n- Document ID: tsmc_10k_2024\n- Document Type: sec_filing\n- Source: TSMC 10-K Annual Report 2024\n- Date: 2024-04-15",
+    "create_time": 1757829422,
+    "update_time": 1757829422,
+    "_id": "doc-c0b70ffd35084183828fcc722e9af3ee"
+  },
+  "doc-4a1a68309419497d0d53f55c500b29d4": {
+    "content": "[INDUSTRY_ANALYSIS] [INDUSTRY_ANALYSIS] Semiconductor Industry Association Report 2024 (2024-08-30)\n\nThe global semiconductor industry demonstrates critical supply chain interdependencies across the AI acceleration ecosystem. ASML Holdings maintains monopolistic control over extreme ultraviolet (EUV) lithography systems essential for advanced node manufacturing, serving Samsung, TSMC, and Intel as primary customers. U.S. export controls targeting China's semiconductor capabilities have disrupted traditional supply patterns, affecting companies including Huawei, ByteDance, and Alibaba's cloud divisions. Advanced Micro Devices (AMD) and Intel Corporation compete intensively in CPU markets while both depending on TSMC for leading-edge process technologies. The artificial intelligence boom has dramatically shifted demand patterns, benefiting GPU manufacturers like NVIDIA while creating supply constraints for traditional PC and server processors. Memory manufacturers including Samsung, SK Hynix, and Micron Technology face cyclical pricing pressures amid inventory corrections. China's domestic semiconductor development through companies like SMIC, HiSilicon, and Unisoc aims to reduce foreign technology dependence, though EUV equipment restrictions limit advanced capability development. Qualcomm maintains leadership in mobile processors, while Intel struggles with manufacturing execution at 7nm and below nodes.\n\nDocument Metadata:\n- Document ID: semi_industry_2024\n- Document Type: industry_analysis\n- Source: Semiconductor Industry Association Report 2024\n- Date: 2024-08-30",
+    "create_time": 1757829422,
+    "update_time": 1757829422,
+    "_id": "doc-4a1a68309419497d0d53f55c500b29d4"
+  },
+  "doc-dab795151522ec0f4608dff93e516697": {
+    "content": "[MARKET_RESEARCH] [MARKET_RESEARCH] AI Infrastructure Market Analysis 2024 (2024-09-15)\n\nArtificial intelligence infrastructure markets show explosive growth with hyperscale data center investments reaching $250 billion globally. Microsoft Azure, Amazon Web Services, Google Cloud Platform, and Meta's infrastructure division drive primary demand for AI accelerators. NVIDIA dominates with 80% market share in AI training chips, while AMD's MI300 series and Intel's Gaudi platforms target inference workloads. Memory bandwidth requirements favor High Bandwidth Memory (HBM) from Samsung and SK Hynix, creating supply bottlenecks. Software ecosystem advantages favor NVIDIA's CUDA platform over AMD's ROCm and Intel's oneAPI frameworks. Edge AI deployment drives demand for specialized processors from Qualcomm, MediaTek, and Apple's custom silicon. Regulatory concerns emerge around AI capability concentration, with national security implications for advanced semiconductor exports. Cloud service providers invest in custom silicon including Google's TPU, Amazon's Trainium, and Microsoft's Maia chips to reduce NVIDIA dependence.\n\nDocument Metadata:\n- Document ID: ai_market_2024\n- Document Type: market_research\n- Source: AI Infrastructure Market Analysis 2024\n- Date: 2024-09-15",
+    "create_time": 1757829422,
+    "update_time": 1757829422,
+    "_id": "doc-dab795151522ec0f4608dff93e516697"
+  },
+  "doc-b731b779944bf609e6d0ef1293f0a0f4": {
+    "content": "[TEST] [MARKET_DATA] Test Financial Document (2024-09-14)\n\nNVIDIA Corporation continues to lead in AI infrastructure with strong data center revenue growth.\nThe company faces supply chain constraints from TSMC manufacturing capacity.\nExport controls to China impact approximately 20-25% of potential revenue streams.\n\nDocument Metadata:\n- Document Type: test_data\n- Source: Test Document\n- Date: 2024-09-14",
+    "create_time": 1757829571,
+    "update_time": 1757829571,
+    "_id": "doc-b731b779944bf609e6d0ef1293f0a0f4"
+  },
+  "doc-b0cd582d09cc9b466da80c8813bfc41c": {
+    "content": "[BATCH_TEST] [TEST] First batch document with NVIDIA information.",
+    "create_time": 1757829623,
+    "update_time": 1757829623,
+    "_id": "doc-b0cd582d09cc9b466da80c8813bfc41c"
+  },
+  "doc-181ed4eeeb0fb40971c097e751aa1c80": {
+    "content": "[BATCH_TEST] [TEST] Second batch document with TSMC supply chain data.",
+    "create_time": 1757829623,
+    "update_time": 1757829623,
+    "_id": "doc-181ed4eeeb0fb40971c097e751aa1c80"
+  }
+}

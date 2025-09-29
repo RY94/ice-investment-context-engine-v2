@@ -1,0 +1,363 @@
+Return-Path: <010001990e2c5604-eaa6a467-f25b-4c2b-9f90-62d59acf8d10-000000@return.news-alerts.factset.com>
+Delivered-To: roy@agtpartners.com.sg
+Received: from web107.vodien.com
+	by web107.vodien.com with LMTP
+	id SOAIBkjat2gzriAAZ3xOiA
+	(envelope-from <010001990e2c5604-eaa6a467-f25b-4c2b-9f90-62d59acf8d10-000000@return.news-alerts.factset.com>)
+	for <roy@agtpartners.com.sg>; Wed, 03 Sep 2025 14:03:52 +0800
+Return-path: <010001990e2c5604-eaa6a467-f25b-4c2b-9f90-62d59acf8d10-000000@return.news-alerts.factset.com>
+Envelope-to: roy@agtpartners.com.sg
+Delivery-date: Wed, 03 Sep 2025 14:03:52 +0800
+Received: from e228-188.smtp-out.amazonses.com ([23.251.228.188]:38527)
+	by web107.vodien.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+	(Exim 4.96.1)
+	(envelope-from <010001990e2c5604-eaa6a467-f25b-4c2b-9f90-62d59acf8d10-000000@return.news-alerts.factset.com>)
+	id 1utgav-0093CT-1G
+	for roy@agtpartners.com.sg;
+	Wed, 03 Sep 2025 14:03:51 +0800
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw; d=amazonses.com; t=1756879410;
+	h=From:To:Subject:MIME-Version:Content-Type:Message-ID:Date:Feedback-ID;
+	bh=DatQuUzyZE5Hk/PhL0/3rzTfJ6ROlKKfGKy1bfALjbk=;
+	b=k9xAj/nE0002bmso5C9Jwe/kQy8xl9TmJ0x5Rgk3NyhV8GtsHoUcJxTMLi5Kuy6m
+	L9glff7L8wO3PYG1RyOFf+LelthAee7VQCHW8mpu+wgsUia4DPsFkzOp7xiEhYCnPWu
+	4Iy0I8+JIe9OkQecNFdIuPQhr3FLGTJTwb340XKg=
+From: FactSet Alerts <FactSet_Alerts@factset.com>
+To: roy@agtpartners.com.sg
+Subject: SA: Leaders join China President Xi for military parade as Trump
+ responds:
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_274559_234616286.1756879410692"
+Message-ID: <010001990e2c5604-eaa6a467-f25b-4c2b-9f90-62d59acf8d10-000000@email.amazonses.com>
+Date: Wed, 3 Sep 2025 06:03:30 +0000
+Feedback-ID: ::1.us-east-1.pWImXW9FCZzsCM8XlKdesXjehPwzPpKbMMsGPJITzQE=:AmazonSES
+X-SES-Outgoing: 2025.09.03-23.251.228.188
+X-Spam-Status: No, score=0.4
+X-Spam-Score: 4
+X-Spam-Bar: /
+X-Spam-Flag: NO
+
+------=_Part_274559_234616286.1756879410692
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+FactSet News Alert for:=20
+
+
+
+Headline: Leaders join China President Xi for military parade as Trump resp=
+onds:
+Source:=20
+Identifier(s):=20
+
+Date & Time: 2:03 AM 3 Sep '25
+
+     *=C2=A0China President Xi joined by leaders of more than 20 countries =
+on Wednesday as he oversaw military parade in Tiananmen
+       Square showcasing advanced Chinese weaponry (NY Times, FT, Reuters, =
+Bloomberg). Parade grabbed attention of President
+       Trump, who accused Beijing, Russia and North Korea of conspiring aga=
+inst US. Trump's post came after he had earlier
+       dismissed concerns about an axis forming against US, highlighting hi=
+s positive relationship with Xi. Press coverage of
+       military parade and Shanghai Cooperation Organization (SCO) summit e=
+arlier this week has focused largely on optics of
+       Xi appearing with leaders of Global South countries like India, as w=
+ell as Russia, North Korea and Iran, sending
+       implicit message of resistance against US. While Trump again took is=
+sue with unbalanced trading relationship with
+       India (said he's not considering lowering 50% tariffs), talks are st=
+ill ongoing according to India's commerce minister
+       (Bloomberg). Trump's claim India offered to reduce tariffs to "nothi=
+ng" also interpreted as sign communication lines
+       remain open. US envoy to NATO said Trump avoiding secondary tariffs =
+on China over Russian crude purchases to allow
+       negotiations to continue (Bloomberg).
+     *=C2=A0For the latest updates on this story and all top news, please v=
+isit the Asia Today's Top News page.
+
+   Subjects: Emerging Topics, News - Asia, News - US, Top News Summaries - =
+Asia
+
+
+
+ =20
+
+
+
+
+
+
+
+
+
+View more in FactSet: https://company-security.apps.factset.com/news-all/ |=
+ https://company-security.apps.factset.com/ic_price/ | https://time-sales-a=
+pp.apps.factset.com/
+
+
+
+Please do not reply to this e-mail
+
+
+DISCLAIMER: This email and/or attachment are confidential and intended sole=
+ly=20
+for the use of the individual to whom they are addressed.  Disclosing, copy=
+ing=20
+or distributing the contents of this email is prohibited.  FactSet Research=
+ Systems=20
+Inc. does not accept liability for the content of this email, or for the co=
+nsequences=20
+of any actions or inactions taken on the basis of the information provided.=
+ The=20
+content of this email is not investment advice and any opinions or assertio=
+n contained=20
+in this email do not represent the opinions or beliefs of FactSet Research =
+Systems Inc. or=20
+its affiliates or any of their respective employees.
+
+If you are not entitled to receive this e-mail or have questions regarding =
+news and research=20
+services in FactSet, please contact FactSet at=20
+Support@FactSet.com
+or 1-877-FACTSET (North America), +44.(0)20.7374.4445 (Europe),=20
+or +81.3.6268.5200 (Asia Pacific).
+
+------=_Part_274559_234616286.1756879410692
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div syle=3D"font-family:Arial;max-width:660px;color:#646464;font-size:11px=
+;margin:0;padding:0;">
+ =20
+ =20
+ =20
+
+ =20
+
+ =20
+
+ =20
+    <font style=3D"color:#3399CC;font-size:13px;font-family:Arial;">
+      2:03 AM 3 Sep '25
+    </font>
+    <font style=3D"font-size:13px;font-family:Arial;">
+      <font color=3D"#2F6CA8"><strong></strong></font><font color=3D"#00000=
+0"></font>
+    </font>
+    <font style=3D"color:#000000;font-size:13px;font-family:Arial;font-weig=
+ht:bold;">
+      Leaders join China President Xi for military parade as Trump responds=
+:
+    </font>
+ =20
+
+ =20
+
+  <p>
+    <script>
+// Utility function to add an event listener
+function dd2addEvent(o,e,f){
+    if (o.addEventListener){ o.addEventListener(e,f,true); return true; }
+    else if (o.attachEvent){ return o.attachEvent("on"+e,f); }
+    else { return false; }
+}
+
+
+function point_links_external()
+{
+    if (!document.getElementsByTagName) return false;
+    var links =3D document.getElementsByTagName("a");
+    for (var i=3D0; i<links.length; i++)
+    {
+        if (links[i].getAttribute("href", 2) !=3D=3D null) {
+            if ((links[i].getAttribute("href", 2).length >=3D 4 && (links[i=
+].getAttribute("href", 2).substring(0,4).toLowerCase() =3D=3D "http" || lin=
+ks[i].getAttribute("href", 2).substring(0,4).toLowerCase() =3D=3D "file")) =
+|| (links[i].getAttribute("href", 2).length >=3D 3 && links[i].getAttribute=
+("href", 2).substring(0,3).toLowerCase() =3D=3D "www"))
+            {
+                if (links[i].getAttribute("target") =3D=3D null || (links[i=
+].getAttribute("target").toLowerCase() !=3D "blank" && links[i].getAttribut=
+e("target").toLowerCase() !=3D "_blank")) {
+                    if (links[i].getAttribute("rel") =3D=3D null || links[i=
+].getAttribute("rel").length < 7 || links[i].getAttribute("rel").substring(=
+0,7).toLowerCase() !=3D "milkbox") {
+                        links[i].onclick =3D function()
+                        {
+                            if(this.fds_click_dest =3D=3D undefined) {
+                                this.fds_click_dest =3D this.href;
+                                this.href =3D 'javascript:void(0);';
+                            }
+                            return !window.open(this.fds_click_dest, '_blan=
+k');
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+dd2addEvent(window, 'load', point_links_external);
+
+</script>
+<style>
+
+.related_container{margin-left:0;padding-left:25px;padding-top:10px}.relate=
+d_content{padding-left:0}.fds_reference_heading{padding-left:25px}
+
+#story_text ul{padding-left:20px}
+
+.dd_highlight{background-color:yellow}{height:1em}.fds_headline{font-weight=
+:bold}.fds_date_time{font-weight:bold}.fds_subheadline{font-weight:bold}.fd=
+s_footer_heading{font-weight:bold}.fds_footer{top:2px}.fds_copyright{top:2p=
+x}.fds_disclaimer_footer{font-size:smaller}body{background-color:white}
+
+div{display:block;width:auto}#story_text pre{font-family:Courier New;font-s=
+ize:10pt;font-weight:normal;font-style:normal;word-wrap:break-word;white-sp=
+ace:pre-wrap;line-height:normal}#story_text,#story_text table{font-family:A=
+rial;font-size:10pt;font-weight:normal;font-style:normal;background-color:w=
+hite !important;color:black !important;line-height:normal}#story_text{top:0=
+;left:0;right:0;bottom:0;padding:10px;overflow:auto;line-height:normal}
+
+</style>
+
+<div id=3D"story_text">
+<!-- DD HEADLINE MARKER --><!-- DD DATETIME MARKER -->
+<ul>
+<li>China President Xi joined by leaders of more than 20 countries on Wedne=
+sday as he <b>oversaw military parade in Tiananmen Square</b> showcasing ad=
+vanced Chinese weaponry (<a href=3D"https://www.nytimes.com/2025/09/02/worl=
+d/asia/xi-putin-kim-parade.html" target=3D"_blank">NY Times</a>, <a href=3D=
+"https://www.ft.com/content/fa6920ef-d731-47dc-ad52-7d66d9ace256" target=3D=
+"_blank">FT</a>, <a href=3D"https://www.reuters.com/world/china/chinas-xi-p=
+rojects-power-military-parade-with-putin-kim-2025-09-03/" target=3D"_blank"=
+>Reuters</a>, <a href=3D"https://www.bloomberg.com/news/articles/2025-09-02=
+/xi-putin-and-kim-to-appear-together-at-china-s-military-parade" target=3D"=
+_blank">Bloomberg</a>). Parade grabbed attention of President Trump, who <b=
+>accused Beijing, Russia and North Korea of conspiring against US.</b> Trum=
+p's post came after he had earlier dismissed concerns about an axis forming=
+ against US, highlighting his <b>positive relationship with Xi.</b> Press c=
+overage of military parade and Shanghai Cooperation Organization (SCO) summ=
+it earlier this week has focused largely on optics of Xi appearing with lea=
+ders of Global South countries like India, as well as Russia, North Korea a=
+nd Iran, sending <b>implicit message of resistance against US</b>. While Tr=
+ump again took issue with unbalanced trading relationship with India (said =
+he's not considering lowering 50% tariffs), <b>talks are still ongoing</b> =
+according to India's commerce minister (<a href=3D"https://www.bloomberg.co=
+m/news/articles/2025-09-02/trump-says-not-considering-lowering-tariffs-on-i=
+ndia-imports" target=3D"_blank">Bloomberg</a>). Trump's claim <b>India offe=
+red to reduce tariffs to "nothing"</b> also interpreted as sign communicati=
+on lines remain open. US envoy to NATO said <b>Trump avoiding secondary tar=
+iffs on China </b>over Russian crude purchases to allow negotiations to con=
+tinue (<a href=3D"https://www.bloomberg.com/news/articles/2025-09-02/us-hol=
+ds-back-china-trade-threats-as-it-weighs-russia-sanctions" target=3D"_blank=
+">Bloomberg</a>).</li>
+<li class=3D"ttn-bullet">For the latest updates on this story and all top n=
+ews, please visit the Asia Today's Top News page.</li></ul>
+<br ><br >
+<span class=3D"fds_footer metaentry" id=3D"fds_subjects">
+
+        <b>Subjects: </b> Emerging Topics, News - Asia, News - US, Top News=
+ Summaries - Asia
+
+        </span>
+<br >
+</div>
+  </p>
+
+  <br>
+  <table cellspacing=3D"0" cellpadding=3D"1" style=3D"font-size:11px;font-f=
+amily:Arial;padding-left:30px;padding-right:30px;">
+   =20
+  </table>
+  <br>
+
+  <table cellspacing=3D"0" cellpadding=3D"0" border=3D"0" style=3D"color:#4=
+B4B4B;font-size:12px;font-family:Arial;font-weight:bold;">
+    <tr>
+      <td>FactSet News Alert for: <strong>Macro News</strong></td>
+    </tr>
+   =20
+  </table>
+
+ =20
+
+ =20
+  <table cellspacing=3D"0" cellpadding=3D"0" border=3D"0" style=3D"color:co=
+lor:#000000;font-size:12px;font-family:Arial;">
+    <tr>
+      <td>
+        Disable this alert in <a href=3D"fdsup://factset/Alerts?_TAB=3Dacti=
+veAlerts&_UNSUB=3D18C40B2AAE9B4C4BBD49999F33C957E3&_FDSUPID=3D1ef34d0a-f8ce=
+-4c0c-98c0-d95bb60dbc5b">Workstation</a> <a href=3D"https://my.apps.factset=
+.com/alert-manager/?tab=3DactiveAlerts&unsub_id=3D18C40B2AAE9B4C4BBD49999F3=
+3C957E3">Web</a>
+      </td>
+    </tr>
+  </table>
+ =20
+
+ =20
+  <table cellspacing=3D"0" cellpadding=3D"0" border=3D"0" style=3D"color:co=
+lor:#000000;font-size:12px;font-family:Arial;">
+    <tr>
+      <td>
+        <br><strong>View more in FactSet:</strong><br>
+        <a href=3D"https://company-security.apps.factset.com/news-all/">New=
+s</a> | <a href=3D"https://company-security.apps.factset.com/ic_price/">Cha=
+rt</a> | <a href=3D"https://time-sales-app.apps.factset.com/">Time &amp; Sa=
+les</a></td>
+    </tr>
+  </table>
+ =20
+
+  <br>
+
+ =20
+  <hr>
+ =20
+
+ =20
+
+ =20
+
+  <div style=3D"color:#646464;font-size:11px;font-family:Arial;">
+   =20
+   =20
+    <font size=3D-2>
+     =20
+      <i>**Please do not reply to this e-mail. </i>
+      <br>
+      <br>
+     =20
+     =20
+      DISCLAIMER: This email and/or attachment are confidential and intende=
+d solely
+      for the use of the individual to whom they are addressed.  Disclosing=
+, copying
+      or distributing the contents of this email is prohibited.  FactSet Re=
+search Systems
+      Inc. does not accept liability for the content of this email, or for =
+the consequences
+      of any actions or inactions taken on the basis of the information pro=
+vided. The
+      content of this email is not investment advice and any opinions or as=
+sertion contained
+      in this email do not represent the opinions or beliefs of FactSet Res=
+earch Systems Inc. or
+      its affiliates or any of their respective employees.
+      <br>
+      If you are not entitled to receive this e-mail or have questions rega=
+rding news and research
+      services in FactSet, please contact FactSet at
+      <a href=3D"mailto:Support@FactSet.com">Support@FactSet.com</a>
+      or 1-877-FACTSET (North America), +44.(0)20.7374.4445 (Europe),
+      or +81.3.6268.5200 (Asia Pacific).
+    </font>
+  </div>
+</div>
+
+------=_Part_274559_234616286.1756879410692--

@@ -1,0 +1,19 @@
+{
+  "doc-2621cc95d2e40125eb79c2aae6ac2f79": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-2621cc95d2e40125eb79c2aae6ac2f79"
+    ],
+    "content_summary": "[TEST] Test doc",
+    "content_length": 15,
+    "created_at": "2025-09-13T15:30:08.895080+00:00",
+    "updated_at": "2025-09-13T15:30:13.923679+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20250913_233008_682a9d3d",
+    "metadata": {
+      "processing_start_time": 1757777408,
+      "processing_end_time": 1757777413
+    }
+  }
+}

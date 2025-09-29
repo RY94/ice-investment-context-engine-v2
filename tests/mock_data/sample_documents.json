@@ -1,0 +1,16 @@
+[
+  {
+    "id": "doc1",
+    "text": "NVIDIA reported strong Q3 2024 results with data center revenue growth of 206%. However, management flagged concerns about China export restrictions affecting future growth.",
+    "type": "earnings_report",
+    "company": "NVIDIA",
+    "ticker": "NVDA"
+  },
+  {
+    "id": "doc2",
+    "text": "TSMC announced capacity constraints at its advanced chip manufacturing facilities. The company manufactures critical components for NVIDIA and other semiconductor companies.",
+    "type": "supply_chain_news",
+    "company": "Taiwan Semiconductor",
+    "ticker": "TSM"
+  }
+]

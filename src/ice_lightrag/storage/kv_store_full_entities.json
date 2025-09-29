@@ -1,0 +1,142 @@
+{
+  "doc-c0b70ffd35084183828fcc722e9af3ee": {
+    "entity_names": [
+      "Qualcomm",
+      "NVIDIA",
+      "ASML Holdings",
+      "3nm, 4nm, 5nm Nodes",
+      "Arizona Fabrication Facilities",
+      "SEC Filing",
+      "AMD",
+      "Taiwan Semiconductor Manufacturing Company Limited",
+      "Document ID: tsmc_10k_2024",
+      "China",
+      "Taiwan",
+      "EUV Lithography",
+      "Apple"
+    ],
+    "count": 13,
+    "create_time": 1757829593,
+    "update_time": 1757829593,
+    "_id": "doc-c0b70ffd35084183828fcc722e9af3ee"
+  },
+  "doc-024d04512c17f290e4f5d9de4b0a7160": {
+    "entity_names": [
+      "Colette Kress",
+      "A100 GPU",
+      "Data Center Revenue",
+      "Google Cloud Platform",
+      "Arizona Fab Development",
+      "Jensen Huang",
+      "Microsoft Azure",
+      "Gaming Revenue",
+      "AI Infrastructure",
+      "TSMC",
+      "Amazon AWS",
+      "AMD MI300 Series",
+      "Export Controls",
+      "Intel Gaudi Accelerators",
+      "NVIDIA Corporation",
+      "H100 GPU"
+    ],
+    "count": 16,
+    "create_time": 1757829596,
+    "update_time": 1757829596,
+    "_id": "doc-024d04512c17f290e4f5d9de4b0a7160"
+  },
+  "doc-4a1a68309419497d0d53f55c500b29d4": {
+    "entity_names": [
+      "Huawei",
+      "Advanced Micro Devices",
+      "Cyclical Pricing Pressures",
+      "China's Semiconductor Development",
+      "Semiconductor Industry Association",
+      "Semiconductor Industry Report",
+      "U.S. Export Controls",
+      "SMIC",
+      "Samsung",
+      "EUV Lithography Systems",
+      "Alibaba",
+      "CPU Markets",
+      "ByteDance",
+      "Unisoc",
+      "Mobile Processors",
+      "ASML Holdings",
+      "HiSilicon",
+      "TSMC",
+      "China's Domestic Semiconductor Development",
+      "Memory Manufacturers",
+      "Micron Technology",
+      "SK Hynix",
+      "Qualcomm",
+      "NVIDIA",
+      "GPU Manufacturers",
+      "artificial intelligence boom",
+      "Intel"
+    ],
+    "count": 27,
+    "create_time": 1757829613,
+    "update_time": 1757829613,
+    "_id": "doc-4a1a68309419497d0d53f55c500b29d4"
+  },
+  "doc-dab795151522ec0f4608dff93e516697": {
+    "entity_names": [
+      "AI Infrastructure Market Analysis 2024",
+      "Intel Gaudi",
+      "Qualcomm",
+      "Amazon's Trainium",
+      "NVIDIA",
+      "Google Cloud Platform",
+      "Google's TPU",
+      "Microsoft Azure",
+      "Regulatory Concerns",
+      "AMD MI300 Series",
+      "Meta",
+      "Artificial Intelligence Infrastructure Market",
+      "Apple's Custom Silicon",
+      "MediaTek",
+      "Amazon Web Services",
+      "Microsoft's Maia Chips",
+      "High Bandwidth Memory (HBM)"
+    ],
+    "count": 17,
+    "create_time": 1757829621,
+    "update_time": 1757829621,
+    "_id": "doc-dab795151522ec0f4608dff93e516697"
+  },
+  "doc-b731b779944bf609e6d0ef1293f0a0f4": {
+    "entity_names": [
+      "Data Center Revenue Growth",
+      "Test Financial Document",
+      "Supply Chain Constraints",
+      "TSMC",
+      "China",
+      "Export Controls",
+      "NVIDIA Corporation"
+    ],
+    "count": 7,
+    "create_time": 1757829623,
+    "update_time": 1757829623,
+    "_id": "doc-b731b779944bf609e6d0ef1293f0a0f4"
+  },
+  "doc-b0cd582d09cc9b466da80c8813bfc41c": {
+    "entity_names": [
+      "NVIDIA",
+      "First Batch Document"
+    ],
+    "count": 2,
+    "create_time": 1757829627,
+    "update_time": 1757829627,
+    "_id": "doc-b0cd582d09cc9b466da80c8813bfc41c"
+  },
+  "doc-181ed4eeeb0fb40971c097e751aa1c80": {
+    "entity_names": [
+      "TSMC",
+      "Supply Chain Data"
+    ],
+    "count": 2,
+    "create_time": 1757829627,
+    "update_time": 1757829627,
+    "_id": "doc-181ed4eeeb0fb40971c097e751aa1c80"
+  }
+}

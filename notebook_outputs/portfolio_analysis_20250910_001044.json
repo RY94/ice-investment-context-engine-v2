@@ -1,0 +1,90 @@
+{
+  "NVDA": {
+    "ticker": "NVDA",
+    "type": "Holding",
+    "mentioned_in_docs": [],
+    "key_insights": [],
+    "risks_identified": [],
+    "query_results": []
+  },
+  "TSMC": {
+    "ticker": "TSMC",
+    "type": "Holding",
+    "mentioned_in_docs": [
+      "NVIDIA Q3 2024 Earnings",
+      "TSMC 10-K Risk Factors",
+      "Semiconductor Industry Update"
+    ],
+    "key_insights": [
+      "The company continues \n        to face supply constraints from TSMC for advanced 4nm and 5nm processes",
+      "TSMC plans to invest $40 billion in US fabs in Arizona to diversify \n        geographic risk, with production expected to begin in 2025.",
+      "TSMC, Samsung, and Intel are the primary customers for EUV \n        systems",
+      "AMD and Intel compete in CPU markets while both depend on TSMC for \n        advanced process nodes"
+    ],
+    "risks_identified": [
+      "Constraint mentioned in NVIDIA Q3 2024 Earnings",
+      "Control mentioned in NVIDIA Q3 2024 Earnings",
+      "Impact mentioned in NVIDIA Q3 2024 Earnings",
+      "Risk mentioned in TSMC 10-K Risk Factors",
+      "Control mentioned in TSMC 10-K Risk Factors",
+      "Tension mentioned in TSMC 10-K Risk Factors",
+      "Control mentioned in Semiconductor Industry Update",
+      "Disruption mentioned in Semiconductor Industry Update",
+      "Impact mentioned in Semiconductor Industry Update"
+    ],
+    "query_results": []
+  },
+  "ASML": {
+    "ticker": "ASML",
+    "type": "Holding",
+    "mentioned_in_docs": [
+      "Semiconductor Industry Update"
+    ],
+    "key_insights": [
+      "ASML Holdings dominates extreme ultraviolet (EUV) lithography equipment essential for \n        advanced chip manufacturing"
+    ],
+    "risks_identified": [
+      "Control mentioned in Semiconductor Industry Update",
+      "Disruption mentioned in Semiconductor Industry Update",
+      "Impact mentioned in Semiconductor Industry Update"
+    ],
+    "query_results": []
+  },
+  "AMD": {
+    "ticker": "AMD",
+    "type": "Holding",
+    "mentioned_in_docs": [
+      "TSMC 10-K Risk Factors",
+      "Semiconductor Industry Update"
+    ],
+    "key_insights": [
+      "The company's advanced process technologies (3nm, 4nm, 5nm) \n        are critical for major customers including Apple, NVIDIA, and AMD",
+      "AMD and Intel compete in CPU markets while both depend on TSMC for \n        advanced process nodes"
+    ],
+    "risks_identified": [
+      "Risk mentioned in TSMC 10-K Risk Factors",
+      "Control mentioned in TSMC 10-K Risk Factors",
+      "Tension mentioned in TSMC 10-K Risk Factors",
+      "Control mentioned in Semiconductor Industry Update",
+      "Disruption mentioned in Semiconductor Industry Update",
+      "Impact mentioned in Semiconductor Industry Update"
+    ],
+    "query_results": []
+  },
+  "QCOM": {
+    "ticker": "QCOM",
+    "type": "Watchlist",
+    "mentioned_in_docs": [],
+    "key_insights": [],
+    "risks_identified": [],
+    "query_results": []
+  },
+  "INTC": {
+    "ticker": "INTC",
+    "type": "Watchlist",
+    "mentioned_in_docs": [],
+    "key_insights": [],
+    "risks_identified": [],
+    "query_results": []
+  }
+}

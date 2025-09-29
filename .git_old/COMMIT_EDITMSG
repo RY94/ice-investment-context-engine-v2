@@ -1,0 +1,12 @@
+Add ICE development notebook and MCP infrastructure
+
+- Create comprehensive ice_development.ipynb with full UI feature parity
+- Add interactive Jupyter interface replacing Streamlit for development
+- Include graph visualization, query testing, and portfolio management
+- Add financial-datasets-mcp and yahoo-finance-mcp servers for data integration
+- Update CLAUDE.md with development status and implementation details
+- Remove redundant ice_ui_v17.py file (functionality moved to notebook)
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>

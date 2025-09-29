@@ -1,0 +1,13 @@
+# /sandbox/.gitignore
+# Ignore all sandbox content from version control
+# This directory is for prototypes, debug scripts, and exploratory development
+
+# Ignore everything in sandbox
+*
+
+# But track this .gitignore file
+!.gitignore
+
+# And allow specific files if needed (uncomment as needed)
+# !important_prototype.py
+# !critical_debug_script.py

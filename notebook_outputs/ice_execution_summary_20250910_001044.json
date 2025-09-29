@@ -1,0 +1,27 @@
+{
+  "timestamp": "2025-09-10T00:10:44.730247",
+  "system_status": {
+    "ice_available": true,
+    "ice_ready": true,
+    "api_configured": true
+  },
+  "data_processing": {
+    "documents_processed": 0,
+    "total_documents": 3,
+    "processing_success_rate": 0.0
+  },
+  "query_performance": {
+    "queries_tested": 5,
+    "successful_queries": 0,
+    "query_success_rate": 0.0,
+    "avg_response_time": 0.0
+  },
+  "portfolio_analysis": {
+    "total_tickers": 6,
+    "holdings": 4,
+    "watchlist": 2,
+    "coverage": 3,
+    "total_risks": 18,
+    "total_insights": 7
+  }
+}

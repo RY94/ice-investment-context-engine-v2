@@ -1,0 +1,858 @@
+Return-Path: <sebastian@agtpartners.com.sg>
+Received: from web107.vodien.com
+	by web107.vodien.com with LMTP
+	id SN66GXqcLmjPqgoAZ3xOiA
+	(envelope-from <sebastian@agtpartners.com.sg>); Thu, 22 May 2025 11:39:38 +0800
+Return-path: <sebastian@agtpartners.com.sg>
+Envelope-to: avrian@agtpartners.com.sg,
+ darren@agtpartners.com.sg,
+ greg@agtpartners.com.sg,
+ hongjun@agtpartners.com.sg,
+ jiajun@agtpartners.com.sg,
+ roy@agtpartners.com.sg,
+ tim@agtpartners.com.sg
+Delivery-date: Thu, 22 May 2025 11:39:38 +0800
+Received: from [66.96.193.166] (port=58754 helo=Seb)
+	by web107.vodien.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96.1)
+	(envelope-from <sebastian@agtpartners.com.sg>)
+	id 1uHwmQ-0030Bt-0W;
+	Thu, 22 May 2025 11:39:38 +0800
+From: "Sebastian \(AGT Partners\)" <sebastian@agtpartners.com.sg>
+To: <avrian@agtpartners.com.sg>,
+	<greg@agtpartners.com.sg>,
+	<tim@agtpartners.com.sg>,
+	<darren@agtpartners.com.sg>,
+	"'Hong Jun \(AGT Partners\)'" <hongjun@agtpartners.com.sg>,
+	<roy@agtpartners.com.sg>,
+	"'Jia Jun \(AGT Partners\)'" <jiajun@agtpartners.com.sg>
+Subject: XPENG 1Q25 earnings
+Date: Thu, 22 May 2025 11:39:14 +0800
+Message-ID: <013901dbcacb$175b8fd0$4612af70$@agtpartners.com.sg>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_013A_01DBCB0E.2580CBA0"
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AdvKtxzQpVTYWjXxTtytUyAfGSZ8Gg==
+Content-Language: en-us
+
+This is a multipart message in MIME format.
+
+------=_NextPart_000_013A_01DBCB0E.2580CBA0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+Overall
+
+*	XPeng's Q1 2025 total revenues reached RMB 15.81 billion, up 141.5%
+year-over-year, slightly down 1.8% from Q4 2024.
+*	Vehicle sales revenue was RMB 14.37 billion, up 159.2%
+year-over-year, down 2.1% quarter-over-quarter. 
+*	Management emphasized strong product cycle, global expansion, and
+technological innovation as key growth drivers.
+*	Continued investment in AI, product R&D, and humanoid robots for
+industrial and commercial use by 2026.
+
+ 
+
+Profitability
+
+*	Vehicle gross margin has improved for seven consecutive quarters,
+propelling the company's overall gross margin to a record-high of 15.6% in
+Q1 2025, with net loss narrowing significantly compared to the previous
+quarter. Free cash flow exceeded RMB3 billion in Q1. 
+*	vehicle margin improved to 10.5%, compared with 5.5% for the same
+period of 2024 and 10.0% for the fourth quarter of 2024. Net loss narrowed
+to RMB 660 million, the lowest in five years and about half the loss
+compared to Q1 2024 and Q4 2024.
+
+ 
+
+ 
+
+Guidance
+
+*	Q2 2025 delivery guidance: 102,000 to 108,000 vehicles, representing
+237.7% to 257.5% year-over-year growth. April 25 deliveries were 35,045
+vehicles, implying May June should be around the same level.
+*	Q2 2025 revenue guidance: RMB 17.5 billion to RMB 18.7 billion.
+*	Multiple new model launches planned from Q3 2025 through 2026,
+including BEV and hybrid variants with higher average selling prices.
+*	Targeting profitability in Q4 2025.
+
+ 
+
+Other income
+
+*	Something to note in 1Q25 results was the significantly higher other
+income of RMB544m vs RMB74m (1Q24) due to regulatory subsidies as well as
+tax rebates etc. Probably not at this level in 2-4Q25. 
+
+ 
+
+ 
+
+Deliveries
+
+*	Q1 deliveries totaled 94,008 units, marking a 331% year-over-year
+increase and establishing a new historical record for quarterly deliveries.
+*	Monthly deliveries have exceeded 30,000 units for six consecutive
+months. 
+*	Will most likely be pretty strong with the new model launches in
+2H25 to 2026. Management is confident of their sales volume performance.
+Will integrate new capabilities (powertrain, architecture, smart cockpit,
+craftmanship).
+*	At similar price points, from the photos and speculated specs,
+XPeng's models do stand out to me with regards to value (technical
+capabilities) and aesthetics + the implied "runway" for your vehicle to last
+for a long time (with regards to TOPs, Tera operations per second, getting a
+508 TOPs car is pretty important in my opinion if you want your 2025 vehicle
+to be L3 or even L4 compatible in say 2026-2029 via an online update.) 
+*	The XPeng cars definitely excel in this field as even the G6 at
+RMB170-180+k price point has 508 TOPs (using 2x NVIDIA Orin X providing 254
+TOPs each). For comparison, to get 508 TOPs, one might go for Xiaomi SU7 Pro
+(RMB245k) or Li Auto's L6 (RMB250k). 
+*	At present, the basic / standard version of Xiaomi SU7 (RMB216k)
+gives 84 TOPs - probably not something one might consider if they want to be
+"relatively" future proof. Beyond processing speed, at XPeng's price point,
+does feel like you are getting more features and that XPeng cars punch above
+its weight when compared to peers. 
+*	The main thing that pales in comparison is probably acceleration
+(0-100kmh) but perhaps that doesn't rank highly as a factor in their target
+consumers minds.
+*	In the 2H25, the turing chip will likely be ~700 TOPs in 1 chip and
+be in some car models (eventually all). 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+------=_NextPart_000_013A_01DBCB0E.2580CBA0
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
+xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
+xmlns=3D"http://www.w3.org/TR/REC-html40"><head><meta =
+http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii"><meta name=3DGenerator content=3D"Microsoft Word 15 =
+(filtered medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Aptos;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-ligatures:standardcontextual;}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{mso-style-priority:34;
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-ligatures:standardcontextual;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Aptos",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+/* List Definitions */
+@list l0
+	{mso-list-id:97531630;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-31952780 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l0:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l0:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l1
+	{mso-list-id:677274022;
+	mso-list-template-ids:-1121527120;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l2
+	{mso-list-id:862985291;
+	mso-list-type:hybrid;
+	mso-list-template-ids:532468896 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l2:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l2:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l2:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l2:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l2:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l2:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l2:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l2:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l3
+	{mso-list-id:1457942306;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1852402428 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l3:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:.75in;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l3:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:1.25in;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l3:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:1.75in;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l3:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:2.25in;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l3:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:2.75in;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l3:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:3.25in;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l3:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:3.75in;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l3:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:4.25in;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l3:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:4.75in;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l4
+	{mso-list-id:1465587069;
+	mso-list-type:hybrid;
+	mso-list-template-ids:496009664 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l4:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:.75in;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l4:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:1.25in;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l4:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:1.75in;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l4:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:2.25in;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l4:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:2.75in;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l4:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:3.25in;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l4:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:3.75in;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l4:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:4.25in;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l4:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:4.75in;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l5
+	{mso-list-id:1896697591;
+	mso-list-type:hybrid;
+	mso-list-template-ids:798361550 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l5:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:.75in;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l5:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:1.25in;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l5:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:1.75in;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l5:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:2.25in;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l5:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:2.75in;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l5:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:3.25in;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l5:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:3.75in;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l5:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:4.25in;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l5:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:4.75in;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l6
+	{mso-list-id:2003850135;
+	mso-list-template-ids:38019996;}
+@list l6:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l6:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:1.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l6:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:1.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l6:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:2.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l6:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:2.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l6:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:3.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l6:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:3.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l6:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:4.0in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l6:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:4.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body lang=3DEN-SG =
+link=3D"#467886" vlink=3D"#96607D" style=3D'word-wrap:break-word'><div =
+class=3DWordSection1><p class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Overall<o:p></o:p></span></u></b=
+></p><ul style=3D'margin-top:0in' type=3Ddisc><li =
+class=3DMsoListParagraph style=3D'margin-left:.25in;mso-list:l3 level1 =
+lfo6'><span style=3D'font-family:"Arial",sans-serif'>XPeng's Q1 2025 =
+total revenues reached RMB 15.81 billion, up 141.5% year-over-year, =
+slightly down 1.8% from Q4 2024.<o:p></o:p></span></li><li =
+class=3DMsoListParagraph style=3D'margin-left:.25in;mso-list:l3 level1 =
+lfo6'><span style=3D'font-family:"Arial",sans-serif'>Vehicle sales =
+revenue was RMB 14.37 billion, up 159.2% year-over-year, down 2.1% =
+quarter-over-quarter. <o:p></o:p></span></li><li =
+class=3DMsoListParagraph style=3D'margin-left:.25in;mso-list:l3 level1 =
+lfo6'><span style=3D'font-family:"Arial",sans-serif'>Management =
+emphasized strong product cycle, global expansion, and technological =
+innovation as key growth drivers.<o:p></o:p></span></li><li =
+class=3DMsoListParagraph style=3D'margin-left:.25in;mso-list:l3 level1 =
+lfo6'><span style=3D'font-family:"Arial",sans-serif'>Continued =
+investment in AI, product R&amp;D, and humanoid robots for industrial =
+and commercial use by 2026.<o:p></o:p></span></li></ul><p =
+class=3DMsoNormal><span =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Profitability<o:p></o:p></span><=
+/u></b></p><ul style=3D'margin-top:0in' type=3Ddisc><li =
+class=3DMsoListParagraph style=3D'margin-left:.25in;mso-list:l4 level1 =
+lfo5'><span style=3D'font-family:"Arial",sans-serif'>Vehicle gross =
+margin has improved for seven consecutive quarters, propelling the =
+company's overall gross margin to a record-high of 15.6% in Q1 2025, =
+with net loss narrowing significantly compared to the previous quarter. =
+Free cash flow exceeded RMB3 billion in Q1. <o:p></o:p></span></li><li =
+class=3DMsoListParagraph style=3D'margin-left:.25in;mso-list:l4 level1 =
+lfo5'><span style=3D'font-family:"Arial",sans-serif'>vehicle margin =
+improved to 10.5%, compared with 5.5% for the same period of 2024 and =
+10.0% for the fourth quarter of 2024. Net loss narrowed to RMB 660 =
+million, the lowest in five years and about half the loss compared to Q1 =
+2024 and Q4 2024.<o:p></o:p></span></li></ul><p class=3DMsoNormal><span =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><b><u><span =
+style=3D'font-family:"Arial",sans-serif'>Guidance<o:p></o:p></span></u></=
+b></p><ul style=3D'margin-top:0in' type=3Ddisc><li =
+class=3DMsoListParagraph style=3D'margin-left:.25in;mso-list:l5 level1 =
+lfo4'><span style=3D'font-family:"Arial",sans-serif'>Q2 2025 delivery =
+guidance: 102,000 to 108,000 vehicles, representing 237.7% to 257.5% =
+year-over-year growth. April 25 deliveries were 35,045 vehicles, =
+implying May June should be around the same =
+level.<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:.25in;mso-list:l5 level1 lfo4'><span =
+style=3D'font-family:"Arial",sans-serif'>Q2 2025 revenue guidance: RMB =
+17.5 billion to RMB 18.7 billion.<o:p></o:p></span></li><li =
+class=3DMsoListParagraph style=3D'margin-left:.25in;mso-list:l5 level1 =
+lfo4'><span style=3D'font-family:"Arial",sans-serif'>Multiple new model =
+launches planned from Q3 2025 through 2026, including BEV and hybrid =
+variants with higher average selling prices.<o:p></o:p></span></li><li =
+class=3DMsoListParagraph style=3D'margin-left:.25in;mso-list:l5 level1 =
+lfo4'><span style=3D'font-family:"Arial",sans-serif'>Targeting =
+profitability in Q4 2025.<o:p></o:p></span></li></ul><p =
+class=3DMsoNormal><span =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Other =
+income<o:p></o:p></span></u></b></p><ul style=3D'margin-top:0in' =
+type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l2 level1 lfo7'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Something to note in 1Q25 =
+results was the significantly higher other income of RMB544m vs RMB74m =
+(1Q24) due to regulatory subsidies as well as tax rebates etc. Probably =
+not at this level in 2-4Q25. <o:p></o:p></span></li></ul><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Deliveries<o:p></o:p></span></u>=
+</b></p><ul style=3D'margin-top:0in' type=3Ddisc><li =
+class=3DMsoListParagraph style=3D'margin-left:0in;mso-list:l0 level1 =
+lfo3'><span style=3D'font-family:"Arial",sans-serif'>Q1 deliveries =
+totaled 94,008 units, marking a 331% year-over-year increase and =
+establishing a new historical record for quarterly =
+deliveries.<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l0 level1 lfo3'><span =
+style=3D'font-family:"Arial",sans-serif'>Monthly deliveries have =
+exceeded 30,000 units for six consecutive months. =
+<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l0 level1 lfo3'><span =
+style=3D'font-family:"Arial",sans-serif'>Will most likely be pretty =
+strong with the new model launches in 2H25 to 2026. Management is =
+confident of their sales volume performance. Will integrate new =
+capabilities (powertrain, architecture, smart cockpit, =
+craftmanship).<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l0 level1 lfo3'><span =
+style=3D'font-family:"Arial",sans-serif'>At similar price points, from =
+the photos and speculated specs, XPeng&#8217;s models do stand out to me =
+with regards to value (technical capabilities) and aesthetics + the =
+implied &#8220;runway&#8221; for your vehicle to last for a long time =
+(with regards to TOPs, Tera operations per second, getting a 508 TOPs =
+car is pretty important in my opinion if you want your 2025 vehicle to =
+be L3 or even L4 compatible in say 2026-2029 via an online update.) =
+<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l0 level1 lfo3'><span =
+style=3D'font-family:"Arial",sans-serif'>The XPeng cars definitely excel =
+in this field as even the G6 at RMB170-180+k price point has 508 TOPs =
+(using 2x NVIDIA Orin X providing 254 TOPs each). For comparison, to get =
+508 TOPs, one might go for Xiaomi SU7 Pro (RMB245k) or Li Auto&#8217;s =
+L6 (RMB250k). <o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l0 level1 lfo3'><span =
+style=3D'font-family:"Arial",sans-serif'>At present, the basic / =
+standard version of Xiaomi SU7 (RMB216k) gives 84 TOPs &#8211; probably =
+not something one might consider if they want to be =
+&#8220;relatively&#8221; future proof. Beyond processing speed, at =
+XPeng&#8217;s price point, does feel like you are getting more features =
+and that XPeng cars punch above its weight when compared to peers. =
+<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l0 level1 lfo3'><span =
+style=3D'font-family:"Arial",sans-serif'>The main thing that pales in =
+comparison is probably acceleration (0-100kmh) but perhaps that =
+doesn&#8217;t rank highly as a factor in their target consumers =
+minds.<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l0 level1 lfo3'><span =
+style=3D'font-family:"Arial",sans-serif'>In the 2H25, the turing chip =
+will likely be ~700 TOPs in 1 chip and be in some car models (eventually =
+all). <o:p></o:p></span></li></ul><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p></di=
+v></body></html>
+------=_NextPart_000_013A_01DBCB0E.2580CBA0--
+

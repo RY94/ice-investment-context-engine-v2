@@ -1,0 +1,1602 @@
+Return-Path: <sebastian@agtpartners.com.sg>
+Received: from web107.vodien.com
+	by web107.vodien.com with LMTP
+	id ONySMBADJ2jxMA8AZ3xOiA
+	(envelope-from <sebastian@agtpartners.com.sg>); Fri, 16 May 2025 17:19:12 +0800
+Return-path: <sebastian@agtpartners.com.sg>
+Envelope-to: avrian@agtpartners.com.sg,
+ darren@agtpartners.com.sg,
+ greg@agtpartners.com.sg,
+ hongjun@agtpartners.com.sg,
+ jiajun@agtpartners.com.sg,
+ roy@agtpartners.com.sg,
+ tim@agtpartners.com.sg
+Delivery-date: Fri, 16 May 2025 17:19:12 +0800
+Received: from [66.96.193.166] (port=52498 helo=Seb)
+	by web107.vodien.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96.1)
+	(envelope-from <sebastian@agtpartners.com.sg>)
+	id 1uFrDk-004IYi-20;
+	Fri, 16 May 2025 17:19:12 +0800
+From: "Sebastian \(AGT Partners\)" <sebastian@agtpartners.com.sg>
+To: <avrian@agtpartners.com.sg>,
+	<greg@agtpartners.com.sg>,
+	<tim@agtpartners.com.sg>,
+	<darren@agtpartners.com.sg>,
+	<roy@agtpartners.com.sg>,
+	"'Hong Jun \(AGT Partners\)'" <hongjun@agtpartners.com.sg>,
+	"'Jia Jun \(AGT Partners\)'" <jiajun@agtpartners.com.sg>
+Subject: UBTECH Robotics Corp Ltd (9880 HK)  CGSI Call
+Date: Fri, 16 May 2025 17:18:57 +0800
+Message-ID: <016801dbc643$8df73ae0$a9e5b0a0$@agtpartners.com.sg>
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	boundary="----=_NextPart_000_0169_01DBC686.9C1C2890"
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AdvFS+1NbTc8cSOxRxmNY1+FjpJnaA==
+Content-Language: en-us
+
+This is a multipart message in MIME format.
+
+------=_NextPart_000_0169_01DBC686.9C1C2890
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_001_016A_01DBC686.9C1C2890"
+
+
+------=_NextPart_001_016A_01DBC686.9C1C2890
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+More details on UBTECH. For relevance, they supply close to RMB200mn of
+logistics related robotics to BYD in 2024. 
+
+ 
+
+Split into 2 parts: humanoid robots (starting from 2025) and ex-humanoid
+robots (RMB1.305bn revenue in 2024A) which is in the second half of this
+note.
+
+ 
+
+Humanoid robot:
+
+*	Walker S1 can carry 15kg boxes. Walker S2 vs S1: increased 2 DoF in
+waist + designed for dual battery so they can replace their own batteries
+and work 24 hours. Lifespan is 5 years. 
+*	Industry-first semantic VSLAM navigation, achieving accurate
+positioning and map construction (mm level precision). Allow robot to
+understand the spatial topology, transmitted to the AI model to make a
+decision (new scene & new perspective). 
+*	In the future, focused on the 3 scenarios of humanoid robots,
+industrial (box carrying, bolt tightening, quality inspection, part
+installation, process material handling, SPS sorting), commercial (in retail
+etc), and household companionship. In next 2-3 years industrial will be the
+major segment for humanoid robots. Most of the industrial robots will be
+delivered to the car companies at first. 
+
+ 
+
+Timeline
+
+*	In 2025, deliver 500 units of industrial robot (mainly focused on
+box carrying)
+*	2026, ~3000 industrial robot (extend to sorting, bolt tightening
+etc).
+*	2027, enter mass production, deliver ~10,000 units of industrial
+robot. 
+
+ 
+
+UBTech designs all the components by themselves before placing purchasing
+orders to 3rd party suppliers who then get back to them and UBTech assembles
+themselves.
+
+Hardware wise, the only foreign component is chipwise NVIDIA's Jetson AGX
+Orin which isn't banned or on restricted lists. The rest of the hardware
+(motor, camera / force sensors etc) are all domestic. Strong cooperation
+with Huawei who has a good GPU chip as well but still sticking to NVIDIA. 
+
+Maintenance checks monthly / quarterly (not a big consideration at this
+stage given its still early / small scale)
+
+ 
+
+Capex requirements:
+
+*	Not much capex plans in the next 2 years as factories are mainly for
+assembly, UBTech don't produce components. At under 10k robots, they just
+require 100 people to do the assembly and not too many production lines
+needed. At mass production, they might require more robotic arms and more
+automation will be applied.
+
+ 
+
+Breakeven point:
+
+*	Should be profitable at RMB3-4bn revenue level (expected to reach in
+2027e). Part of it comes from AI revenue, education, smart logistics etc
+(ex-humanoid robot) while the rest of it comes from humanoid robots. 
+*	At the current small production scale, gross margins are 30%. The
+target GM will be 50% upon reaching mass production and delivery stage (>10k
+units). This comes from lowered BOM (even after taking into account a lower
+ASP which accelerates adoption).
+
+ 
+
+Visibility in orders:
+
+*	For now, UBTech got small scale orders from different companies.
+Dongfeng group and BYD are 2 groups of orders. With regards to potential
+orders, they can't share at this moment.
+
+ 
+
+On potential of the market:
+
+ 
+
+"For humanoid robots, in 2025 we got our first order, once we settle down
+the first order, market size will increase significantly. Just in BYD
+factories, they need 10,000 box carrying robots. If you extend to sorting
+and other scenarios, there might be hundreds of thousands or millions of
+robots needed by the industry. Can't imagine at this moment what's the
+situation in the next few years. Just like in the development of EV industry
+5 years ago, would not expect BYD to become no.1 EV maker in the world."
+
+ 
+
+On their tech advantage in humanoid robots for industrial use:
+
+*	Technical advantage is swarm intelligence, essential technology is
+to achieve the large-scale application of humanoid robots in industrial
+scenarios.
+*	1000+ engineers (World no.1)
+*	763 valid patents in humanoid robots (world no. 1)
+*	"Unitree only has motion control systems, no AI tech. UBTech has
+developed close to 10 years of tech advantage, we also make more mistakes
+than the other companies because we started research 10 years ago. So we
+know what kind of technology cannot be commercialized in humanoid robots. In
+the factories we are the only company that can deliver humanoid robots that
+can continuously work for 24 hours, 5 years. The other startup companies can
+only show units for demo or that work for few hours max. We are not just
+testing products in laboratories, we commercialized 4 years ago."
+
+ 
+
+ 
+
+Before humanoid robots, the company is generating total revenue of RMB1,305m
+in 2024.
+
+ 
+
+Customers are in China but have been expanding our business to Korea Japan
+and recently Middle East (Saudi Arabia).
+
+ 
+
+Education smart robotics (27.8% revenue, RMB363m):
+
+*	UBTech offers services in K12 and schools. They are the no.1
+supplier in AI education in China, strong leading status in AI education.
+They build the AI lab in school and revenue per AI lab is around RMB4m in
+their experience. They are now servicing over 4000 schools in China (in some
+manner, probably not the full AI lab etc) with the second supplier being at
+around 100 schools. 
+*	The revenue mainly comes from governments - they collaborate with
+education bureaus in the cities / districts. For instance, in Xiamen, UBTech
+supply services to around 100 schools. They have grabbed strong support from
+the government. Driver in this segment is that the central govt national
+education bureau released a plan that before 2030, most of the schools in
+China should put AI education into the daily course in K12 schools. 
+
+ 
+
+Logistics smart robotics (24.6% revenue, RMB321m):
+
+*	For logistics smart robotics, UBTech provide the AMR, smart
+logistics solution for factories. 
+*	Logistics smart robotics segment made RMB321m in 2024 - BYD should
+be over 60% of this so RMB193m of its revenue should be from BYD.
+
+ 
+
+Consumer-level smart robotics (36.5% revenue, RMB477m):
+
+*	UBTech's smart cat litter box sold over 200k units in 2024. My
+estimate is probably 1200/1500RMB at 200k units = ~RMB300m in 2024. Consumer
+smart robotics segment made RMB477m revenue in 2024 so the smart cat litter
+box could be over 50/60% of the segment. 
+*	Has experienced significant growth (FY24 growth of 88%) and will
+likely experience ~50% growth. 
+
+ 
+
+Target split / proportion of revenue 
+
+ 
+
+AI related business will represent main core of our revenue (>50%), but in
+2027e humanoid robots will become major revenue of our group. AI related
+business (ex-humanoid robots) education smart logistics etc, not seeing a
+dramatic increase for now but for consumer smart robotics there's a dramatic
+increase. 
+
+ 
+
+Valuation:
+
+Trading at RMB39bn market cap & RMB39.6bn EV, estimating what investors are
+paying for at this valuation:
+
+ 
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+*	Not taking into account any potential fund raising. ~95x FY28e P/E
+with a big assumption of 5% net margins with R&D intensity not multiples
+higher.
+*	Humanoid robots as a % of their total revenue should past the 50%
+mark at 2027e and ramp from there.
+*	Farfetched - but if they execute well, a US$5.5bn enterprise value
+(at the moment) x2 is probably in the acquirable realms for the tech / EV
+majors.
+
+ 
+
+
+------=_NextPart_001_016A_01DBC686.9C1C2890
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
+xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
+xmlns=3D"http://www.w3.org/TR/REC-html40"><head><meta =
+http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii"><meta name=3DGenerator content=3D"Microsoft Word 15 =
+(filtered medium)"><!--[if !mso]><style>v\:* =
+{behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style><![endif]--><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Aptos;}
+@font-face
+	{font-family:"\@DengXian";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-ligatures:standardcontextual;}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{mso-style-priority:34;
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-ligatures:standardcontextual;}
+span.EmailStyle18
+	{mso-style-type:personal-compose;
+	font-family:"Aptos",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:10.0pt;
+	mso-ligatures:none;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+/* List Definitions */
+@list l0
+	{mso-list-id:190925480;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-919169106 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l0:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l0:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l1
+	{mso-list-id:201134492;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-2094903718 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l1:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l1:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l1:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l1:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l1:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l1:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l1:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l1:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l2
+	{mso-list-id:539053690;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-510505250 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l2:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l2:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l2:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l2:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l2:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l2:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l2:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l2:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l3
+	{mso-list-id:1415543574;
+	mso-list-type:hybrid;
+	mso-list-template-ids:2090266124 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l3:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l3:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l3:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l3:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l3:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l3:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l3:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l3:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l3:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l4
+	{mso-list-id:1449734021;
+	mso-list-type:hybrid;
+	mso-list-template-ids:1034556820 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l4:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l4:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l4:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l4:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l4:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l4:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l4:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l4:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l4:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l5
+	{mso-list-id:1517233621;
+	mso-list-type:hybrid;
+	mso-list-template-ids:904957436 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l5:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l5:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l5:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l5:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l5:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l5:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l5:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l5:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l5:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l6
+	{mso-list-id:1524436904;
+	mso-list-type:hybrid;
+	mso-list-template-ids:664053986 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l6:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l6:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l6:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l6:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l6:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l6:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l6:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l6:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l6:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l7
+	{mso-list-id:1630741395;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-678110944 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l7:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l7:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l7:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l7:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l7:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l7:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l7:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l7:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l7:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1027" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body lang=3DEN-SG =
+link=3D"#467886" vlink=3D"#96607D" style=3D'word-wrap:break-word'><div =
+class=3DWordSection1><p class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>More details on UBTECH. For =
+relevance, they supply close to RMB200mn of logistics related robotics =
+to BYD in 2024. <o:p></o:p></span></p><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Split into 2 parts: humanoid =
+robots (starting from 2025) and ex-humanoid robots (RMB1.305bn revenue =
+in 2024A) which is in the second half of this =
+note.<o:p></o:p></span></p><p class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p><span =
+style=3D'text-decoration:none'>&nbsp;</span></o:p></span></u></b></p><p =
+class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Humanoid =
+robot:<o:p></o:p></span></u></b></p><ul style=3D'margin-top:0in' =
+type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l7 level1 lfo1'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Walker S1 can carry 15kg boxes. =
+Walker S2 vs S1: increased 2 DoF in waist + designed for dual battery so =
+they can replace their own batteries and work 24 hours. Lifespan is 5 =
+years. <o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l7 level1 lfo1'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Industry-first semantic VSLAM =
+navigation, achieving accurate positioning and map construction (mm =
+level precision). Allow robot to understand the spatial topology, =
+transmitted to the AI model to make a decision (new scene &amp; new =
+perspective). <o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l7 level1 lfo1'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>In the future, focused on the 3 =
+scenarios of humanoid robots, industrial (box carrying, bolt tightening, =
+quality inspection, part installation, process material handling, SPS =
+sorting), commercial (in retail etc), and household companionship. In =
+next 2-3 years industrial will be the major segment for humanoid robots. =
+Most of the industrial robots will be delivered to the car companies at =
+first. <o:p></o:p></span></li></ul><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Timeline<o:p></o:p></span></u></=
+b></p><ul style=3D'margin-top:0in' type=3Ddisc><li =
+class=3DMsoListParagraph style=3D'margin-left:0in;mso-list:l2 level1 =
+lfo2'><span lang=3DEN-US style=3D'font-family:"Arial",sans-serif'>In =
+2025, deliver 500 units of industrial robot (mainly focused on box =
+carrying)<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l2 level1 lfo2'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>2026, ~3000 industrial robot =
+(extend to sorting, bolt tightening etc).<o:p></o:p></span></li><li =
+class=3DMsoListParagraph style=3D'margin-left:0in;mso-list:l2 level1 =
+lfo2'><span lang=3DEN-US style=3D'font-family:"Arial",sans-serif'>2027, =
+enter mass production, deliver ~10,000 units of industrial robot. =
+<o:p></o:p></span></li></ul><p class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>UBTech designs all the =
+components by themselves before placing purchasing orders to =
+3<sup>rd</sup> party suppliers who then get back to them and UBTech =
+assembles themselves.<o:p></o:p></span></p><p class=3DMsoNormal><span =
+lang=3DEN-US style=3D'font-family:"Arial",sans-serif'>Hardware wise, the =
+only foreign component is chipwise NVIDIA&#8217;s Jetson AGX Orin which =
+isn&#8217;t banned or on restricted lists. The rest of the hardware =
+(motor, camera / force sensors etc) are all domestic. Strong cooperation =
+with Huawei who has a good GPU chip as well but still sticking to =
+NVIDIA. <o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Maintenance checks monthly / =
+quarterly (not a big consideration at this stage given its still early / =
+small scale)<o:p></o:p></span></p><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Capex =
+requirements:<o:p></o:p></span></u></b></p><ul style=3D'margin-top:0in' =
+type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l4 level1 lfo3'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Not much capex plans in the =
+next 2 years as factories are mainly for assembly, UBTech don&#8217;t =
+produce components. At under 10k robots, they just require 100 people to =
+do the assembly and not too many production lines needed. At mass =
+production, they might require more robotic arms and more automation =
+will be applied.<o:p></o:p></span></li></ul><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Breakeven =
+point:<o:p></o:p></span></u></b></p><ul style=3D'margin-top:0in' =
+type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l4 level1 lfo3'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Should be profitable at =
+RMB3-4bn revenue level (expected to reach in 2027e). Part of it comes =
+from AI revenue, education, smart logistics etc (ex-humanoid robot) =
+while the rest of it comes from humanoid robots. =
+<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l4 level1 lfo3'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>At the current small production =
+scale, gross margins are 30%. The target GM will be 50% upon reaching =
+mass production and delivery stage (&gt;10k units). This comes from =
+lowered BOM (even after taking into account a lower ASP which =
+accelerates adoption).<o:p></o:p></span></li></ul><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Visibility in =
+orders:<o:p></o:p></span></u></b></p><ul style=3D'margin-top:0in' =
+type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l6 level1 lfo4'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>For now, UBTech got small scale =
+orders from different companies. Dongfeng group and BYD are 2 groups of =
+orders. With regards to potential orders, they can&#8217;t share at this =
+moment.<o:p></o:p></span></li></ul><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>On potential of the =
+market:<o:p></o:p></span></u></b></p><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>&#8220;For humanoid robots, in =
+2025 we got our first order, once we settle down the first order, market =
+size will increase significantly. Just in BYD factories, they need =
+10,000 box carrying robots. If you extend to sorting and other =
+scenarios, there might be hundreds of thousands or millions of robots =
+needed by the industry. Can&#8217;t imagine at this moment what&#8217;s =
+the situation in the next few years. Just like in the development of EV =
+industry 5 years ago, would not expect BYD to become no.1 EV maker in =
+the world.&#8221;<o:p></o:p></span></p><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>On their tech advantage in =
+humanoid robots for industrial use:<o:p></o:p></span></u></b></p><ul =
+style=3D'margin-top:0in' type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l6 level1 lfo4'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Technical advantage is swarm =
+intelligence, essential technology is to achieve the large-scale =
+application of humanoid robots in industrial =
+scenarios.<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l6 level1 lfo4'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>1000+ engineers (World =
+no.1)<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l6 level1 lfo4'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>763 valid patents in humanoid =
+robots (world no. 1)<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l6 level1 lfo4'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>&#8220;Unitree only has motion =
+control systems, no AI tech. UBTech has developed close to 10 years of =
+tech advantage, we also make more mistakes than the other companies =
+because we started research 10 years ago. So we know what kind of =
+technology cannot be commercialized in humanoid robots. In the factories =
+we are the only company that can deliver humanoid robots that can =
+continuously work for 24 hours, 5 years. The other startup companies can =
+only show units for demo or that work for few hours max. We are not just =
+testing products in laboratories, we commercialized 4 years =
+ago.&#8221;<o:p></o:p></span></li></ul><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Before humanoid robots, the =
+company is generating total revenue of RMB1,305m in =
+2024.<o:p></o:p></span></u></b></p><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Customers are in China but have =
+been expanding our business to Korea Japan and recently Middle East =
+(Saudi Arabia).<o:p></o:p></span></p><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Education smart robotics (27.8% =
+revenue, RMB363m):<o:p></o:p></span></u></p><ul style=3D'margin-top:0in' =
+type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l0 level1 lfo5'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>UBTech offers services in K12 =
+and schools. They are the no.1 supplier in AI education in China, strong =
+leading status in AI education. They build the AI lab in school and =
+revenue per AI lab is around RMB4m in their experience. They are now =
+servicing over 4000 schools in China (in some manner, probably not the =
+full AI lab etc) with the second supplier being at around 100 schools. =
+<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l0 level1 lfo5'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>The revenue mainly comes from =
+governments - they collaborate with education bureaus in the cities / =
+districts. For instance, in Xiamen, UBTech supply services to around 100 =
+schools. They have grabbed strong support from the government. Driver in =
+this segment is that the central govt national education bureau released =
+a plan that before 2030, most of the schools in China should put AI =
+education into the daily course in K12 schools. =
+<o:p></o:p></span></li></ul><p class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Logistics smart robotics (24.6% =
+revenue, RMB321m):<o:p></o:p></span></u></p><ul style=3D'margin-top:0in' =
+type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l3 level1 lfo6'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>For logistics smart robotics, =
+UBTech provide the AMR, smart logistics solution for factories. =
+<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l3 level1 lfo6'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Logistics smart robotics =
+segment made RMB321m in 2024 - BYD should be over 60% of this so RMB193m =
+of its revenue should be from BYD.<o:p></o:p></span></li></ul><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Consumer-level smart robotics =
+(36.5% revenue, RMB477m):<o:p></o:p></span></u></p><ul =
+style=3D'margin-top:0in' type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l5 level1 lfo7'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>UBTech&#8217;s smart cat litter =
+box sold over 200k units in 2024. My estimate is probably 1200/1500RMB =
+at 200k units =3D ~RMB300m in 2024. Consumer smart robotics segment made =
+RMB477m revenue in 2024 so the smart cat litter box could be over 50/60% =
+of the segment. <o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l5 level1 lfo7'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Has experienced significant =
+growth (FY24 growth of 88%) and will likely experience ~50% growth. =
+<o:p></o:p></span></li></ul><p class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Target split / proportion of =
+revenue <o:p></o:p></span></u></b></p><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>AI related business will =
+represent main core of our revenue (&gt;50%), but in 2027e humanoid =
+robots will become major revenue of our group. AI related business =
+(ex-humanoid robots) education smart logistics etc, not seeing a =
+dramatic increase for now but for consumer smart robotics there&#8217;s =
+a dramatic increase. <o:p></o:p></span></p><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><b><u><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Valuation:<o:p></o:p></span></u>=
+</b></p><p class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Trading at RMB39bn market cap =
+&amp; RMB39.6bn EV, estimating what investors are paying for at this =
+valuation:<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><!--[if gte vml 1]><v:shapetype id=3D"_x0000_t75" =
+coordsize=3D"21600,21600" o:spt=3D"75" o:preferrelative=3D"t" =
+path=3D"m@4@5l@4@11@9@11@9@5xe" filled=3D"f" stroked=3D"f">
+<v:stroke joinstyle=3D"miter" />
+<v:formulas>
+<v:f eqn=3D"if lineDrawn pixelLineWidth 0" />
+<v:f eqn=3D"sum @0 1 0" />
+<v:f eqn=3D"sum 0 0 @1" />
+<v:f eqn=3D"prod @2 1 2" />
+<v:f eqn=3D"prod @3 21600 pixelWidth" />
+<v:f eqn=3D"prod @3 21600 pixelHeight" />
+<v:f eqn=3D"sum @0 0 1" />
+<v:f eqn=3D"prod @6 1 2" />
+<v:f eqn=3D"prod @7 21600 pixelWidth" />
+<v:f eqn=3D"sum @8 21600 0" />
+<v:f eqn=3D"prod @7 21600 pixelHeight" />
+<v:f eqn=3D"sum @10 21600 0" />
+</v:formulas>
+<v:path o:extrusionok=3D"f" gradientshapeok=3D"t" o:connecttype=3D"rect" =
+/>
+<o:lock v:ext=3D"edit" aspectratio=3D"t" />
+</v:shapetype><v:shape id=3D"Picture_x0020_2" o:spid=3D"_x0000_s1026" =
+type=3D"#_x0000_t75" alt=3D"A screenshot of a computer =
+screen&#10;&#10;AI-generated content may be incorrect." =
+style=3D'position:absolute;margin-left:0;margin-top:0;width:440.3pt;heigh=
+t:259.55pt;z-index:251659264;visibility:visible;mso-wrap-style:square;mso=
+-width-percent:0;mso-height-percent:0;mso-wrap-distance-left:9pt;mso-wrap=
+-distance-top:0;mso-wrap-distance-right:9pt;mso-wrap-distance-bottom:0;ms=
+o-position-horizontal:left;mso-position-horizontal-relative:text;mso-posi=
+tion-vertical:top;mso-position-vertical-relative:text;mso-width-percent:0=
+;mso-height-percent:0;mso-width-relative:page;mso-height-relative:page'>
+<v:imagedata src=3D"cid:image001.png@01DBC685.237B3A30" o:title=3D"A =
+screenshot of a computer screen&#10;&#10;AI-generated content may be =
+incorrect" />
+<w:wrap type=3D"square"/>
+</v:shape><![endif]--><![if !vml]><img width=3D587 height=3D346 =
+style=3D'width:6.1145in;height:3.6041in' =
+src=3D"cid:image001.png@01DBC685.237B3A30" align=3Dleft hspace=3D12 =
+alt=3D"A screenshot of a computer screen&#10;&#10;AI-generated content =
+may be incorrect." v:shapes=3D"Picture_x0020_2"><![endif]><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><br><br><o:p></o:p></span></p><p=
+ class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p><ul =
+style=3D'margin-top:0in' type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l1 level1 lfo8'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Not taking into account any =
+potential fund raising. ~95x FY28e P/E with a big assumption of 5% net =
+margins with R&amp;D intensity not multiples =
+higher.<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l1 level1 lfo8'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Humanoid robots as a % of their =
+total revenue should past the 50% mark at 2027e and ramp from =
+there.<o:p></o:p></span></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l1 level1 lfo8'><span lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'>Farfetched - but if they =
+execute well, a US$5.5bn enterprise value (at the moment) x2 is probably =
+in the acquirable realms for the tech / EV =
+majors.<o:p></o:p></span></li></ul><p class=3DMsoNormal><span =
+lang=3DEN-US =
+style=3D'font-family:"Arial",sans-serif'><o:p>&nbsp;</o:p></span></p></di=
+v></body></html>
+------=_NextPart_001_016A_01DBC686.9C1C2890--
+
+------=_NextPart_000_0169_01DBC686.9C1C2890
+Content-Type: image/png;
+	name="image001.png"
+Content-Transfer-Encoding: base64
+Content-ID: <image001.png@01DBC685.237B3A30>
+
+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
+kB3dY9UAAAAASUVORK5CYII=
+
+------=_NextPart_000_0169_01DBC686.9C1C2890--
+

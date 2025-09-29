@@ -1,0 +1,36 @@
+{
+  "mcpServers": {
+    "notion": {
+      "command": "npx",
+      "args": ["@notionhq/notion-mcp-server"],
+      "env": {
+        "NOTION_API_KEY": "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"
+      }
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["@upstash/context7-mcp"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp"]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "yahoo-finance": {
+      "command": "python",
+      "args": ["mcp_servers/yahoo-finance-mcp/server.py"],
+      "cwd": "${PWD}"
+    },
+    "financial-datasets": {
+      "command": "python",
+      "args": ["mcp_servers/financial-datasets-mcp/server.py"],
+      "cwd": "${PWD}",
+      "env": {
+        "FINANCIAL_DATASETS_API_KEY": ""
+      }
+    }
+  }
+}

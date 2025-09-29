@@ -1,0 +1,12 @@
+# lightrag/requirements.txt
+# Minimal dependencies for ICE LightRAG integration
+
+# Core LightRAG
+lightrag
+
+# For integration with existing Streamlit app
+streamlit
+pandas
+
+# Environment management
+python-dotenv

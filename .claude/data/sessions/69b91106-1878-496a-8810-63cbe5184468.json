@@ -1,0 +1,19 @@
+{
+  "session_id": "69b91106-1878-496a-8810-63cbe5184468",
+  "prompts": [
+    "Is Serena initialized?",
+    "what are the key modules in this projec directory?",
+    "you mentioned ice_main_notebook.ipynb as the primary development interface, but where is it? Can you find the file for me?",
+    "if files are archived, then they should not be considered as key modules or files anymore. ",
+    "what is a effective way to tell claude code how the key modules are linked to one another? ",
+    "can you search the web, how do claude code power users make claude code know the linkages and relationships between the key modules and processes? Think hard. Search the web.",
+    "what does this analyza dependencies md contain?",
+    "why do we need it as a custom commands, do we need to run it often to analyse the dependencies? Why can't we analyse the dependencies once, create a hierarchical tree that will constantly update itself whenever there are changes? Think hard.",
+    "  - \u2705 Comprehensive dependency tree in CLAUDE.md\n  - \u2705 Import flow documentation\n  - \u2705 Data flow architecture\n  - \u2705 Module communication patterns\n\nUltrathink, check this.",
+    "proceed",
+    "what does self-maintaining documentation mean?",
+    "which of the following files should be self-maintaining:\n- @CLAUDE.md \n- @PROJECT_STRUCTURE.md \n- @PROJECT_CHANGELOG.md \n- @README.md \n- @ICE_DEVELOPMENT_TODO.md ",
+    "should we include a prompt to specify these files to be self-maintaining as they should?",
+    "implement these prompts in the relevant files in the cleanest and most efficient way possible, write as little prompt as possible. Think hard. Then brief me"
+  ]
+}

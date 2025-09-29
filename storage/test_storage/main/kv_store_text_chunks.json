@@ -1,0 +1,16 @@
+{
+  "chunk-2621cc95d2e40125eb79c2aae6ac2f79": {
+    "tokens": 5,
+    "content": "[TEST] Test doc",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-2621cc95d2e40125eb79c2aae6ac2f79",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:0a65a7b0f010158c6f7993ffe137ae1f",
+      "default:extract:645c79e51cda74dce41bd9063ada9816"
+    ],
+    "create_time": 1757777408,
+    "update_time": 1757777413,
+    "_id": "chunk-2621cc95d2e40125eb79c2aae6ac2f79"
+  }
+}

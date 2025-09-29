@@ -1,0 +1,6 @@
+Ticker,Name,Sector,Alert Priority,What Changed,Top Causal Path,Themes,KPIs,Soft Signal,Recency,Confidence
+NVDA,Nvidia,Semis,92,Export curbs expanded → DC GPU slowdown (cited),NVDA → TSMC → China Risk (3 src),AI infra • .8 • 2d | China policy • .6 • 1d,Datacenter Rev • 1d | Lead times • 5d,⚠️ mgmt cautious on China,6h,0.91 (3 src)
+AAPL,Apple,Consumer Tech,76,iPhone SE delays → Q3 topline risk (cited),AAPL → Foxconn → China lockdown (2 src),Consumer sentiment • .7 • 3d,Unit sales • 2d,⚠️ weak Asia demand flagged,18h,0.82 (2 src)
+MSFT,Microsoft,Software,73,Azure bookings downshift → Cloud growth risk,MSFT → Azure → CapEx Pullback (2 src),Cloud slowdown • .6 • 2d,Azure NRR • 1d,⚠️ hiring freeze in cloud ops,12h,0.79 (2 src)
+AMZN,Amazon,E-commerce,68,Prime sign-ups lag seasonal norm → Demand drag,AMZN → Consumer Spend → Macro Weakness (2 src),US consumer • .5 • 4d,Prime subs • 2d,⚠️ CSAT complaints trending up,2d,0.76 (2 src)
+GOOGL,Alphabet,Digital Ads,70,Ad budgets trimmed → Rev softness,GOOGL → SMB Ad Spend → Macro Risk (2 src),Ad slowdown • .6 • 3d,Ad RPM • 1d,⚠️ internal memo on cost cuts,1d,0.78 (2 src)

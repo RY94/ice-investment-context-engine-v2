@@ -1,0 +1,40 @@
+# lightrag/requirements.txt
+# Dependencies for ICE LightRAG integration and news API system
+
+# Core LightRAG
+lightrag
+
+# For integration with existing Streamlit app
+streamlit
+pandas
+
+# Environment management
+python-dotenv
+
+# News API Integration Dependencies
+requests>=2.31.0
+urllib3>=2.0.0
+
+# Data Processing and Analysis
+numpy>=1.24.0
+scipy>=1.11.0
+
+# Graph Processing
+networkx>=3.1
+
+# Testing Framework
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Data Validation and Parsing
+pydantic>=2.0.0
+
+# Caching and Serialization
+diskcache>=5.6.0
+
+# Async support (for future enhancements)
+aiohttp>=3.8.0
+
+# Additional utilities
+python-dateutil>=2.8.0
+pytz>=2023.3

@@ -1,0 +1,121 @@
+{
+  "doc-024d04512c17f290e4f5d9de4b0a7160": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-024d04512c17f290e4f5d9de4b0a7160"
+    ],
+    "content_summary": "[EARNINGS_TRANSCRIPT] [EARNINGS_TRANSCRIPT] NVIDIA Q3 2024 Earnings Call (2024-11-20)\n\nNVIDIA Corporation reported record Q3 2024 revenue of $18.12 billion, up 206% year-over-year, driven primarily by Data Center revenue of $14.51 billion. CEO Jensen...",
+    "content_length": 1262,
+    "created_at": "2025-09-14T05:57:02.964332+00:00",
+    "updated_at": "2025-09-14T05:59:56.707430+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20250914_135702_1cdd44e6",
+    "metadata": {
+      "processing_start_time": 1757829571,
+      "processing_end_time": 1757829596
+    }
+  },
+  "doc-c0b70ffd35084183828fcc722e9af3ee": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-c0b70ffd35084183828fcc722e9af3ee"
+    ],
+    "content_summary": "[SEC_FILING] [SEC_FILING] TSMC 10-K Annual Report 2024 (2024-04-15)\n\nTaiwan Semiconductor Manufacturing Company Limited faces significant geopolitical and operational risks due to concentrated manufacturing in Taiwan. Cross-strait tensions with mainl...",
+    "content_length": 1336,
+    "created_at": "2025-09-14T05:57:02.969290+00:00",
+    "updated_at": "2025-09-14T05:59:53.269435+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20250914_135702_bc0247ce",
+    "metadata": {
+      "processing_start_time": 1757829571,
+      "processing_end_time": 1757829593
+    }
+  },
+  "doc-4a1a68309419497d0d53f55c500b29d4": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-4a1a68309419497d0d53f55c500b29d4"
+    ],
+    "content_summary": "[INDUSTRY_ANALYSIS] [INDUSTRY_ANALYSIS] Semiconductor Industry Association Report 2024 (2024-08-30)\n\nThe global semiconductor industry demonstrates critical supply chain interdependencies across the AI acceleration ecosystem. ASML Holdings maintains ...",
+    "content_length": 1592,
+    "created_at": "2025-09-14T05:57:02.971816+00:00",
+    "updated_at": "2025-09-14T06:00:13.908540+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20250914_135702_bbdfa7e1",
+    "metadata": {
+      "processing_start_time": 1757829593,
+      "processing_end_time": 1757829613
+    }
+  },
+  "doc-dab795151522ec0f4608dff93e516697": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-dab795151522ec0f4608dff93e516697"
+    ],
+    "content_summary": "[MARKET_RESEARCH] [MARKET_RESEARCH] AI Infrastructure Market Analysis 2024 (2024-09-15)\n\nArtificial intelligence infrastructure markets show explosive growth with hyperscale data center investments reaching $250 billion globally. Microsoft Azure, Ama...",
+    "content_length": 1282,
+    "created_at": "2025-09-14T05:57:02.974369+00:00",
+    "updated_at": "2025-09-14T06:00:21.286597+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20250914_135702_e7d77b4e",
+    "metadata": {
+      "processing_start_time": 1757829596,
+      "processing_end_time": 1757829621
+    }
+  },
+  "doc-b731b779944bf609e6d0ef1293f0a0f4": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-b731b779944bf609e6d0ef1293f0a0f4"
+    ],
+    "content_summary": "[TEST] [MARKET_DATA] Test Financial Document (2024-09-14)\n\nNVIDIA Corporation continues to lead in AI infrastructure with strong data center revenue growth.\nThe company faces supply chain constraints from TSMC manufacturing capacity.\nExport controls ...",
+    "content_length": 406,
+    "created_at": "2025-09-14T05:59:31.640641+00:00",
+    "updated_at": "2025-09-14T06:00:23.337274+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20250914_135931_d5b31f48",
+    "metadata": {
+      "processing_start_time": 1757829613,
+      "processing_end_time": 1757829623
+    }
+  },
+  "doc-b0cd582d09cc9b466da80c8813bfc41c": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-b0cd582d09cc9b466da80c8813bfc41c"
+    ],
+    "content_summary": "[BATCH_TEST] [TEST] First batch document with NVIDIA information.",
+    "content_length": 65,
+    "created_at": "2025-09-14T06:00:23.352135+00:00",
+    "updated_at": "2025-09-14T06:00:27.571843+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20250914_140023_8cf1b1d9",
+    "metadata": {
+      "processing_start_time": 1757829623,
+      "processing_end_time": 1757829627
+    }
+  },
+  "doc-181ed4eeeb0fb40971c097e751aa1c80": {
+    "status": "processed",
+    "chunks_count": 1,
+    "chunks_list": [
+      "chunk-181ed4eeeb0fb40971c097e751aa1c80"
+    ],
+    "content_summary": "[BATCH_TEST] [TEST] Second batch document with TSMC supply chain data.",
+    "content_length": 70,
+    "created_at": "2025-09-14T06:00:23.352796+00:00",
+    "updated_at": "2025-09-14T06:00:27.790348+00:00",
+    "file_path": "unknown_source",
+    "track_id": "insert_20250914_140023_a93fed52",
+    "metadata": {
+      "processing_start_time": 1757829623,
+      "processing_end_time": 1757829627
+    }
+  }
+}

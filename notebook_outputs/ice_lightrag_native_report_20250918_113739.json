@@ -1,0 +1,101 @@
+{
+  "execution_metadata": {
+    "timestamp": "2025-09-18T11:37:39.172799",
+    "notebook_version": "v2_lightrag_native",
+    "architecture": "6_section_lightrag_native",
+    "approach": "automatic_graph_building"
+  },
+  "system_status": {
+    "lightrag_available": true,
+    "lightrag_ready": true,
+    "openai_configured": true,
+    "data_sources_available": 9,
+    "total_possible_sources": 12
+  },
+  "data_ingestion": {
+    "financial_apis": {
+      "available": 4,
+      "total": 4,
+      "apis": {
+        "Alpha Vantage": true,
+        "Financial Modeling Prep": true,
+        "Polygon.io": true,
+        "Finnhub": true
+      }
+    },
+    "news_apis": {
+      "available": 4,
+      "total": 4,
+      "apis": {
+        "NewsAPI.org": true,
+        "Benzinga": true,
+        "MarketAux": true,
+        "Exa (Web Search)": true
+      }
+    },
+    "mcp_servers": {
+      "available": 1,
+      "total": 4,
+      "servers": {
+        "Yahoo Finance MCP": "available",
+        "SEC EDGAR MCP": "planned",
+        "News Aggregator MCP": "planned",
+        "Email Intelligence MCP": "prototype"
+      }
+    }
+  },
+  "document_processing": {
+    "documents_submitted": 4,
+    "documents_successful": 4,
+    "processing_success_rate": 100.0,
+    "total_processing_time": 0.444465,
+    "avg_processing_time": 0.11111625,
+    "automatic_graph_building": true
+  },
+  "query_performance": {
+    "queries_tested": 6,
+    "queries_successful": 6,
+    "query_success_rate": 100.0,
+    "avg_response_time": 0.000307,
+    "modes_tested": [
+      "hybrid",
+      "local",
+      "global",
+      "naive"
+    ],
+    "multi_modal_retrieval": true
+  },
+  "portfolio_analysis": {
+    "total_tickers": 6,
+    "holdings_count": 4,
+    "watchlist_count": 2,
+    "holdings": [
+      "NVDA",
+      "TSMC",
+      "ASML",
+      "AMD"
+    ],
+    "watchlist": [
+      "QCOM",
+      "INTC"
+    ],
+    "well_covered_holdings": [
+      "TSMC",
+      "ASML",
+      "AMD"
+    ],
+    "limited_coverage_holdings": [
+      "NVDA"
+    ],
+    "total_risk_factors": 4,
+    "total_opportunities": 4,
+    "total_insights": 0,
+    "knowledge_graph_analysis": true
+  },
+  "performance_metrics": {
+    "overall_success": true,
+    "data_ingestion_readiness": 75.0,
+    "end_to_end_functionality": true,
+    "portfolio_coverage_rate": 75.0
+  }
+}

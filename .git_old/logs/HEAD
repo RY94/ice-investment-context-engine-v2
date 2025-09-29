@@ -1,0 +1,9 @@
+0000000000000000000000000000000000000000 7682767a1c9e1059076670cc46638104b1e2fa8a Roy Yeo <royyeo0101@hotmail.com> 1756744595 +0800	commit (initial): Initial commit: ICE Investment Context Engine MVP
+7682767a1c9e1059076670cc46638104b1e2fa8a 1cf0d6016c436704969c33a1a81f248da5a45e46 Roy Yeo <royyeo0101@hotmail.com> 1757248139 +0800	commit: Major ICE project update: Complete development structure and MVP
+1cf0d6016c436704969c33a1a81f248da5a45e46 d90d4c594d7fee43ad0b858f52fe6752ad9052fd Roy Yeo <royyeo0101@hotmail.com> 1757261765 +0800	commit: docs: Update capstone proposal documents
+d90d4c594d7fee43ad0b858f52fe6752ad9052fd d90d4c594d7fee43ad0b858f52fe6752ad9052fd Roy Yeo <royyeo0101@hotmail.com> 1757261778 +0800	checkout: moving from main to feature/lightrag-integration
+d90d4c594d7fee43ad0b858f52fe6752ad9052fd 69bd4ca157c0b46f985f87429e64d97d294faba2 Roy Yeo <royyeo0101@hotmail.com> 1757264606 +0800	commit: feat: Complete ICE-LightRAG integration with comprehensive testing
+69bd4ca157c0b46f985f87429e64d97d294faba2 69bd4ca157c0b46f985f87429e64d97d294faba2 Roy Yeo <royyeo0101@hotmail.com> 1757295691 +0800	reset: moving to HEAD
+69bd4ca157c0b46f985f87429e64d97d294faba2 a1f74446ab50f6153503f65c09b210bf47c23670 Roy Yeo <royyeo0101@hotmail.com> 1757295731 +0800	checkout: moving from feature/lightrag-integration to add-claude-github-actions-1757091424152
+a1f74446ab50f6153503f65c09b210bf47c23670 c6b1955e33dc33189f38dca8cbcbdffcb3ac8984 Roy Yeo <royyeo0101@hotmail.com> 1757303416 +0800	commit: Refactor CLAUDE.md: extract implementation code to dedicated modules
+c6b1955e33dc33189f38dca8cbcbdffcb3ac8984 b1138c3aee11994382a615fc1c471b223f8e0ba5 Roy Yeo <royyeo0101@hotmail.com> 1757320571 +0800	commit: Add ICE development notebook and MCP infrastructure
