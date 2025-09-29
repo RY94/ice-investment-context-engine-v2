@@ -90,3 +90,26 @@ requirements-dev.lock
 
 # OneDrive ignore file
 .onedriveignore
+
+# Large files and embedded repositories
+archive/misc_files/fortransfer.claude/
+archive/misc_files/claude-code-intro/
+*.jsonl
+*.pack
+*/.git/
+.git_old/
+
+# Large media files
+*.png
+*.jpg
+*.jpeg
+*.pdf
+*.docx
+*.pptx
+*.msg
+
+# Large data files
+*.json
+!package.json
+!config.json
+!.mcp.json
