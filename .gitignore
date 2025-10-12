@@ -66,8 +66,10 @@ Thumbs.db
 .ipynb_checkpoints/
 *.ipynb_checkpoints
 
-# Logs
+# Logs (may contain API keys from runtime)
 *.log
+logs/
+.claude/data/sessions/
 
 # Temporary files
 *.tmp

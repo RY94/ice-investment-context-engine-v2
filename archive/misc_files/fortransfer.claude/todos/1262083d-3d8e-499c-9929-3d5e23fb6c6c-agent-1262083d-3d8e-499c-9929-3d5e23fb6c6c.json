@@ -1,0 +1,22 @@
+[
+  {
+    "content": "Install Notion SDK for Python",
+    "status": "completed",
+    "activeForm": "Installing Notion SDK for Python"
+  },
+  {
+    "content": "Create Notion API integration wrapper",
+    "status": "in_progress",
+    "activeForm": "Creating Notion API integration wrapper"
+  },
+  {
+    "content": "Test Notion API connection",
+    "status": "pending",
+    "activeForm": "Testing Notion API connection"
+  },
+  {
+    "content": "Create example usage functions",
+    "status": "pending",
+    "activeForm": "Creating example usage functions"
+  }
+]

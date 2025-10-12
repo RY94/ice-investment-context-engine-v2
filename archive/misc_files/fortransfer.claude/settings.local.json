@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__notion__API-post-search",
+      "mcp__browsermcp__browser_snapshot",
+      "mcp__browsermcp__browser_click",
+      "mcp__browsermcp__browser_type",
+      "mcp__browsermcp__browser_wait",
+      "mcp__browsermcp__browser_navigate",
+      "mcp__browsermcp__browser_screenshot"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

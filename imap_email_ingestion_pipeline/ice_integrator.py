@@ -1,7 +1,7 @@
 # imap_email_ingestion_pipeline/ice_integrator.py
 # Enhanced ICE integration layer for email pipeline
 # Feeds email content and graph data into LightRAG system with batch processing
-# RELEVANT FILES: graph_builder.py, state_manager.py, entity_extractor.py
+# RELEVANT FILES: graph_builder.py, state_manager.py, entity_extractor.py, enhanced_doc_creator.py
 
 import os
 import sys
@@ -10,6 +10,9 @@ import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 from pathlib import Path
+
+# Import enhanced document creator (Week 1.5 addition)
+from .enhanced_doc_creator import create_enhanced_document
 
 # Add parent directory to path to import ICE modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -51,11 +54,26 @@ class ICEEmailIntegrator:
             'last_processed': None
         }
     
-    def integrate_email_data(self, email_data: Dict[str, Any], 
+    def integrate_email_data(self, email_data: Dict[str, Any],
                            extracted_entities: Dict[str, Any],
                            graph_data: Dict[str, Any],
-                           attachments_data: List[Dict[str, Any]] = None) -> Dict[str, Any]:
-        """Integrate complete email data into ICE system"""
+                           attachments_data: List[Dict[str, Any]] = None,
+                           use_enhanced: bool = True,
+                           save_graph_json: bool = False) -> Dict[str, Any]:
+        """
+        Integrate complete email data into ICE system
+
+        Args:
+            email_data: Email metadata and content
+            extracted_entities: EntityExtractor output with confidence scores
+            graph_data: GraphBuilder output
+            attachments_data: List of attachment data (optional)
+            use_enhanced: If True, use enhanced documents with inline markup (Week 1.5 feature)
+            save_graph_json: If True, save graph data as JSON files (legacy feature, defaults to False)
+
+        Returns:
+            Integration result dictionary with success status and component results
+        """
         try:
             integration_result = {
                 'email_uid': email_data.get('uid'),
@@ -69,19 +87,26 @@ class ICEEmailIntegrator:
                 'errors': []
             }
             
-            # 1. Create comprehensive document for LightRAG
-            email_document = self._create_comprehensive_document(
-                email_data, extracted_entities, attachments_data
-            )
-            
+            # 1. Create document for LightRAG (enhanced or plain)
+            if use_enhanced:
+                # Week 1.5: Use enhanced documents with inline markup
+                email_document = self._create_enhanced_document(
+                    email_data, extracted_entities, graph_data
+                )
+            else:
+                # Legacy: Use plain comprehensive documents
+                email_document = self._create_comprehensive_document(
+                    email_data, extracted_entities, attachments_data
+                )
+
             if email_document:
                 doc_result = self._integrate_document(email_document)
                 integration_result['components']['document_integration'] = doc_result['success']
                 if not doc_result['success']:
                     integration_result['errors'].append(f"Document integration failed: {doc_result.get('error')}")
-            
-            # 2. Integrate graph structure
-            if graph_data and graph_data.get('nodes'):
+
+            # 2. Integrate graph structure (optional - Week 1.5: defaults to False)
+            if save_graph_json and graph_data and graph_data.get('nodes'):
                 graph_result = self._integrate_graph_data(graph_data)
                 integration_result['components']['graph_integration'] = graph_result['success']
                 if not graph_result['success']:
@@ -217,7 +242,50 @@ class ICEEmailIntegrator:
         except Exception as e:
             self.logger.error(f"Error creating comprehensive document: {e}")
             return None
-    
+
+    def _create_enhanced_document(self, email_data: Dict[str, Any],
+                                  entities: Dict[str, Any],
+                                  graph_data: Optional[Dict[str, Any]] = None) -> Optional[str]:
+        """
+        Create enhanced document with inline metadata markup for LightRAG.
+
+        Week 1.5 Addition: Wrapper around enhanced_doc_creator.create_enhanced_document()
+        that preserves EntityExtractor precision while using single LightRAG graph.
+
+        This method replaces the dual-graph approach by injecting custom extractions
+        as structured markup within the document text before LightRAG ingestion.
+
+        Args:
+            email_data: Email metadata (uid, from, date, subject, body, attachments, etc.)
+            entities: EntityExtractor output with confidence scores
+            graph_data: Optional GraphBuilder output (for future use)
+
+        Returns:
+            Enhanced document string with inline markup, or None if creation fails
+
+        Example markup in output:
+            [SOURCE_EMAIL:12345|sender:analyst@gs.com|date:2024-01-15]
+            [TICKER:NVDA|confidence:0.95] [RATING:BUY|confidence:0.87]
+            Original email body text...
+        """
+        try:
+            # Use the enhanced_doc_creator module function
+            enhanced_doc = create_enhanced_document(email_data, entities, graph_data)
+
+            if enhanced_doc:
+                self.logger.info(
+                    f"Created enhanced document for email {email_data.get('uid')}: "
+                    f"{len(enhanced_doc)} bytes with inline markup"
+                )
+            else:
+                self.logger.warning(f"Failed to create enhanced document for email {email_data.get('uid')}")
+
+            return enhanced_doc
+
+        except Exception as e:
+            self.logger.error(f"Error creating enhanced document: {e}", exc_info=True)
+            return None
+
     def _integrate_document(self, document: str) -> Dict[str, Any]:
         """Integrate document into LightRAG"""
         try:

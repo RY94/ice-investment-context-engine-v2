@@ -1,0 +1,113 @@
+INFO:ice_data_ingestion.ice_integration:ICE LightRAG system initialized successfully
+INFO:ice_data_ingestion.ice_integration:ICE LightRAG system initialized successfully
+INFO:updated_architectures.implementation.ice_simplified:ICE Core initializing with ICESystemManager orchestration
+INFO:src.ice_core.ice_system_manager:ICE System Manager initialized with working_dir: ice_lightrag/storage
+INFO:updated_architectures.implementation.ice_simplified:✅ ICESystemManager initialized successfully
+INFO:updated_architectures.implementation.ice_simplified:Data Ingester initialized with 4 API services
+INFO:updated_architectures.implementation.ice_simplified:Query Engine initialized
+INFO:updated_architectures.implementation.ice_simplified:✅ ICE Simplified system initialized successfully
+INFO:src.ice_core.ice_system_manager:LightRAG wrapper created successfully (lazy initialization mode)
+INFO:src.ice_core.ice_system_manager:Exa MCP connector initialized successfully
+INFO:src.ice_core.ice_graph_builder:ICE Graph Builder initialized
+INFO:src.ice_core.ice_graph_builder:LightRAG instance updated in Graph Builder
+INFO:src.ice_core.ice_system_manager:Graph Builder initialized successfully
+INFO:src.ice_core.ice_query_processor:ICE Query Processor initialized
+INFO:src.ice_core.ice_system_manager:Query Processor initialized successfully
+INFO:updated_architectures.implementation.ice_simplified:System health: ready=True
+INFO:updated_architectures.implementation.ice_simplified:Components: {'lightrag': True, 'exa_connector': True, 'graph_builder': True, 'query_processor': True, 'data_manager': False}
+INFO:updated_architectures.implementation.ice_simplified:✅ ICE system created and ready for operations
+test_1_full_data_pipeline (__main__.TestIntegration.test_1_full_data_pipeline)
+Test 1: Full data pipeline (API → Email → SEC → LightRAG graph) ... FAIL
+test_2_circuit_breaker_activation (__main__.TestIntegration.test_2_circuit_breaker_activation)
+Test 2: Circuit breaker activation (force API failure, verify retry) ... ERROR
+test_3_secure_config_roundtrip (__main__.TestIntegration.test_3_secure_config_roundtrip)
+Test 3: SecureConfig roundtrip (encrypt/decrypt, verify rotation) ... ok
+test_4_query_fallback_cascade (__main__.TestIntegration.test_4_query_fallback_cascade)
+Test 4: Query fallback cascade (force mix failure → hybrid → local) ... ERROR
+test_5_health_monitoring_metrics (__main__.TestIntegration.test_5_health_monitoring_metrics)
+Test 5: Health monitoring metrics collection ... INFO:src.ice_core.ice_system_manager:ICE query completed: mode=local, graph_context=True
+INFO:updated_architectures.implementation.ice_simplified:Query completed: 10 chars, mode: local
+ok
+
+======================================================================
+ERROR: test_2_circuit_breaker_activation (__main__.TestIntegration.test_2_circuit_breaker_activation)
+Test 2: Circuit breaker activation (force API failure, verify retry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project/updated_architectures/implementation/test_integration.py", line 99, in test_2_circuit_breaker_activation
+    client = RobustHTTPClient(
+             ^^^^^^^^^^^^^^^^^
+TypeError: RobustHTTPClient.__init__() got an unexpected keyword argument 'max_retries'
+
+======================================================================
+ERROR: test_4_query_fallback_cascade (__main__.TestIntegration.test_4_query_fallback_cascade)
+Test 4: Query fallback cascade (force mix failure → hybrid → local)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project/updated_architectures/implementation/test_integration.py", line 160, in test_4_query_fallback_cascade
+    result = self.ice.core.query(
+             ^^^^^^^^^^^^^^^^^^^^
+TypeError: ICECore.query() got an unexpected keyword argument 'use_graph_context'
+
+======================================================================
+FAIL: test_1_full_data_pipeline (__main__.TestIntegration.test_1_full_data_pipeline)
+Test 1: Full data pipeline (API → Email → SEC → LightRAG graph)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project/updated_architectures/implementation/test_integration.py", line 65, in test_1_full_data_pipeline
+    self.assertTrue(storage_stats['total_storage_bytes'] > 0,
+AssertionError: False is not true : Knowledge graph should have data
+
+----------------------------------------------------------------------
+Ran 5 tests in 1.031s
+
+FAILED (failures=1, errors=2)
+
+======================================================================
+Starting Integration Test Suite
+======================================================================
+
+======================================================================
+INTEGRATION TEST SUITE - Week 6
+======================================================================
+✅ LightRAG successfully imported!
+
+======================================================================
+TEST 1: Full Data Pipeline Integration
+======================================================================
+
+======================================================================
+TEST 2: Circuit Breaker & Retry Logic
+======================================================================
+
+======================================================================
+TEST 3: SecureConfig Encryption/Decryption
+======================================================================
+✅ SecureConfig encryption validated
+   - Encryption/decryption roundtrip successful
+   - Key rotation mechanism available
+
+======================================================================
+TEST 4: Query Fallback Logic
+======================================================================
+
+======================================================================
+TEST 5: Health Monitoring & Metrics
+======================================================================
+✅ Health monitoring validated
+   System ready: True
+   Query modes available: 6
+   Storage size: 0.00 MB
+   Sample query time: 0.00s
+   - All health indicators operational
+
+======================================================================
+INTEGRATION TEST SUMMARY
+======================================================================
+Tests run: 5
+Successes: 2
+Failures: 1
+Errors: 2
+
+⚠️  Some integration tests failed - review output above
+======================================================================

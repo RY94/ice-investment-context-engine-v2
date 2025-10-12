@@ -142,7 +142,51 @@ class ICEQueryProcessor:
 ### 📚 Sources
 {sources}"""
         }
-    
+
+    def _query_with_fallback(self, question: str, mode: str) -> Dict[str, Any]:
+        """
+        Execute LightRAG query with automatic mode fallback for robustness
+
+        Week 4 Integration: Implements mix → hybrid → local cascade for advanced modes
+
+        Args:
+            question: User's investment question
+            mode: Requested LightRAG query mode
+
+        Returns:
+            Query result dict from first successful mode
+        """
+        # Define fallback chains for advanced modes
+        fallback_chain = {
+            'mix': ['mix', 'hybrid', 'local'],
+            'hybrid': ['hybrid', 'local']
+        }
+        # Use fallback chain if available, otherwise try only requested mode
+        modes_to_try = fallback_chain.get(mode, [mode])
+
+        last_error = None
+        for attempt_mode in modes_to_try:
+            try:
+                logger.info(f"Attempting query with mode: {attempt_mode}")
+                result = self.lightrag.query(question, attempt_mode)
+
+                if result.get("status") == "success":
+                    if attempt_mode != mode:
+                        logger.warning(f"Fallback successful: {mode} → {attempt_mode}")
+                    return result
+
+            except Exception as e:
+                logger.warning(f"Mode {attempt_mode} failed: {e}")
+                last_error = e
+                continue
+
+        # All modes failed
+        return {
+            "status": "error",
+            "message": f"All query modes failed. Last error: {str(last_error)}",
+            "attempted_modes": modes_to_try
+        }
+
     def process_enhanced_query(self, question: str, mode: str = "hybrid") -> Dict[str, Any]:
         """
         Process user query with enhanced Graph-RAG capabilities
@@ -164,10 +208,10 @@ class ICEQueryProcessor:
             # Step 1: Extract entities and classify query intent
             entities = self._extract_entities_from_query(question)
             query_type = self._classify_query_type(question, entities)
-            
-            # Step 2: Execute LightRAG semantic search
-            rag_result = self.lightrag.query(question, mode)
-            
+
+            # Step 2: Execute LightRAG semantic search with fallback (Week 4 enhancement)
+            rag_result = self._query_with_fallback(question, mode)
+
             if rag_result["status"] != "success":
                 return rag_result
             

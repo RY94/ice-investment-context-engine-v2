@@ -3,15 +3,26 @@
 ELEGANT FIX: Jupyter-Native LightRAG wrapper with proper async handling
 Replaces the problematic SimpleICERAG with a Jupyter-compatible version
 Fixes the "This event loop is already running" issue with zero complexity increase
-Relevant files: ice_rag.py, ice_integration.py, ice_main_notebook.ipynb
+
+Week 3 Integration: SecureConfig for encrypted API key management
+Relevant files: ice_rag.py, ice_integration.py, ice_data_ingestion/secure_config.py
 """
 
 import os
+import sys
 import asyncio
 import logging
 from pathlib import Path
 from typing import Optional, Dict, Any
 from dotenv import load_dotenv
+
+# Add project root to path for SecureConfig import
+project_root = Path(__file__).parents[2]
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+# Import SecureConfig for encrypted API key management (Week 3 integration)
+from ice_data_ingestion.secure_config import get_secure_config
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -26,10 +37,18 @@ except ImportError:
 
 try:
     from lightrag import LightRAG, QueryParam
-    from lightrag.llm.openai import gpt_4o_mini_complete, openai_embed
+    # Model provider imports moved to model_provider.py factory
     LIGHTRAG_AVAILABLE = True
 except ImportError:
     LIGHTRAG_AVAILABLE = False
+
+# Import model provider factory for Ollama/OpenAI selection
+try:
+    from .model_provider import get_llm_provider
+    MODEL_PROVIDER_AVAILABLE = True
+except ImportError:
+    MODEL_PROVIDER_AVAILABLE = False
+    logger.warning("Model provider factory not available")
 
 
 class JupyterICERAG:
@@ -87,7 +106,11 @@ class JupyterICERAG:
             self._loop = None
 
     async def _ensure_initialized(self) -> bool:
-        """Lazy initialization with proper error handling and pipeline status"""
+        """
+        Lazy initialization with proper error handling and pipeline status
+
+        Week 3 Integration: Uses SecureConfig for encrypted API key retrieval
+        """
         if self._initialized:
             return True
 
@@ -100,18 +123,24 @@ class JupyterICERAG:
             self._initialization_failed = True
             return False
 
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            logger.error("OPENAI_API_KEY not set")
+        if not MODEL_PROVIDER_AVAILABLE:
+            logger.error("Model provider factory not available")
             self._initialization_failed = True
             return False
 
         try:
-            # Initialize LightRAG
+            # Get model provider based on configuration (OpenAI or Ollama)
+            # Factory handles Ollama health checks and OpenAI fallback automatically
+            llm_func, embed_func, model_config = get_llm_provider()
+
+            # Initialize LightRAG with selected provider
+            # model_config contains llm_model_name and llm_model_kwargs for Ollama
+            # Empty dict for OpenAI (uses defaults)
             self._rag = LightRAG(
                 working_dir=str(self.working_dir),
-                llm_model_func=gpt_4o_mini_complete,
-                embedding_func=openai_embed
+                llm_model_func=llm_func,
+                embedding_func=embed_func,
+                **model_config
             )
 
             # CRITICAL FIX: Initialize storages AND pipeline status

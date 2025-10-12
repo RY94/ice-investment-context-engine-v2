@@ -1,9 +1,12 @@
 # ICE Development Changelog
 
-**Location**: `/docs/CHANGELOG.md`
-**Purpose**: Track major changes, improvements, and milestones in ICE development
+> **Purpose**: Release milestones and version history
+> **Scope**: Major structural changes, reorganizations, version releases
+> **See also**: `PROJECT_CHANGELOG.md` (root) for detailed implementation tracking
+
+**Location**: `/md_files/CHANGELOG.md`
 **Business Value**: Development history and version tracking for stakeholders
-**Relevant Files**: `README.md`, `tasks/todo.md`, `docs/ARCHITECTURE.md`
+**Relevant Files**: `README.md`, `PROJECT_STRUCTURE.md`, `PROJECT_CHANGELOG.md`
 
 ---
 

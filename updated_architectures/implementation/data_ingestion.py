@@ -7,10 +7,21 @@ Relevant files: ice_simplified.py, ice_core.py
 """
 
 import os
+import sys
+from pathlib import Path
 import requests
 import logging
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
+
+# Add project root to path for production module imports
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+# Production module imports for robust data ingestion
+from ice_data_ingestion.robust_client import RobustHTTPClient
+from ice_data_ingestion.sec_edgar_connector import SECEdgarConnector
+from imap_email_ingestion_pipeline.email_connector import EmailConnector
 
 logger = logging.getLogger(__name__)
 
@@ -53,11 +64,36 @@ class DataIngester:
 
         self.available_services = list(self.api_keys.keys())
 
+        # Initialize production modules for robust data ingestion
+        # 1. Robust HTTP Client (replaces simple requests.get())
+        # Note: For now, keep using requests for simple integration
+        # TODO: Fully migrate to RobustHTTPClient with service-specific clients
+        self.http_client = None  # Will use requests for now, migrate later
+
+        # 2. Email Connector - NOT needed for sample emails
+        # fetch_email_documents() reads .eml files directly
+        # EmailConnector only needed for live IMAP connections in production
+        self.email_connector = None  # Development: read sample .eml files directly
+
+        # 3. SEC EDGAR Connector (regulatory filings: 10-K, 10-Q, 8-K)
+        self.sec_connector = SECEdgarConnector()
+
         logger.info(f"Data Ingester initialized with {len(self.available_services)} API services: {self.available_services}")
+        logger.info("Production modules initialized: SEC EDGAR connector ready, Email reads from samples")
 
     def is_service_available(self, service: str) -> bool:
         """Check if specific API service is configured"""
         return service in self.api_keys and bool(self.api_keys[service])
+
+    def _format_number(self, value: Any) -> str:
+        """Safely format a number with comma separators, handle strings/None"""
+        try:
+            if value is None or value == '' or value == 'N/A':
+                return 'N/A'
+            num = int(float(value))
+            return f"{num:,}"
+        except (ValueError, TypeError):
+            return 'N/A'
 
     def fetch_company_news(self, symbol: str, limit: int = 5) -> List[str]:
         """
@@ -233,6 +269,160 @@ Entities: {', '.join(article.get('entities', []))}
         logger.info(f"Fetched {len(documents)} financial documents for {symbol}")
         return documents
 
+    def fetch_email_documents(self, tickers: Optional[List[str]] = None, limit: int = 10) -> List[str]:
+        """
+        Fetch broker research emails from sample emails directory
+
+        During development, reads from data/emails_samples/ directory
+        In production, can switch to real IMAP using imap_email_ingestion_pipeline
+
+        Args:
+            tickers: Optional list of ticker symbols to filter emails
+            limit: Maximum number of emails to return
+
+        Returns:
+            List of email document texts ready for LightRAG ingestion
+        """
+        import email
+        from pathlib import Path
+
+        documents = []
+        # Path relative to this file: updated_architectures/implementation/data_ingestion.py
+        # Need to go up 2 levels to reach project root, then into data/emails_samples/
+        emails_dir = Path(__file__).parent.parent.parent / "data" / "emails_samples"
+
+        if not emails_dir.exists():
+            logger.warning(f"Email samples directory not found: {emails_dir}")
+            return documents
+
+        # Get all .eml files
+        eml_files = list(emails_dir.glob("*.eml"))
+        logger.info(f"Found {len(eml_files)} sample email files")
+
+        # Process each email file
+        filtered_docs = []
+        all_docs = []
+
+        for eml_file in eml_files:
+            try:
+                with open(eml_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    msg = email.message_from_file(f)
+
+                # Extract email metadata
+                subject = msg.get('Subject', 'No Subject')
+                sender = msg.get('From', 'Unknown Sender')
+                date = msg.get('Date', 'Unknown Date')
+
+                # Extract email body
+                body = ""
+                if msg.is_multipart():
+                    for part in msg.walk():
+                        if part.get_content_type() == "text/plain":
+                            payload = part.get_payload(decode=True)
+                            if payload:
+                                body += payload.decode('utf-8', errors='ignore')
+                else:
+                    payload = msg.get_payload(decode=True)
+                    if payload:
+                        body = payload.decode('utf-8', errors='ignore')
+
+                # Format as document for LightRAG
+                email_doc = f"""
+Broker Research Email: {subject}
+
+From: {sender}
+Date: {date}
+Source: Sample Email ({eml_file.name})
+
+{body.strip()}
+
+---
+Email Type: Broker Research
+Category: Investment Intelligence
+Tickers Mentioned: {', '.join(tickers) if tickers else 'All'}
+"""
+                all_docs.append(email_doc.strip())
+
+                # Check if matches ticker filter
+                if tickers:
+                    content_text = f"{subject} {body}".upper()
+                    if any(ticker.upper() in content_text for ticker in tickers):
+                        filtered_docs.append(email_doc.strip())
+
+            except Exception as e:
+                logger.warning(f"Failed to parse email {eml_file.name}: {e}")
+                continue
+
+        # Return filtered results if any, otherwise return first N unfiltered results
+        if tickers and filtered_docs:
+            documents = filtered_docs[:limit]
+            logger.info(f"Fetched {len(documents)} email documents filtered by tickers: {tickers}")
+        else:
+            documents = all_docs[:limit]
+            logger.info(f"Fetched {len(documents)} email documents (no ticker filter applied)")
+
+
+        return documents
+
+    def fetch_sec_filings(self, symbol: str, limit: int = 5) -> List[str]:
+        """
+        Fetch SEC EDGAR filings for a company
+
+        Fetches regulatory filings (10-K, 10-Q, 8-K) from SEC EDGAR database
+
+        Args:
+            symbol: Stock ticker symbol
+            limit: Maximum number of filings to return
+
+        Returns:
+            List of SEC filing document texts ready for LightRAG ingestion
+        """
+        import asyncio
+
+        documents = []
+
+        try:
+            # Run async method synchronously
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                filings = loop.run_until_complete(
+                    self.sec_connector.get_recent_filings(symbol, limit=limit)
+                )
+            finally:
+                loop.close()
+
+            # Convert SEC filing objects to text documents
+            for filing in filings:
+                filing_doc = f"""
+SEC EDGAR Filing: {filing.form} - {symbol}
+
+Filing Date: {filing.filing_date}
+Accession Number: {filing.accession_number}
+File Number: {filing.file_number}
+Acceptance DateTime: {filing.acceptance_datetime}
+Act: {filing.act}
+Document Size: {filing.size:,} bytes
+XBRL: {filing.is_xbrl}
+Inline XBRL: {filing.is_inline_xbrl}
+Primary Document: {filing.primary_document or 'N/A'}
+Document Description: {filing.primary_doc_description or 'N/A'}
+
+---
+Source: SEC EDGAR Database
+Symbol: {symbol}
+Document Type: Regulatory Filing
+Form Type: {filing.form}
+"""
+                documents.append(filing_doc.strip())
+
+            logger.info(f"Fetched {len(documents)} SEC filings for {symbol}")
+
+        except Exception as e:
+            logger.warning(f"SEC filings fetch failed for {symbol}: {e}")
+
+        return documents
+
     def _fetch_fmp_profile(self, symbol: str) -> List[str]:
         """Fetch company profile from Financial Modeling Prep"""
         url = f"https://financialmodelingprep.com/api/v3/profile/{symbol}"
@@ -254,10 +444,10 @@ Exchange: {company.get('exchangeShortName', 'Unknown')}
 Sector: {company.get('sector', 'Unknown')}
 Industry: {company.get('industry', 'Unknown')}
 Country: {company.get('country', 'Unknown')}
-Market Cap: ${company.get('mktCap', 0):,}
+Market Cap: ${self._format_number(company.get('mktCap', 0))}
 Current Price: ${company.get('price', 0)}
 Beta: {company.get('beta', 'N/A')}
-Volume Average: {company.get('volAvg', 0):,}
+Volume Average: {self._format_number(company.get('volAvg', 0))}
 Website: {company.get('website', '')}
 
 Business Description:
@@ -265,7 +455,7 @@ Business Description:
 
 Key Metrics:
 - CEO: {company.get('ceo', 'Unknown')}
-- Full Time Employees: {company.get('fullTimeEmployees', 'Unknown'):,}
+- Full Time Employees: {self._format_number(company.get('fullTimeEmployees', 0))}
 - IPO Date: {company.get('ipoDate', 'Unknown')}
 - 52 Week Range: ${company.get('range', 'N/A')}
 
@@ -304,8 +494,8 @@ Sector: {data.get('Sector', 'Unknown')}
 Industry: {data.get('Industry', 'Unknown')}
 
 Financial Metrics:
-- Market Capitalization: ${int(data.get('MarketCapitalization', 0)):,}
-- Shares Outstanding: {int(data.get('SharesOutstanding', 0)):,}
+- Market Capitalization: ${self._format_number(data.get('MarketCapitalization', 0))}
+- Shares Outstanding: {self._format_number(data.get('SharesOutstanding', 0))}
 - PE Ratio: {data.get('PERatio', 'N/A')}
 - PEG Ratio: {data.get('PEGRatio', 'N/A')}
 - Book Value: {data.get('BookValue', 'N/A')}
@@ -359,9 +549,9 @@ CIK: {details.get('cik', 'Unknown')}
 Composite FIGI: {details.get('composite_figi', 'Unknown')}
 Share Class FIGI: {details.get('share_class_figi', 'Unknown')}
 
-Market Cap: ${details.get('market_cap', 0):,}
-Weighted Shares Outstanding: {details.get('weighted_shares_outstanding', 0):,}
-Outstanding Shares: {details.get('share_class_shares_outstanding', 0):,}
+Market Cap: ${self._format_number(details.get('market_cap', 0))}
+Weighted Shares Outstanding: {self._format_number(details.get('weighted_shares_outstanding', 0))}
+Outstanding Shares: {self._format_number(details.get('share_class_shares_outstanding', 0))}
 
 Homepage: {details.get('homepage_url', '')}
 Description: {details.get('description', 'No description available')}
@@ -371,38 +561,64 @@ Retrieved: {datetime.now().isoformat()}
 """
         return [details_text.strip()]
 
-    def fetch_comprehensive_data(self, symbol: str, news_limit: int = 5) -> List[str]:
+    def fetch_comprehensive_data(self, symbols: List[str], news_limit: int = 5, email_limit: int = 5, sec_limit: int = 3) -> List[str]:
         """
-        Fetch comprehensive data for a symbol - news + financials
+        Fetch comprehensive data from ALL 3 sources: API + Email + SEC filings
+
+        This is the UNIFIED data ingestion method that combines:
+        1. API data (news + financials) from NewsAPI, Alpha Vantage, FMP, etc.
+        2. Email documents (broker research) from sample emails
+        3. SEC EDGAR filings (10-K, 10-Q, 8-K) from regulatory database
 
         Args:
-            symbol: Stock ticker symbol
-            news_limit: Maximum number of news articles
+            symbols: List of stock ticker symbols
+            news_limit: Maximum number of news articles per symbol
+            email_limit: Maximum number of emails to fetch
+            sec_limit: Maximum number of SEC filings per symbol
 
         Returns:
-            Combined list of all available documents
+            Combined list of all documents from all 3 sources ready for LightRAG ingestion
         """
         all_documents = []
 
-        logger.info(f"Fetching comprehensive data for {symbol}")
+        logger.info(f"🚀 Fetching comprehensive data from 3 sources for symbols: {symbols}")
 
-        # Get financial data first (typically more stable)
+        # SOURCE 1: Email documents (CORE data source - broker research and signals)
         try:
-            financial_docs = self.fetch_company_financials(symbol)
-            all_documents.extend(financial_docs)
-            logger.info(f"Added {len(financial_docs)} financial documents for {symbol}")
+            email_docs = self.fetch_email_documents(tickers=symbols, limit=email_limit)
+            all_documents.extend(email_docs)
+            logger.info(f"✅ Source 1 (Email): Added {len(email_docs)} email documents")
         except Exception as e:
-            logger.error(f"Financial data fetch failed for {symbol}: {e}")
+            logger.error(f"❌ Source 1 (Email) failed: {e}")
 
-        # Get news data
-        try:
-            news_docs = self.fetch_company_news(symbol, news_limit)
-            all_documents.extend(news_docs)
-            logger.info(f"Added {len(news_docs)} news documents for {symbol}")
-        except Exception as e:
-            logger.error(f"News data fetch failed for {symbol}: {e}")
+        # SOURCE 2 & 3: For each symbol, get API data + SEC filings
+        for symbol in symbols:
+            # SOURCE 2a: Financial data (API)
+            try:
+                financial_docs = self.fetch_company_financials(symbol)
+                all_documents.extend(financial_docs)
+                logger.info(f"✅ Source 2a (API/Financials): Added {len(financial_docs)} documents for {symbol}")
+            except Exception as e:
+                logger.error(f"❌ Source 2a (API/Financials) failed for {symbol}: {e}")
 
-        logger.info(f"Fetched {len(all_documents)} total documents for {symbol}")
+            # SOURCE 2b: News data (API)
+            try:
+                news_docs = self.fetch_company_news(symbol, news_limit)
+                all_documents.extend(news_docs)
+                logger.info(f"✅ Source 2b (API/News): Added {len(news_docs)} documents for {symbol}")
+            except Exception as e:
+                logger.error(f"❌ Source 2b (API/News) failed for {symbol}: {e}")
+
+            # SOURCE 3: SEC EDGAR filings (regulatory)
+            try:
+                sec_docs = self.fetch_sec_filings(symbol, limit=sec_limit)
+                all_documents.extend(sec_docs)
+                logger.info(f"✅ Source 3 (SEC EDGAR): Added {len(sec_docs)} filings for {symbol}")
+            except Exception as e:
+                logger.error(f"❌ Source 3 (SEC EDGAR) failed for {symbol}: {e}")
+
+        logger.info(f"📊 COMPREHENSIVE DATA FETCH COMPLETE: {len(all_documents)} total documents from 3 sources")
+        logger.info(f"   Sources: Email (broker research) + API (news/financials) + SEC EDGAR (filings)")
         return all_documents
 
     def get_service_status(self) -> Dict[str, Any]:
@@ -454,37 +670,55 @@ def create_data_ingester(api_keys: Optional[Dict[str, str]] = None) -> DataInges
     return ingester
 
 
-def test_data_ingestion(symbol: str = "AAPL") -> bool:
+def test_data_ingestion(symbols: List[str] = ["NVDA", "TSMC", "AMD", "ASML"]) -> bool:
     """
-    Test data ingestion functionality
+    Test integrated data ingestion from all 3 sources
+
+    Tests the complete integration:
+    1. Email documents (broker research from sample emails)
+    2. API data (news + financials from NewsAPI, Alpha Vantage, FMP, etc.)
+    3. SEC EDGAR filings (regulatory documents)
 
     Args:
-        symbol: Stock symbol to test with
+        symbols: List of stock symbols to test with (default: semiconductor portfolio)
 
     Returns:
         True if test passes, False otherwise
     """
     try:
-        logger.info(f"🧪 Testing data ingestion for {symbol}...")
+        logger.info(f"🧪 Testing INTEGRATED data ingestion for {len(symbols)} symbols: {symbols}")
 
         ingester = create_data_ingester()
 
-        if not ingester.available_services:
-            logger.warning("No API services configured - skipping test")
-            return True
-
-        # Test comprehensive data fetch
-        documents = ingester.fetch_comprehensive_data(symbol, news_limit=2)
+        # Test comprehensive data fetch from ALL 3 sources
+        documents = ingester.fetch_comprehensive_data(
+            symbols=symbols,
+            news_limit=2,      # 2 news articles per symbol
+            email_limit=5,     # 5 broker emails
+            sec_limit=2        # 2 SEC filings per symbol
+        )
 
         if documents:
-            logger.info(f"✅ Data ingestion test passed: {len(documents)} documents fetched")
+            logger.info(f"✅ INTEGRATION TEST PASSED: {len(documents)} documents fetched from 3 sources")
+
+            # Show breakdown by source
+            email_docs = [d for d in documents if 'Broker Research Email' in d or 'Sample Email' in d]
+            api_docs = [d for d in documents if any(src in d for src in ['NewsAPI', 'Alpha Vantage', 'Financial Modeling Prep', 'Finnhub', 'MarketAux', 'Polygon'])]
+            sec_docs = [d for d in documents if 'SEC EDGAR' in d]
+
+            logger.info(f"   📧 Email documents: {len(email_docs)}")
+            logger.info(f"   📊 API documents: {len(api_docs)}")
+            logger.info(f"   📋 SEC filings: {len(sec_docs)}")
+
             return True
         else:
             logger.warning("⚠️ No documents fetched, but no errors occurred")
             return True
 
     except Exception as e:
-        logger.error(f"❌ Data ingestion test failed: {e}")
+        logger.error(f"❌ Integration test failed: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 

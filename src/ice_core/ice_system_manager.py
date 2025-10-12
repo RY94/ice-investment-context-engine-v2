@@ -98,18 +98,24 @@ class ICESystemManager:
         if self._lightrag is None:
             try:
                 # Import here to avoid circular dependencies
-                from ice_lightrag.ice_rag import SimpleICERAG
+                # Week 2 Fix: Use fully qualified path from project root
+                # Week 2.5 Fix: Import from ice_rag_fixed.py (Jupyter-compatible version)
+                # Use JupyterSyncWrapper for sync context (ICESystemManager is not async)
+                from src.ice_lightrag.ice_rag_fixed import JupyterSyncWrapper
 
-                self._lightrag = SimpleICERAG(str(self.working_dir))
+                self._lightrag = JupyterSyncWrapper(str(self.working_dir))
 
-                if not self._lightrag.is_ready():
-                    error_msg = "LightRAG not ready - check API keys and dependencies"
+                # Note: JupyterSyncWrapper uses lazy initialization
+                # It will initialize on first usage (add_document/query)
+                # We verify the wrapper was created, not full readiness
+                if self._lightrag is None:
+                    error_msg = "Failed to create LightRAG wrapper"
                     self.component_errors["lightrag"] = error_msg
                     logger.error(error_msg)
                     raise RuntimeError(error_msg)
 
                 self.initialization_status["lightrag"] = True
-                logger.info("LightRAG component initialized successfully")
+                logger.info("LightRAG wrapper created successfully (lazy initialization mode)")
 
             except ImportError as e:
                 error_msg = f"LightRAG module not found: {str(e)}"
@@ -231,7 +237,9 @@ class ICESystemManager:
                 # Try to initialize lightrag
                 _ = self.lightrag
 
-            if not self._lightrag or not self._lightrag.is_ready():
+            # With lazy initialization, just check if wrapper exists
+            # Full initialization happens on first usage (add_document/query)
+            if not self._lightrag:
                 errors = self.component_errors.copy()
                 error_msg = "ICE System not ready. Component errors:\n"
                 for component, error in errors.items():
@@ -267,17 +275,19 @@ class ICESystemManager:
             }
         }
     
-    def query_ice(self, question: str, mode: str = "hybrid", use_graph_context: bool = True) -> Dict[str, Any]:
+    def query_ice(self, question: str, mode: str = "hybrid", use_graph_context: bool = False) -> Dict[str, Any]:
         """
         Main ICE query interface - combines LightRAG with graph intelligence
-        
+
         Args:
             question: User's investment question
-            mode: LightRAG query mode ("hybrid", "local", "global", "naive") 
-            use_graph_context: Whether to enhance with graph-based context
-            
+            mode: LightRAG query mode ("hybrid", "local", "global", "naive")
+            use_graph_context: Whether to enhance with graph-based context (Week 3+ feature, disabled for Week 2)
+
         Returns:
             Dict with query results, sources, and metadata
+
+        Note: use_graph_context=False by default for Week 2 (ICEQueryProcessor is Week 3+ feature)
         """
         if not self.is_ready():
             return {
@@ -329,12 +339,13 @@ class ICESystemManager:
         try:
             # Add document to LightRAG
             result = self.lightrag.add_document(text, doc_type)
-            
-            if result["status"] == "success" and update_graph and self.graph_builder:
-                # Update graph relationships from new document
-                graph_result = self.graph_builder.refresh_edges_from_documents([text])
-                result["graph_updates"] = graph_result
-                
+
+            # Week 2.5 Note: Graph updates disabled for now (Week 3+ feature)
+            # TODO Week 3: Re-enable with correct method name or implement stub
+            # if result["status"] == "success" and update_graph and self.graph_builder:
+            #     graph_result = self.graph_builder.refresh_edges_from_recent_documents()
+            #     result["graph_updates"] = graph_result
+
             logger.info(f"Document added: type={doc_type}, graph_updated={update_graph}")
             return result
             

@@ -1,6 +1,6 @@
 # Investment Context Engine (ICE)
 
-> **🔗 LINKED DOCUMENTATION**: This is one of 5 essential core files that must stay synchronized. When updating this file, always cross-check and update the related files: `CLAUDE.md`, `PROJECT_STRUCTURE.md`, `ICE_DEVELOPMENT_TODO.md`, and `PROJECT_CHANGELOG.md` to maintain consistency across project documentation.
+> **🔗 LINKED DOCUMENTATION**: This is one of 6 essential core files that must stay synchronized. When updating this file, always cross-check and update the related files: `CLAUDE.md`, `PROJECT_STRUCTURE.md`, `ICE_DEVELOPMENT_TODO.md`, `PROJECT_CHANGELOG.md`, and `ICE_PRD.md` to maintain consistency across project documentation.
 
 ![Python](https://img.shields.io/badge/python-v3.8+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -30,39 +30,56 @@ ICE addresses critical pain points faced by lean boutique hedge funds through an
 
 ## 🏗️ Architecture Overview
 
-### 🆕 **Simplified Architecture (Production Ready)**
+### 🆕 **Integrated Architecture (Simple Orchestration + Production Modules)**
 
-**Current Version**: ICE 2.0 - 83% code reduction while maintaining 100% functionality
+**Current Version**: ICE 2.0 - Simple orchestrator using robust production modules
+**Philosophy**: Keep simple, understandable orchestration while leveraging 34K+ lines of production-ready code
 
 ```
 ┌─────────────────────────────────────────┐
-│          ICE Simplified Interface       │
+│     ICE Simplified (Orchestrator)       │
 │           (ice_simplified.py)           │
-│     Main coordination - 677 lines      │
+│   Simple coordination - imports from:   │
 └─────────────────────────────────────────┘
                     ↓
-┌─────────┬─────────────────┬─────────────┐
-│ICE Core │  Data Ingestion │Query Engine │
-│374 lines│    510 lines    │  534 lines  │
-│         │                 │             │
-│LightRAG │  8 API Services │Query Templ.│
-│Direct   │  Simple Calls   │Thin Wrapper │
-└─────────┴─────────────────┴─────────────┘
+┌─────────────────────────────────────────┐
+│      Production Data Sources            │
+│  (All feed into LightRAG Knowledge Graph)│
+│                                         │
+│  1. API/MCP (ice_data_ingestion/)      │
+│     ├── NewsAPI, Finnhub, Alpha Vantage│
+│     ├── MCP infrastructure             │
+│     └── SEC EDGAR connector            │
+│                                         │
+│  2. Email (imap_email_ingestion/)      │
+│     ├── Broker research emails         │
+│     ├── Analyst reports (PDFs)         │
+│     └── BUY/SELL signal extraction     │
+│                                         │
+│  3. Robust Framework                    │
+│     ├── Circuit breaker + retry logic  │
+│     ├── SecureConfig (Week 3: AES-256) │
+│     └── Multi-level validation         │
+└─────────────────────────────────────────┘
                     ↓
 ┌─────────────────────────────────────────┐
-│            Configuration                │
-│              (config.py)                │
-│       Environment - 420 lines          │
+│     LightRAG Knowledge Graph            │
+│   (Vector + Graph + Entity storage)     │
 └─────────────────────────────────────────┘
 ```
 
-**Key Improvements:**
-- ✅ **2,515 lines** total (vs 15,000+ in complex version)
-- ✅ **Direct LightRAG integration** - no wrapper complexity
-- ✅ **8 financial APIs** with graceful degradation
-- ✅ **Portfolio analysis workflows** built-in
-- ✅ **Production ready** with comprehensive testing
+**Architecture**: User-Directed Modular Architecture (UDMA) - Option 5 from strategic analysis
 
+**Integration Benefits:**
+- ✅ **Simple orchestration** - Easy to understand and maintain
+- ✅ **Production modules** - Circuit breaker, retry, validation (34K+ lines)
+- ✅ **3 data sources** - API/MCP + Email + SEC filings → unified graph
+- ✅ **Robust features** - Health monitoring, graceful degradation, encrypted config
+- ✅ **No code duplication** - Import from existing production modules
+- ✅ **User control** - Manual testing decides what gets integrated (not automated thresholds)
+
+**Implementation Guide**: See `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` (UDMA complete guide)
+**Decision History**: See `archive/strategic_analysis/README.md` (all 5 options analyzed)
 **Location**: `updated_architectures/implementation/`
 
 **Documentation**:
@@ -114,6 +131,26 @@ holdings = ['NVDA', 'TSMC', 'AMD']
 analysis = ice.analyze_portfolio(holdings)
 print(f"Analysis: {analysis['summary']['analysis_completion_rate']:.1f}% complete")
 ```
+
+### **Graph Analysis & Categorization**
+
+ICE includes pattern-based categorization for entities and relationships in the knowledge graph:
+
+```python
+from src.ice_lightrag.graph_categorization import categorize_entities, categorize_relationships
+
+# Categorize entities (9 categories: Company, Financial Metric, Technology/Product, etc.)
+entity_stats = categorize_entities(entities_data)
+# Returns: {'Company': 15, 'Financial Metric': 45, ...}
+
+# Categorize relationships (10 categories: Financial, Product/Tech, Corporate, etc.)
+rel_stats = categorize_relationships(relationships_data)
+# Returns: {'Financial': 40, 'Product/Tech': 25, ...}
+```
+
+**Patterns Configuration**:
+- `src/ice_lightrag/entity_categories.py` - Entity categorization patterns
+- `src/ice_lightrag/relationship_categories.py` - Relationship categorization patterns
 
 ### **Legacy Complex Architecture**
 
@@ -235,6 +272,10 @@ ICE-Investment-Context-Engine/
 - **Core Engine**: `src/ice_lightrag/ice_rag.py` - LightRAG wrapper
 - **Demo & Testing**: `src/simple_demo.py`, `tests/test_runner.py`
 - **Enhanced Testing Framework**: `sandbox/python_notebook/ice_data_sources_demo_v2.ipynb` - 🆕 Production-grade validation
+- **Week 6 Test Suite**: 🎉 **UDMA Integration Complete (6/6 weeks)**
+  - `updated_architectures/implementation/test_integration.py` - 5 integration tests (251 lines)
+  - `updated_architectures/implementation/test_pivf_queries.py` - 20 golden queries with 9-dimensional scoring (424 lines)
+  - `updated_architectures/implementation/benchmark_performance.py` - 4 performance metrics (418 lines)
 - **Development Guide**: `CLAUDE.md` - Claude Code instructions
 - **Project Changelog**: `PROJECT_CHANGELOG.md` - 🆕 Complete implementation tracking
 
@@ -321,9 +362,13 @@ ICE-Investment-Context-Engine/
 ## 📚 Documentation
 
 ### Core Development Guides
+- **[ICE_PRD.md](ICE_PRD.md)**: 🆕 Product Requirements Document - Unified requirements specification for Claude Code instances (product vision, user personas, functional/non-functional requirements, success metrics)
 - **[CLAUDE.md](CLAUDE.md)**: Essential guidance for Claude Code power users
 - **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)**: Complete directory organization and file navigation
+- **[ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md](ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md)**: 🆕 UDMA implementation guide (User-Directed Modular Architecture, Option 5)
 - **[ICE_DEVELOPMENT_PLAN_v3.md](ICE_DEVELOPMENT_PLAN_v3.md)**: Comprehensive activation-focused development roadmap
+- **[ICE_VALIDATION_FRAMEWORK.md](ICE_VALIDATION_FRAMEWORK.md)**: 🆕 PIVF - Comprehensive validation framework (20 golden queries, 9-dimensional scoring)
+- **[archive/strategic_analysis/README.md](archive/strategic_analysis/README.md)**: 🆕 Quick reference for all 5 architectural options analyzed
 
 ### Technical Setup Guides
 - **[md_files/LIGHTRAG_SETUP.md](md_files/LIGHTRAG_SETUP.md)**: Complete LightRAG configuration and financial optimizations

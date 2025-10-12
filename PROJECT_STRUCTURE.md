@@ -1,6 +1,6 @@
 # ICE Project Structure Guide
 
-> **🔗 LINKED DOCUMENTATION**: This is one of 5 essential core files that must stay synchronized. When updating this file, always cross-check and update the related files (if applicable): `CLAUDE.md`, `README.md`, `ICE_DEVELOPMENT_TODO.md`, and `PROJECT_CHANGELOG.md` to maintain consistency across project documentation.
+> **🔗 LINKED DOCUMENTATION**: This is one of 6 essential core files that must stay synchronized. When updating this file, always cross-check and update the related files (if applicable): `CLAUDE.md`, `README.md`, `ICE_DEVELOPMENT_TODO.md`, `PROJECT_CHANGELOG.md`, and `ICE_PRD.md` to maintain consistency across project documentation.
 
 **Location**: `/PROJECT_STRUCTURE.md`
 **Purpose**: Comprehensive directory structure guide for Claude Code navigation and understanding
@@ -18,26 +18,32 @@ ICE-Investment-Context-Engine/
 ├── 📄 Core Project Files
 │   ├── README.md                           # Project overview & getting started guide
 │   ├── CLAUDE.md                          # Claude Code development guidance & power user docs
+│   ├── ICE_PRD.md                         # 🆕 Product Requirements Document - Unified requirements for Claude Code instances
 │   ├── PROJECT_STRUCTURE.md               # This file - comprehensive directory guide
-│   ├── PROJECT_CHANGELOG.md               # 🆕 Complete implementation changelog and task tracking
-│   ├── dual_notebooks_designs_to_do.md    # 🆕 Dual notebook evaluation & integration checklist
-│   ├── ice_building_workflow_design.md    # 🆕 Design specification for building workflow notebook
-│   ├── ice_query_workflow_design.md       # 🆕 Design specification for query workflow notebook
+│   ├── PROJECT_CHANGELOG.md               # 🆕 Detailed dev log (day-by-day changes, see also: md_files/CHANGELOG.md for versions)
+│   ├── ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md  # 🆕 UDMA implementation guide (User-Directed Modular Architecture)
+│   ├── ICE_VALIDATION_FRAMEWORK.md        # 🆕 PIVF - Comprehensive validation framework (20 golden queries, 9 dimensions)
 │   ├── ice_building_workflow.ipynb        # 🆕 Knowledge graph building workflow notebook
 │   ├── ice_query_workflow.ipynb           # 🆕 Investment intelligence analysis workflow notebook
 │   ├── simple_demo.py                     # Standalone LightRAG demo script
 │   ├── ice_main_notebook.ipynb            # ⭐ PRIMARY DEVELOPMENT INTERFACE (New simplified design)
 │   └── ice_main_notebook_20250917.ipynb   # 📋 Original notebook (backed up)
 │
-├── 🆕 Simplified Architecture (Production Ready)
-│   ├── updated_architectures/             # ⭐ NEW SIMPLIFIED SYSTEM (2,515 lines)
+├── 🆕 Simplified Architecture (Integrated with Production Modules)
+│   ├── updated_architectures/             # ⭐ SIMPLE ORCHESTRATOR using production modules
 │   │   ├── README.md                      # Architecture overview & deployment guide
-│   │   ├── implementation/                # Complete working system
-│   │   │   ├── ice_simplified.py         # Main interface (677 lines)
+│   │   ├── implementation/                # Simple orchestration layer (Week 1-4 INTEGRATED)
+│   │   │   ├── ice_simplified.py         # Main interface (Week 4: ICEQueryProcessor enabled)
 │   │   │   ├── ice_core.py               # Direct LightRAG wrapper (374 lines)
-│   │   │   ├── data_ingestion.py         # 8 API services (510 lines)
-│   │   │   ├── query_engine.py           # Portfolio analysis (534 lines)
-│   │   │   └── config.py                 # Environment config (420 lines)
+│   │   │   ├── data_ingestion.py         # Data sources (Week 1: Email + SEC + API integrated)
+│   │   │   ├── query_engine.py           # Portfolio analysis (Week 4: Uses ICEQueryProcessor via delegation)
+│   │   │   ├── config.py                 # Basic environment config
+│   │   │   ├── test_secure_config.py     # ✅ Week 3: SecureConfig validation suite (145 lines)
+│   │   │   ├── rotate_credentials.py     # ✅ Week 3: Credential rotation utility (236 lines)
+│   │   │   ├── test_week4.py             # ✅ Week 4: Query enhancement validation (240 lines)
+│   │   │   ├── test_integration.py       # ✅ Week 6: Integration test suite - 5 tests (251 lines)
+│   │   │   ├── test_pivf_queries.py      # ✅ Week 6: PIVF golden query validation - 20 queries (424 lines)
+│   │   │   └── benchmark_performance.py  # ✅ Week 6: Performance benchmarking - 4 metrics (418 lines)
 │   │   ├── tests/                        # Comprehensive testing
 │   │   │   ├── test_architecture_structure.py  # Structure validation
 │   │   │   └── test_simplified_architecture.py # Functional tests
@@ -51,9 +57,15 @@ ICE-Investment-Context-Engine/
 │
 ├── 🧠 Core AI Engine (ice_lightrag/)
 │   ├── ice_rag.py                         # Core ICELightRAG wrapper class
+│   ├── ice_rag_fixed.py                   # ✅ Week 3: JupyterSyncWrapper with SecureConfig integration
+│   ├── model_provider.py                  # 🆕 Model provider factory (OpenAI/Ollama/Hybrid selection)
+│   ├── 🏷️ Graph Analysis & Categorization # Pattern-based entity/relationship classification
+│   │   ├── entity_categories.py           # Entity categorization patterns (9 categories)
+│   │   ├── relationship_categories.py     # Relationship categorization patterns (10 categories)
+│   │   └── graph_categorization.py        # Helper functions for graph analysis
 │   ├── streamlit_integration.py           # Streamlit UI components for RAG
 │   ├── setup.py                           # Automated dependency installer
-│   ├── test_basic.py                      # Basic functionality tests
+│   ├── test_basic.py                      # Basic functionality tests (includes provider tests)
 │   ├── earnings_fetcher.py                # Yahoo Finance earnings data fetcher
 │   ├── quick_test.py                      # Quick LightRAG testing utility
 │   └── storage/                           # LightRAG knowledge graph storage
@@ -61,22 +73,22 @@ ICE-Investment-Context-Engine/
 │       ├── relationships_vdb/             # Relationship vector database
 │       └── chunks_vdb/                    # Document chunk vector database
 │
-├── 📊 Data Infrastructure
-│   ├── ice_data_ingestion/                # 15+ API clients for financial data
-│   │   ├── 🔐 Security & Configuration
-│   │   │   ├── secure_config.py            # 🆕 Encrypted API key management with rotation
-│   │   │   ├── robust_client.py            # 🆕 HTTP client with retry/circuit breaker
+├── 📊 Data Infrastructure (Production Modules - WEEK 1-3 INTEGRATED)
+│   ├── ice_data_ingestion/                # 🏭 PRODUCTION DATA FRAMEWORK (17,256 lines, 38 files)
+│   │   ├── 🔐 Security & Configuration    # ✅ Week 3: Integrated into ice_simplified.py
+│   │   │   ├── secure_config.py            # ✅ Week 3: Encrypted API key management (AES-256, rotation, audit)
+│   │   │   ├── robust_client.py            # ✅ Week 1: HTTP client with retry/circuit breaker
 │   │   │   └── config.py                   # Base configuration management
-│   │   ├── 🧪 Testing & Validation
+│   │   ├── 🧪 Testing & Validation        # Production-grade validation
 │   │   │   ├── test_scenarios.py           # 🆕 Comprehensive test scenarios (5 suites)
 │   │   │   ├── data_validator.py           # 🆕 Multi-level data validation framework
 │   │   │   ├── test_data_pipeline.py       # Pipeline integration tests
 │   │   │   └── tests/                      # Unit tests directory
-│   │   ├── 📡 Data Connectors
+│   │   ├── 📡 Data Connectors             # 7+ API integrations + MCP + SEC EDGAR
 │   │   │   ├── bloomberg_connector.py      # Bloomberg API integration
 │   │   │   ├── exa_mcp_connector.py       # Exa search MCP integration
 │   │   │   ├── financial_news_connectors.py # Multi-source news aggregation
-│   │   │   ├── sec_edgar_connector.py      # SEC filing data connector
+│   │   │   ├── sec_edgar_connector.py      # SEC filing data connector (to be added to simplified)
 │   │   │   ├── polygon_connector.py        # Polygon.io market data
 │   │   │   └── mcp_client_manager.py       # MCP client orchestration
 │   │
@@ -128,9 +140,17 @@ ICE-Investment-Context-Engine/
 │       └── python_notebook/             # Python notebook experiments
 │
 ├── 📋 Documentation & Planning
+│   ├── project_information/development_plans/
+│   │   ├── notebook_designs/            # 🆕 Notebook design specifications
+│   │   │   ├── ice_building_workflow_design.md    # Building workflow design spec
+│   │   │   ├── ice_query_workflow_design.md       # Query workflow design spec
+│   │   │   └── dual_notebooks_designs_to_do.md    # Dual notebook evaluation checklist
+│   │   └── ICE_DEVELOPMENT_PLANS/       # Development roadmaps
 │   └── md_files/                        # Organized project documentation
+│       ├── CHANGELOG.md                 # Version milestones & releases (see also: PROJECT_CHANGELOG.md at root)
 │       ├── LIGHTRAG_SETUP.md           # ⭐ Complete LightRAG configuration guide
 │       ├── LOCAL_LLM_GUIDE.md          # ⭐ Ollama setup and cost optimization
+│       ├── OLLAMA_TEST_RESULTS.md      # 🆕 Comprehensive Ollama integration test results (hybrid mode validated)
 │       ├── QUERY_PATTERNS.md           # ⭐ Query strategies and optimization
 │       ├── plans/                       # Development plans and roadmaps
 │       │   └── ICE_DEVELOPMENT_PLAN.md  # ⭐ MAIN 75-TASK ROADMAP
@@ -147,18 +167,25 @@ ICE-Investment-Context-Engine/
 │       ├── ice_ui_v17.py               # Latest/main Streamlit application
 │       └── ice_ui_v1.py-v16.py         # Previous development iterations
 │
-├── 🏗️ Infrastructure & Integration
-│   ├── ice_core/                        # Core system management
+├── 🏗️ Infrastructure & Integration (Production Modules - WEEK 2-4 INTEGRATED)
+│   ├── src/ice_core/                    # 🏭 PRODUCTION ORCHESTRATION (3,955 lines, 9 files)
 │   │   ├── ice_unified_rag.py           # Unified RAG engine implementation
 │   │   ├── ice_error_handling.py        # Error handling utilities
-│   │   ├── ice_system_manager.py        # System orchestration
+│   │   ├── ice_system_manager.py        # ✅ Week 2: System orchestration (used by ice_simplified.py)
+│   │   ├── ice_query_processor.py       # ✅ Week 4: Enhanced query processing with fallback logic (enabled via use_graph_context=True)
+│   │   ├── ice_graph_builder.py         # Graph construction utilities
 │   │   └── ice_data_manager.py          # Data management coordination
 │   │
 │   ├── mcp_servers/                     # MCP server integrations
 │   │   ├── financial-datasets-mcp/      # Financial data MCP server
 │   │   └── yahoo-finance-mcp/           # Yahoo Finance MCP server
 │   │
-│   ├── imap_email_ingestion_pipeline/   # Email processing and analysis
+│   ├── imap_email_ingestion_pipeline/   # 🏭 PRODUCTION EMAIL PIPELINE (12,810 lines, 31 files)
+│   │   │                                # CORE DATA SOURCE (to be integrated with simplified)
+│   │   ├── email_connector.py           # Email data source connector
+│   │   ├── contextual_signal_extractor.py # BUY/SELL/HOLD signal extraction
+│   │   ├── intelligent_link_processor.py # PDF downloads from emails
+│   │   └── attachment_processor.py      # OCR and document processing
 │   ├── project_information/             # Project documentation consolidation
 │   │   ├── about_lightrag/             # 🆕 LightRAG focused documentation
 │   │   │   ├── LightRAG_notes.md       # Technical implementation notes
@@ -171,12 +198,22 @@ ICE-Investment-Context-Engine/
 │   │   ├── development_plans/          # Development planning documents (moved from root)
 │   │   │   ├── ICE_DEVELOPMENT_PLANS/  # Detailed implementation strategies
 │   │   │   └── Development Brainstorm Plans (md files)/  # Strategy brainstorms
+│   │   ├── user_research/               # 🆕 User research and persona documentation
+│   │   │   └── ICE_USER_PERSONAS_DETAILED.md  # Complete user persona profiles
+│   │   ├── other_resources/            # Other supporting resources and documentation
 │   │   ├── Critical Analysis of the ICE AI System Proposal.docx
 │   │   └── README.md                  # Project information overview
 │   └── logs/                           # Application and system logs
 │
 ├── 🗂️ Archive & Legacy
 │   ├── archive/                         # Organized archived files
+│   │   ├── strategic_analysis/          # 🆕 Architecture decision history (5-option analysis)
+│   │   │   ├── README.md               # 🆕 Quick reference: All 5 architectural options compared
+│   │   │   ├── ICE_ARCHITECTURE_STRATEGIC_ANALYSIS.md  # 🆕 Complete 5-option comparison & decision framework
+│   │   │   ├── MODIFIED_OPTION_4_ANALYSIS.md  # 🆕 Deep analysis: Why Option 4 rejected, UDMA philosophy
+│   │   │   ├── ARCHITECTURE_INTEGRATION_PLAN.md  # 🆕 Original 6-week roadmap (superseded by UDMA)
+│   │   │   ├── implementation_qa_20250106.md     # 🆕 ARCHIVED: Implementation Q&A questions (future-state design)
+│   │   │   └── implementation_qa_answers_v2_20250106.md  # 🆕 ARCHIVED: Q&A with answers (500-stock production spec)
 │   │   ├── backups/                    # Notebook and code backups
 │   │   │   └── notebooks/              # Consolidated notebook backups
 │   │   ├── deprecated_designs/          # 🆕 Deprecated design files with timestamps
@@ -231,8 +268,12 @@ ICE-Investment-Context-Engine/
 ### **Critical Configuration**
 - **Development Guide**: `CLAUDE.md` - Essential Claude Code power user guide
 - **Project Structure**: `PROJECT_STRUCTURE.md` - Complete directory organization
+- **Architecture Plan**: `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` - 🆕 UDMA implementation guide (User-Directed Modular Architecture, aka Option 5)
+- **Validation Framework**: `ICE_VALIDATION_FRAMEWORK.md` - 🆕 PIVF comprehensive testing framework (20 golden queries, 9-dimensional scoring)
+- **Architecture History**: `archive/strategic_analysis/README.md` - 🆕 Quick reference for all 5 architectural options analyzed
 - **Notebook Design**: `ICE_MAIN_NOTEBOOK_DESIGN_V2.md` - 🆕 Refined main notebook with LightRAG workflows
 - **LightRAG Workflows**: `project_information/about_lightrag/lightrag_building_workflow.md` & `lightrag_query_workflow.md` - 🆕 Detailed pipeline guides
+- **User Personas**: `project_information/user_research/ICE_USER_PERSONAS_DETAILED.md` - 🆕 Detailed user persona profiles for product planning
 - **Project Roadmap**: `md_files/plans/ICE_DEVELOPMENT_PLAN.md` - 75-task development plan
 - **LightRAG Setup**: `md_files/LIGHTRAG_SETUP.md` - Complete configuration guide
 - **Local LLM Guide**: `md_files/LOCAL_LLM_GUIDE.md` - Ollama setup and cost optimization
@@ -249,11 +290,65 @@ ICE-Investment-Context-Engine/
 - **Dual Notebook Integration Tests**: `tests/test_dual_notebook_integration.py` - 🆕 Complete workflow validation
 - **Basic Tests**: `ice_lightrag/test_basic.py` - Core functionality validation
 - **Health Checks**: `check/health_checks.py` - System monitoring
+- **Integration Tests**: `updated_architectures/implementation/test_integration.py` - 🆕 Week 6: 5 integration tests (251 lines)
+- **PIVF Validation**: `updated_architectures/implementation/test_pivf_queries.py` - 🆕 Week 6: 20 golden queries with 9-dimensional scoring (424 lines)
+- **Performance Benchmarks**: `updated_architectures/implementation/benchmark_performance.py` - 🆕 Week 6: 4 performance metrics (418 lines)
 
 ### **Data & Storage**
 - **LightRAG Storage**: `ice_lightrag/storage/` - Knowledge graph persistence
 - **Cache Storage**: `storage/cache/` - Centralized cache for all data ingestion APIs
 - **Test Data**: `storage/test_storage/main/` - Consolidated test LightRAG data and fixtures
+
+---
+
+## 🔄 INTEGRATION STATUS & DATA FLOW
+
+### **Current Architecture Strategy (January 2025)**
+**Architecture**: User-Directed Modular Architecture (UDMA) - Option 5 from strategic analysis
+**Philosophy**: Simple Orchestration + Production Modules = Best of Both Worlds
+
+**Implementation Plan** (see ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md):
+- ✅ **Keep**: Simple, understandable orchestration (`ice_simplified.py` - 879 lines)
+- ✅ **Use**: Production-ready modules (34K+ lines of robust code)
+- ✅ **Integrate**: All data sources → LightRAG → Query Processing
+- ✅ **Control**: User-directed enhancement (manual testing decides integration)
+
+**For decision history**: See `archive/strategic_analysis/README.md` for all 5 options analyzed
+
+### **Data Flow (Integrated Architecture)**
+```
+┌─────────────────────────────────────────────────────────┐
+│  ICE Simplified (Simple Orchestrator)                   │
+│  └── Uses: ICESystemManager, DataIngester (integrated)  │
+└─────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────┐
+│  Data Sources (All feed into LightRAG)                  │
+│  ├── 1. API/MCP (ice_data_ingestion/)                  │
+│  │    ├── NewsAPI, Finnhub, Alpha Vantage, FMP        │
+│  │    ├── MCP infrastructure                           │
+│  │    └── SEC EDGAR connector                          │
+│  ├── 2. Email (imap_email_ingestion_pipeline/)        │
+│  │    ├── Broker research emails                      │
+│  │    ├── Analyst reports (PDF downloads)             │
+│  │    └── Signal extraction (BUY/SELL/HOLD)           │
+│  └── 3. All use robust_client (circuit breaker)       │
+└─────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────┐
+│  LightRAG Knowledge Graph                               │
+│  ├── JupyterSyncWrapper (src/ice_lightrag/)           │
+│  └── Vector + Graph storage                            │
+└─────────────────────────────────────────────────────────┘
+```
+
+### **Integration Phases** (6-week roadmap)
+1. ✅ **Week 1 COMPLETE**: Data Ingestion Integration (robust_client, email + SEC sources)
+2. ✅ **Week 2 COMPLETE**: Core Orchestration (ICESystemManager with health monitoring)
+3. ✅ **Week 3 COMPLETE**: Configuration & Security (SecureConfig with AES-256 encryption)
+4. ✅ **Week 4 COMPLETE**: Query Enhancement (ICEQueryProcessor with mix→hybrid→local fallback)
+5. ⏳ **Week 5 NEXT**: Workflow Notebook Updates (demonstrate integrated features)
+6. **Week 6**: Testing & Validation (end-to-end integration tests)
 
 ---
 
@@ -268,6 +363,7 @@ This structure reflects the major reorganization completed to improve navigation
 4. **Documentation Centralization**: All docs organized under `md_files/`
 5. **Script Organization**: Utilities categorized by purpose in `scripts/`
 6. **Storage Consolidation**: All storage systems organized under `storage/`
+7. **Integration Strategy**: Simple orchestration using production modules (not code duplication)
 
 ### **Navigation Guidelines**
 - **Start Here**: `README.md` for project overview
