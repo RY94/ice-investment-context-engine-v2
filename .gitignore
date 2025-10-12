@@ -101,6 +101,9 @@ archive/misc_files/claude-code-intro/
 */.git/
 .git_old/
 
+# Claude session files (may contain API keys)
+archive/misc_files/fortransfer.claude/
+
 # Large media files
 *.png
 *.jpg
