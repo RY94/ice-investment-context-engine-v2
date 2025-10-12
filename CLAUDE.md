@@ -163,6 +163,18 @@ ice_simplified.py (879 lines)    →    ice_data_ingestion/ (17,256 lines)
 └── All use robust_client with circuit breaker + retry logic
 ```
 
+**Storage Architecture**: 2 types, 4 components
+```
+Vector Stores (3)                 Graph Store (1)
+├── chunks_vdb      (text)       └── graph (NetworkX structure)
+├── entities_vdb    (entities)        ├── Entity nodes
+└── relationships_vdb (concepts)      └── Relationship edges
+
+Current: NanoVectorDBStorage + NetworkXStorage (lightweight, JSON-based)
+Production: QdrantVectorDBStorage + Neo4JStorage (scale for >10GB data)
+Purpose: Enables LightRAG's dual-level retrieval (entities + relationships)
+```
+
 ### Dual Notebooks: Demo/Testing Interfaces
 **Purpose**: Interactive interfaces for end-to-end validation, aligned with production codebase
 

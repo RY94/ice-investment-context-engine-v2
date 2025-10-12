@@ -11,6 +11,46 @@
 
 ---
 
+## 36. Storage Architecture Documentation (2025-10-12)
+
+### 🎯 OBJECTIVE
+Document ICE's storage architecture clearly and concisely across core documentation files.
+
+### 💡 MOTIVATION
+User identified that storage architecture (2 types, 4 components) was not explicitly documented in a clear, executive-summary format despite being fundamental to LightRAG's dual-level retrieval.
+
+### ✅ IMPLEMENTATION
+
+**Files Modified**:
+- `project_information/about_lightrag/LightRAG_notes.md` - Added "Storage Architecture Summary" section
+  - Lists 2 storage types (Vector + Graph)
+  - Details 4 components (3 VDBs + 1 Graph)
+  - Current backend: NanoVectorDBStorage + NetworkXStorage
+  - Production upgrade path: QdrantVectorDBStorage + Neo4JStorage
+  - Purpose: Enables dual-level retrieval (entities + relationships)
+
+- `CLAUDE.md` - Added storage architecture to "Current Architecture Strategy" section
+  - Visual diagram showing 3 Vector Stores and 1 Graph Store
+  - Current vs Production backend comparison
+  - Integration with data flow documentation
+
+- `PROJECT_STRUCTURE.md` - Expanded "LightRAG Storage" entry with architecture details
+  - 2 storage types, 4 components breakdown
+  - Purpose and production upgrade path
+
+### 📊 RESULTS
+
+**Documentation Improvements**:
+- ✅ Clear executive summary of storage architecture
+- ✅ Consistent storage documentation across 3 core files
+- ✅ Easy reference for developers (current backend + production path)
+- ✅ Explains "why" (dual-level retrieval enablement)
+
+**Key Insight Documented**:
+Storage architecture directly supports LightRAG's core innovation - dual-level retrieval combining entity-focused (low-level) and relationship-focused (high-level) search strategies.
+
+---
+
 ## 35. Building Workflow Notebook Simplification (2025-10-12)
 
 ### 🎯 OBJECTIVE

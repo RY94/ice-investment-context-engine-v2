@@ -296,6 +296,11 @@ ICE-Investment-Context-Engine/
 
 ### **Data & Storage**
 - **LightRAG Storage**: `ice_lightrag/storage/` - Knowledge graph persistence
+  - **Architecture**: 2 storage types (Vector + Graph), 4 components
+  - **Vector Stores** (3): `chunks_vdb`, `entities_vdb`, `relationships_vdb` (NanoVectorDBStorage)
+  - **Graph Store** (1): `graph_chunk_entity_relation.graphml` (NetworkXStorage)
+  - **Purpose**: Dual-level retrieval (entities + relationships) for LightRAG queries
+  - **Production Path**: Upgrade to QdrantVectorDBStorage + Neo4JStorage for scale
 - **Cache Storage**: `storage/cache/` - Centralized cache for all data ingestion APIs
 - **Test Data**: `storage/test_storage/main/` - Consolidated test LightRAG data and fixtures
 

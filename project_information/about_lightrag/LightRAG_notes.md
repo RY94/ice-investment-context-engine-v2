@@ -6,6 +6,23 @@ LightRAG implements a **dual-level retrieval system** combining traditional vect
 ### Key Innovation: Graph-Enhanced Text Indexing
 LightRAG constructs graph structures that enable extraction of global information from multi-hop subgraphs, greatly enhancing the model's ability to handle complex queries spanning multiple document chunks. The key-value data structures derived from the graph are optimized for rapid and precise retrieval.
 
+### Storage Architecture Summary
+**ICE Implementation**: 2 storage types, 4 components supporting dual-level retrieval
+
+**Storage Types**:
+- **Vector Stores** (3): Semantic similarity search via embeddings
+- **Graph Store** (1): Relationship traversal and multi-hop reasoning
+
+**Storage Components**:
+1. `chunks_vdb` → Vector embeddings of text chunks (traditional RAG search)
+2. `entities_vdb` → Vector embeddings of entities (low-level entity retrieval)
+3. `relationships_vdb` → Vector embeddings of relationships (high-level concept retrieval)
+4. `graph` → NetworkX graph structure (entity-relationship network for traversal)
+
+**Current Backend**: NanoVectorDBStorage (lightweight JSON) + NetworkXStorage (Python-native)
+**Production Path**: Upgrade to QdrantVectorDBStorage + Neo4JStorage for scale
+**Why This Architecture**: Enables LightRAG's dual-level retrieval (entities + relationships) for fast, cost-efficient queries
+
 ## 1. Document Insertion Pipeline
 
 **Input → Chunking → Entity Extraction → Graph Construction → Storage**
