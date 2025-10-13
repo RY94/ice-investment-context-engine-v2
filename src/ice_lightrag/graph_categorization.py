@@ -47,10 +47,48 @@ HYBRID_CONFIDENCE_THRESHOLD = 0.70  # Minimum confidence for keyword matching be
 OLLAMA_MODEL = 'qwen2.5:3b'  # Ollama model for hybrid/llm modes
 OLLAMA_HOST = 'http://localhost:11434'  # Ollama service URL
 
+# Month names for date entity detection
+MONTH_NAMES = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+               'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER']
+
+
+def _is_date_entity(entity_name: str) -> bool:
+    """
+    Check if entity name is a date using word boundary detection + digit requirement.
+
+    A true date has BOTH:
+    1. A complete month word (not substring)
+    2. At least one digit (day/year)
+
+    This avoids false positives:
+    - "MAYBANK CORPORATION" (contains "MAY" substring → NO match, word boundary)
+    - "APRIL TECHNOLOGIES" (contains "APRIL" word but no digit → NO match)
+    - "October 2, 2025" (contains "OCTOBER" word + digits → MATCH)
+
+    Args:
+        entity_name: Name of the entity to check
+
+    Returns:
+        True if entity is a date (month word + digit), False otherwise
+    """
+    import re
+    # Split on non-alphanumeric characters to get words
+    words = set(re.split(r'[^A-Z]+', entity_name.upper()))
+    has_month = any(month in words for month in MONTH_NAMES)
+    has_digit = any(char.isdigit() for char in entity_name)
+    return has_month and has_digit
+
 
 def categorize_entity(entity_name: str, entity_content: str = '') -> str:
     """
-    Categorize a single entity based on pattern matching.
+    Categorize a single entity based on two-phase pattern matching.
+
+    Two-Phase Matching Strategy:
+    - Phase 1: Match against entity_name only (high precision)
+    - Phase 2: Match against entity_name + entity_content (broader context)
+
+    This prevents content "noise" (company names, keywords in descriptions)
+    from causing false positive matches in higher-priority categories.
 
     Patterns are checked in priority order (specific to general).
     First matching pattern determines the category.
@@ -62,15 +100,33 @@ def categorize_entity(entity_name: str, entity_content: str = '') -> str:
     Returns:
         Category name (e.g., "Company", "Financial Metric")
     """
-    # Combine name and content for pattern matching
-    text = f"{entity_name} {entity_content}".upper()
-
-    # Check patterns in priority order (sorted by priority field)
+    # Sort categories by priority once
     sorted_categories = sorted(
         ENTITY_PATTERNS.items(),
         key=lambda x: x[1].get('priority', 999)
     )
 
+    # PHASE 1: Check entity_name ONLY (high precision)
+    name_upper = entity_name.upper()
+
+    # Early return for date entities (temporal metadata, not investment entities)
+    if _is_date_entity(entity_name):
+        return 'Other'
+
+    for category_name, category_info in sorted_categories:
+        patterns = category_info.get('patterns', [])
+
+        # Skip fallback category in Phase 1
+        if not patterns:
+            continue
+
+        # Check if any pattern matches the entity name
+        for pattern in patterns:
+            if pattern.upper() in name_upper:
+                return category_name
+
+    # PHASE 2: Check entity_name + entity_content (fallback for ambiguous cases)
+    text = f"{entity_name} {entity_content}".upper()
     for category_name, category_info in sorted_categories:
         patterns = category_info.get('patterns', [])
 
@@ -134,13 +190,25 @@ def categorize_relationship(relationship_content: str) -> str:
 
 def categorize_entity_with_confidence(entity_name: str, entity_content: str = '') -> Tuple[str, float]:
     """
-    Categorize entity with confidence score based on pattern priority.
+    Categorize entity with confidence score using two-phase pattern matching.
+
+    Two-Phase Matching Strategy:
+    - Phase 1: Match against entity_name only (high precision, high confidence)
+    - Phase 2: Match against entity_name + entity_content (broader context, lower confidence)
+
+    This prevents content "noise" from causing false positive matches.
 
     Confidence scoring:
-    - 0.95: Priority 1-2 (Industry/Sector, Company) - highly specific patterns
-    - 0.85: Priority 3-4 (Financial Metric, Technology/Product) - clear patterns
-    - 0.75: Priority 5-7 (Market Infrastructure, Geographic, Regulation) - moderate patterns
-    - 0.60: Priority 8-9 (Media/Source, Other) - weak or fallback patterns
+    - Phase 1 matches (entity_name only - high precision):
+      - 0.95: Priority 1-2 (Industry/Sector, Company) - highly specific patterns
+      - 0.85: Priority 3-4 (Financial Metric, Technology/Product) - clear patterns
+      - 0.75: Priority 5-7 (Market Infrastructure, Geographic, Regulation) - moderate patterns
+      - 0.60: Priority 8-9 (Media/Source, Other) - weak or fallback patterns
+    - Phase 2 matches (entity_name + entity_content - lower precision, fallback):
+      - 0.85: Priority 1-2 (reduced by 0.10 due to content noise)
+      - 0.75: Priority 3-4 (reduced by 0.10 due to content noise)
+      - 0.65: Priority 5-7 (reduced by 0.10 due to content noise)
+      - 0.50: Priority 8-9 (reduced by 0.10 due to content noise)
 
     Args:
         entity_name: Name of the entity
@@ -149,18 +217,25 @@ def categorize_entity_with_confidence(entity_name: str, entity_content: str = ''
     Returns:
         Tuple of (category_name, confidence_score)
     """
-    text = f"{entity_name} {entity_content}".upper()
     sorted_categories = sorted(ENTITY_PATTERNS.items(), key=lambda x: x[1].get('priority', 999))
+
+    # PHASE 1: Check entity_name ONLY (high precision)
+    name_upper = entity_name.upper()
+
+    # Early return for date entities (temporal metadata, not investment entities)
+    if _is_date_entity(entity_name):
+        return ('Other', 0.50)
 
     for category_name, category_info in sorted_categories:
         patterns = category_info.get('patterns', [])
         priority = category_info.get('priority', 999)
 
-        if not patterns:  # Fallback category (Other)
-            return (category_name, 0.60)
+        # Skip fallback category in Phase 1
+        if not patterns:
+            continue
 
         for pattern in patterns:
-            if pattern.upper() in text:
+            if pattern.upper() in name_upper:
                 # Confidence based on priority level
                 if priority <= 2:
                     confidence = 0.95
@@ -172,7 +247,29 @@ def categorize_entity_with_confidence(entity_name: str, entity_content: str = ''
                     confidence = 0.60
                 return (category_name, confidence)
 
-    return ('Other', 0.60)
+    # PHASE 2: Check entity_name + entity_content (fallback for ambiguous cases)
+    text = f"{entity_name} {entity_content}".upper()
+    for category_name, category_info in sorted_categories:
+        patterns = category_info.get('patterns', [])
+        priority = category_info.get('priority', 999)
+
+        if not patterns:  # Fallback category (Other)
+            return (category_name, 0.50)
+
+        for pattern in patterns:
+            if pattern.upper() in text:
+                # Phase 2 confidence: Lower than Phase 1 (reduced by 0.10 due to content noise)
+                if priority <= 2:
+                    confidence = 0.85  # was 0.95
+                elif priority <= 4:
+                    confidence = 0.75  # was 0.85
+                elif priority <= 7:
+                    confidence = 0.65  # was 0.75
+                else:
+                    confidence = 0.50  # was 0.60
+                return (category_name, confidence)
+
+    return ('Other', 0.50)
 
 
 def _call_ollama(prompt: str, model: str = "qwen2.5:3b", host: str = "http://localhost:11434") -> str:
@@ -233,15 +330,31 @@ def categorize_entity_hybrid(
     if confidence >= confidence_threshold or not use_llm:
         return (category, confidence)
 
-    # Step 3: Low confidence - use LLM
+    # Step 3: Low confidence - use LLM with full context
     try:
-        category_list = ', '.join([c for c in ENTITY_DISPLAY_ORDER if c != 'Other'])
-        prompt = (
-            f"Categorize this financial entity into ONE category.\n"
-            f"Entity: {entity_name}\n"
-            f"Categories: {category_list}\n"
-            f"Answer with ONLY the category name, nothing else."
-        )
+        # Include ALL 9 categories (including 'Other') for LLM fallback
+        # so it can legitimately choose 'Other' for non-investment entities
+        category_list = ', '.join(ENTITY_DISPLAY_ORDER)
+
+        # Include entity_content if available to give LLM more context
+        if entity_content:
+            prompt = (
+                f"Categorize this entity into ONE category.\n"
+                f"Entity: {entity_name}\n"
+                f"Context: {entity_content}\n"
+                f"Categories: {category_list}\n"
+                f"Note: 'Other' is for non-investment entities (dates, events, generic terms).\n"
+                f"Answer with ONLY the category name, nothing else."
+            )
+        else:
+            prompt = (
+                f"Categorize this entity into ONE category.\n"
+                f"Entity: {entity_name}\n"
+                f"Categories: {category_list}\n"
+                f"Note: 'Other' is for non-investment entities (dates, events, generic terms).\n"
+                f"Answer with ONLY the category name, nothing else."
+            )
+
         llm_category = _call_ollama(prompt)
 
         # Validate LLM response is a known category
@@ -254,6 +367,68 @@ def categorize_entity_hybrid(
     except Exception as e:
         logger.warning(f"LLM fallback failed, using keyword result: {e}")
         return (category, confidence)
+
+
+def categorize_entity_llm_only(
+    entity_name: str,
+    entity_content: str = '',
+    model: str = OLLAMA_MODEL
+) -> Tuple[str, float]:
+    """
+    Pure LLM categorization using local Ollama model (no preprocessing).
+
+    Uses Ollama LLM for ALL entities with NO rule-based preprocessing.
+    This includes dates, which other methods handle with _is_date_entity().
+
+    Useful for benchmarking true LLM accuracy vs keyword/hybrid approaches.
+    May categorize dates differently than keyword methods (by design).
+
+    Args:
+        entity_name: Name of the entity
+        entity_content: Optional content description
+        model: Ollama model to use (default: OLLAMA_MODEL constant)
+
+    Returns:
+        Tuple of (category_name, confidence_score)
+        - Returns ('Other', 0.50) if LLM call fails or returns invalid category
+        - Returns (category, 0.90) for successful LLM categorization
+    """
+    try:
+        # Include ALL 9 categories (including 'Other') so LLM can legitimately
+        # categorize non-investment entities like dates as 'Other'
+        category_list = ', '.join(ENTITY_DISPLAY_ORDER)
+
+        # Include entity_content if available for better LLM context
+        if entity_content:
+            prompt = (
+                f"Categorize this entity into ONE category.\n"
+                f"Entity: {entity_name}\n"
+                f"Context: {entity_content}\n"
+                f"Categories: {category_list}\n"
+                f"Note: 'Other' is for non-investment entities (dates, events, generic terms).\n"
+                f"Answer with ONLY the category name, nothing else."
+            )
+        else:
+            prompt = (
+                f"Categorize this entity into ONE category.\n"
+                f"Entity: {entity_name}\n"
+                f"Categories: {category_list}\n"
+                f"Note: 'Other' is for non-investment entities (dates, events, generic terms).\n"
+                f"Answer with ONLY the category name, nothing else."
+            )
+
+        llm_category = _call_ollama(prompt, model=model)
+
+        # Validate LLM response is a known category
+        if llm_category in ENTITY_DISPLAY_ORDER:
+            return (llm_category, 0.90)  # High confidence for LLM results
+        else:
+            logger.warning(f"LLM returned invalid category '{llm_category}', returning 'Other'")
+            return ('Other', 0.50)
+
+    except Exception as e:
+        logger.warning(f"Pure LLM categorization failed: {e}")
+        return ('Other', 0.50)
 
 
 def categorize_entities(entities_data: List[Dict]) -> Dict[str, int]:
