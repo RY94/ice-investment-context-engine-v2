@@ -1,0 +1,11 @@
+ticker,company_name,sector,shares
+AAPL,Apple Inc.,Technology,200
+MSFT,Microsoft Corporation,Technology,150
+NVDA,NVIDIA Corporation,Technology,100
+JNJ,Johnson & Johnson,Healthcare,180
+UNH,UnitedHealth Group Inc.,Healthcare,80
+LLY,Eli Lilly and Company,Healthcare,60
+JPM,JPMorgan Chase & Co.,Financials,200
+V,Visa Inc.,Financials,120
+XOM,Exxon Mobil Corporation,Energy,250
+CVX,Chevron Corporation,Energy,180

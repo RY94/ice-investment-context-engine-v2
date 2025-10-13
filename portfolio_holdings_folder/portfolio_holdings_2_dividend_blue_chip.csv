@@ -1,0 +1,16 @@
+ticker,company_name,sector,shares
+JNJ,Johnson & Johnson,Healthcare,300
+PG,Procter & Gamble,Consumer Staples,250
+KO,Coca-Cola Company,Consumer Staples,400
+PEP,PepsiCo Inc.,Consumer Staples,200
+XOM,Exxon Mobil Corporation,Energy,350
+CVX,Chevron Corporation,Energy,200
+VZ,Verizon Communications,Telecommunications,450
+T,AT&T Inc.,Telecommunications,500
+ABBV,AbbVie Inc.,Healthcare,180
+MRK,Merck & Co.,Healthcare,220
+MDT,Medtronic plc,Healthcare,280
+IBM,International Business Machines,Technology,150
+MMM,3M Company,Industrials,180
+CAT,Caterpillar Inc.,Industrials,120
+HD,Home Depot Inc.,Consumer Discretionary,140

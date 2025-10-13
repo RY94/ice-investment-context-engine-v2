@@ -96,8 +96,21 @@ ICE-Investment-Context-Engine/
 │   │   ├── sample_data.py                # Sample financial data for development
 │   │   ├── data_loader.py                # Data loading utilities
 │   │   ├── emails_samples/               # Sample financial emails
-│   │   └── user_profiles/               # User portfolios and preferences
-│   │   └── portfolio_holdings.xlsx       # Sample portfolio data
+│   │   ├── user_profiles/               # User portfolios and preferences
+│   │   ├── portfolio_holdings.xlsx       # Sample portfolio data (original)
+│   │   ├── portfolio_holdings.csv        # Sample portfolio data (CSV format)
+│   │   └── portfolio_holdings_folder/    # 🆕 Test portfolio datasets (11 diverse portfolios)
+│   │       ├── portfolio_holdings_1_tech_growth.csv           # Tech growth stocks (10 stocks)
+│   │       ├── portfolio_holdings_2_dividend_blue_chip.csv    # Dividend aristocrats (15 stocks)
+│   │       ├── portfolio_holdings_3_small_cap_growth.csv      # Small cap growth (15 stocks)
+│   │       ├── portfolio_holdings_4_balanced_diversified.csv  # Balanced mix (15 stocks)
+│   │       ├── portfolio_holdings_5_energy_materials.csv      # Energy & materials (14 stocks)
+│   │       ├── portfolio_holdings_6_healthcare_biotech.csv    # Healthcare & biotech (15 stocks)
+│   │       ├── portfolio_holdings_7_financial_services.csv    # Financial services (15 stocks)
+│   │       ├── portfolio_holdings_8_consumer_discretionary.csv # Consumer discretionary (15 stocks)
+│   │       ├── portfolio_holdings_9_ai_semiconductor.csv      # AI & semiconductor (15 stocks)
+│   │       ├── portfolio_holdings_10_defensive_value.csv      # Defensive value (15 stocks)
+│   │       └── portfolio_holdings_diversified_10.csv          # Multi-sector diversified (10 stocks, 4 sectors)
 │   │
 │   └── storage/                          # Organized storage systems
 │       ├── cache/                        # Centralized cache for all APIs

@@ -1,0 +1,16 @@
+ticker,company_name,sector,shares
+AMZN,Amazon.com Inc.,Consumer Discretionary,150
+TSLA,Tesla Inc.,Consumer Discretionary,120
+HD,Home Depot Inc.,Consumer Discretionary,140
+MCD,McDonald's Corporation,Consumer Discretionary,180
+NKE,Nike Inc.,Consumer Discretionary,250
+SBUX,Starbucks Corporation,Consumer Discretionary,300
+TGT,Target Corporation,Consumer Discretionary,220
+LOW,Lowe's Companies Inc.,Consumer Discretionary,180
+TJX,TJX Companies Inc.,Consumer Discretionary,350
+BKNG,Booking Holdings Inc.,Consumer Discretionary,25
+MAR,Marriott International,Consumer Discretionary,150
+YUM,Yum! Brands Inc.,Consumer Discretionary,200
+CMG,Chipotle Mexican Grill,Consumer Discretionary,35
+DRI,Darden Restaurants Inc.,Consumer Discretionary,180
+ROST,Ross Stores Inc.,Consumer Discretionary,280

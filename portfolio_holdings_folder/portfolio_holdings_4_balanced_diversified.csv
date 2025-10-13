@@ -1,0 +1,16 @@
+ticker,company_name,sector,shares
+AAPL,Apple Inc.,Technology,150
+MSFT,Microsoft Corporation,Technology,120
+JNJ,Johnson & Johnson,Healthcare,200
+JPM,JPMorgan Chase & Co.,Financials,180
+BAC,Bank of America Corp.,Financials,350
+WMT,Walmart Inc.,Consumer Staples,200
+UNH,UnitedHealth Group Inc.,Healthcare,80
+V,Visa Inc.,Financials,120
+MA,Mastercard Inc.,Financials,100
+DIS,Walt Disney Company,Consumer Discretionary,220
+NFLX,Netflix Inc.,Technology,60
+AMD,Advanced Micro Devices,Technology,150
+BA,Boeing Company,Industrials,100
+NKE,Nike Inc.,Consumer Discretionary,180
+SBUX,Starbucks Corporation,Consumer Discretionary,250

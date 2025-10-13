@@ -1,0 +1,16 @@
+ticker,company_name,sector,shares
+JPM,JPMorgan Chase & Co.,Financials,250
+BAC,Bank of America Corp.,Financials,500
+WFC,Wells Fargo & Company,Financials,400
+C,Citigroup Inc.,Financials,350
+GS,Goldman Sachs Group Inc.,Financials,80
+MS,Morgan Stanley,Financials,180
+BLK,BlackRock Inc.,Financials,60
+SCHW,Charles Schwab Corporation,Financials,300
+USB,U.S. Bancorp,Financials,350
+PNC,PNC Financial Services,Financials,200
+AXP,American Express Company,Financials,180
+V,Visa Inc.,Financials,150
+MA,Mastercard Inc.,Financials,120
+BRK.B,Berkshire Hathaway Inc.,Financials,200
+SPG,Simon Property Group,Real Estate,250

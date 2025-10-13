@@ -1,0 +1,15 @@
+ticker,company_name,sector,shares
+XOM,Exxon Mobil Corporation,Energy,400
+CVX,Chevron Corporation,Energy,300
+COP,ConocoPhillips,Energy,250
+SLB,Schlumberger NV,Energy,350
+HAL,Halliburton Company,Energy,400
+OXY,Occidental Petroleum,Energy,500
+EOG,EOG Resources Inc.,Energy,200
+PXD,Pioneer Natural Resources,Energy,180
+FCX,Freeport-McMoRan Inc.,Materials,500
+NEM,Newmont Corporation,Materials,450
+NUE,Nucor Corporation,Materials,250
+STLD,Steel Dynamics Inc.,Materials,300
+VMC,Vulcan Materials Company,Materials,150
+MLM,Martin Marietta Materials,Materials,100

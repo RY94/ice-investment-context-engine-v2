@@ -70,7 +70,36 @@ jupyter notebook sandbox/python_notebook/ice_data_sources_demo_simple.ipynb
 
 # Email integration tests
 python tests/test_email_graph_integration.py
+
+# Portfolio analysis testing (11 diverse test datasets)
+jupyter notebook ice_query_workflow.ipynb
+# Load portfolios from: portfolio_holdings_folder/*.csv
 ```
+
+### Test Portfolio Datasets
+**Location**: `portfolio_holdings_folder/` (11 diverse portfolios, 157 unique positions)
+
+**Available Portfolios**:
+- `portfolio_holdings_1_tech_growth.csv` - Tech growth (10 stocks: NVDA, MSFT, AAPL, GOOGL, META)
+- `portfolio_holdings_2_dividend_blue_chip.csv` - Dividend aristocrats (15 stocks)
+- `portfolio_holdings_3_small_cap_growth.csv` - Small cap growth (15 stocks: ASTS, PLTR, SOFI)
+- `portfolio_holdings_4_balanced_diversified.csv` - Balanced mix (15 stocks, 6 sectors)
+- `portfolio_holdings_5_energy_materials.csv` - Energy & materials (14 stocks)
+- `portfolio_holdings_6_healthcare_biotech.csv` - Healthcare & biotech (15 stocks)
+- `portfolio_holdings_7_financial_services.csv` - Financial services (15 stocks)
+- `portfolio_holdings_8_consumer_discretionary.csv` - Consumer discretionary (15 stocks)
+- `portfolio_holdings_9_ai_semiconductor.csv` - AI & semiconductor (15 stocks)
+- `portfolio_holdings_10_defensive_value.csv` - Defensive value (15 stocks)
+- `portfolio_holdings_diversified_10.csv` - Multi-sector diversified (10 stocks, 4 sectors)
+
+**CSV Format**: `ticker, company_name, sector, shares`
+
+**Testing Use Cases**:
+- Sector concentration analysis (single vs multi-sector)
+- Risk profile validation (growth vs defensive vs balanced)
+- Portfolio size impact (10 vs 15 stocks)
+- Investment strategy assessment
+- Multi-hop reasoning (e.g., "How does China risk impact AI semiconductor portfolio?")
 
 ### Critical Files by Purpose
 

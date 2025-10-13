@@ -1,0 +1,16 @@
+ticker,company_name,sector,shares
+NVDA,NVIDIA Corporation,Technology,200
+AMD,Advanced Micro Devices,Technology,300
+AVGO,Broadcom Inc.,Technology,80
+TSM,Taiwan Semiconductor,Technology,400
+INTC,Intel Corporation,Technology,500
+QCOM,Qualcomm Inc.,Technology,250
+MRVL,Marvell Technology Inc.,Technology,350
+AMAT,Applied Materials Inc.,Technology,200
+LRCX,Lam Research Corporation,Technology,100
+KLAC,KLA Corporation,Technology,80
+ASML,ASML Holding NV,Technology,50
+MU,Micron Technology Inc.,Technology,350
+NXPI,NXP Semiconductors NV,Technology,180
+ADI,Analog Devices Inc.,Technology,200
+TXN,Texas Instruments Inc.,Technology,180

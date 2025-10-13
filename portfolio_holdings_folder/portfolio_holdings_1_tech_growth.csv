@@ -1,0 +1,11 @@
+ticker,company_name,sector,shares
+NVDA,NVIDIA Corporation,Technology,150
+MSFT,Microsoft Corporation,Technology,200
+AAPL,Apple Inc.,Technology,250
+GOOGL,Alphabet Inc.,Technology,100
+META,Meta Platforms Inc.,Technology,120
+AMZN,Amazon.com Inc.,Consumer Discretionary,80
+TSM,Taiwan Semiconductor,Technology,300
+AMD,Advanced Micro Devices,Technology,200
+TSLA,Tesla Inc.,Consumer Discretionary,100
+AVGO,Broadcom Inc.,Technology,50

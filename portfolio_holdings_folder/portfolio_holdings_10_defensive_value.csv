@@ -1,0 +1,16 @@
+ticker,company_name,sector,shares
+BRK.B,Berkshire Hathaway Inc.,Financials,180
+JNJ,Johnson & Johnson,Healthcare,280
+PG,Procter & Gamble,Consumer Staples,300
+KO,Coca-Cola Company,Consumer Staples,500
+PEP,PepsiCo Inc.,Consumer Staples,250
+WMT,Walmart Inc.,Consumer Staples,220
+COST,Costco Wholesale Corp.,Consumer Staples,100
+VZ,Verizon Communications,Telecommunications,500
+T,AT&T Inc.,Telecommunications,600
+DUK,Duke Energy Corporation,Utilities,350
+SO,Southern Company,Utilities,400
+NEE,NextEra Energy Inc.,Utilities,280
+AEP,American Electric Power,Utilities,350
+D,Dominion Energy Inc.,Utilities,400
+XEL,Xcel Energy Inc.,Utilities,450
