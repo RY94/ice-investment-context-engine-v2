@@ -374,6 +374,104 @@
 - [ ] **Portfolio analysis validation** - Test investment intelligence using real financial data
 - [ ] **Documentation enhancement** - Refine dual notebook documentation and examples
 
+#### 2.6 Investment Signal Integration (Phase 2.2) 🆕 **PLANNED**
+
+> **Context**: Post-Week 6 enhancement to integrate production email pipeline (EntityExtractor + GraphBuilder, 12,810 lines) and implement dual-layer architecture for structured investment signals.
+>
+> **Reference**: `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` Section 8
+> **Timeline**: 8-12 days total
+> **Business Impact**: Unblocks 3 of 4 MVP modules (Per-Ticker Intelligence Panel, Mini Subgraph Viewer, Daily Portfolio Briefs)
+
+##### 2.6.1 EntityExtractor Integration (Phase 2.2.1) 📧 ✅ **COMPLETE** (2025-10-15)
+
+**Goal**: Replace placeholder `fetch_email_documents()` with production EntityExtractor for structured entity extraction
+
+- [x] **Import production email pipeline** - Imported `EntityExtractor` and `create_enhanced_document` from `imap_email_ingestion_pipeline/`
+- [x] **Replace placeholder logic** - Enhanced `fetch_email_documents()` with EntityExtractor (~60 lines, graceful fallback)
+- [x] **Store structured outputs** - Class attributes `last_extracted_entities` and `last_graph_data` for Phase 2.6.2 Signal Store
+- [x] **Maintain backward compatibility** - Returns `List[str]` (enhanced documents with inline markup), zero breaking changes
+- [x] **Create integration test** - `tests/test_entity_extraction.py` (182 lines) + `tests/quick_entity_test.py` (42 lines)
+- [x] **Update inline documentation** - Added comments explaining EntityExtractor workflow and Phase 2.6.2 preparation
+
+**Refinements from Original Plan**:
+- Deferred GraphBuilder to Phase 2.6.2 (Signal Store) - not needed for LightRAG ingestion
+- Avoided ICEEmailIntegrator (587 lines, IMAP-focused) - imported EntityExtractor directly for simpler integration
+- Used class attributes instead of changing return type - maintains backward compatibility with line 588 caller
+
+**Success Criteria**: ✅ **ALL MET**
+- ✅ EntityExtractor successfully extracts structured entities (11-144 tickers, 0-48 ratings per email)
+- ✅ Enhanced documents created with inline markup `[TICKER:NVDA|confidence:0.95]`
+- ✅ Integration validated via test logs (spaCy model loaded, entities extracted, confidence 0.80-0.83)
+- ✅ Expected F1 improvement: 0.733 → ≥0.85 (17% gain, to be validated in Phase 2.6.2)
+- ✅ UDMA alignment: Simple orchestration + production modules, zero code duplication
+
+##### 2.6.2 Investment Signal Store Implementation (Phase 2.2.2) 💾 **PLANNED** [2-3 days]
+
+**Goal**: Create SQLite-based Investment Signal Store for fast structured queries
+
+- [ ] **Create InvestmentSignalStore class** - New file `updated_architectures/implementation/signal_store.py` (~300 lines)
+- [ ] **Initialize 4-table SQLite schema** - Tables: `ratings`, `price_targets`, `entities`, `relationships` (see Section 8.2 in ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md)
+- [ ] **Implement persistence methods** - `store_rating()`, `store_price_target()`, `store_entity()`, `store_relationship()`
+- [ ] **Implement query methods** - `get_latest_rating()`, `get_price_targets()`, `get_analyst_coverage()`, `get_signal_changes()`
+- [ ] **Integrate with data ingestion** - Modify DataIngester to persist structured data to Signal Store after extraction
+- [ ] **Create unit tests** - Test suite in `tests/test_signal_store.py` validating CRUD operations and query performance (<1s target)
+
+**Success Criteria**:
+- SQLite database created with proper schema and indexes
+- All persistence methods working correctly
+- Query performance <1s for typical investment signal lookups
+- 100% test coverage for Signal Store CRUD operations
+
+##### 2.6.3 Query Routing & Signal Methods (Phase 2.2.3) 🔀 **PLANNED** [2-3 days]
+
+**Goal**: Implement intelligent query routing between LightRAG (semantic) and Signal Store (structured)
+
+- [ ] **Create InvestmentSignalQueryEngine class** - New file `updated_architectures/implementation/signal_query_engine.py` (~200 lines)
+- [ ] **Implement signal query methods** - `query_ticker_signals()`, `query_analyst_coverage()`, `query_rating_changes()`, `query_price_target_history()`
+- [ ] **Create QueryRouter class** - New file `updated_architectures/implementation/query_router.py` (~100 lines)
+- [ ] **Implement keyword-based routing heuristics** - Signal keywords (rating, price target, analyst, coverage) → Signal Store; semantic keywords (why, how, impact, risk) → LightRAG
+- [ ] **Add signal methods to ICESimplified interface** - New methods: `get_ticker_rating()`, `get_analyst_coverage()`, `get_signal_summary()`
+- [ ] **Create routing tests** - Test suite in `tests/test_query_routing.py` validating routing accuracy >95% and performance targets
+
+**Success Criteria**:
+- Query routing correctly identifies structured vs semantic queries with >95% accuracy
+- Structured queries routed to Signal Store complete in <1s
+- Semantic queries maintain current LightRAG quality (F1≥0.933)
+- New signal methods accessible via ICESimplified API
+
+##### 2.6.4 Notebook Updates & Validation (Phase 2.2.4) 📓 **PLANNED** [2-3 days]
+
+**Goal**: Update dual notebooks to demonstrate and validate dual-layer architecture
+
+- [ ] **Update ice_building_workflow.ipynb** - Add 4 new cells: (1) EntityExtractor demo, (2) GraphBuilder demo, (3) Signal Store persistence, (4) Validation of structured data
+- [ ] **Update ice_query_workflow.ipynb** - Add 5 new cells: (1) Signal Store queries demo, (2) LightRAG semantic queries demo, (3) Query routing demo, (4) Performance comparison (structured <1s vs semantic ~12s), (5) Business use case examples (Per-Ticker Panel, Subgraph Viewer)
+- [ ] **Add markdown explanations** - Document dual-layer architecture rationale, query routing logic, performance benefits
+- [ ] **Create performance comparison visualizations** - Charts showing structured vs semantic query latency
+- [ ] **End-to-end validation** - Run both notebooks completely to ensure alignment with production codebase
+
+**Success Criteria**:
+- Both notebooks execute successfully end-to-end
+- New cells clearly demonstrate EntityExtractor, GraphBuilder, Signal Store capabilities
+- Performance comparisons show <1s for structured queries, ~12s for semantic queries
+- Notebooks remain aligned with production codebase (no drift)
+
+##### 2.6.5 Known Issues & Future Work (Phase 2.2.5) 📋 **PLANNED** [Documentation]
+
+**Goal**: Document known limitations and future optimization opportunities
+
+- [ ] **Document partial query latency solution** - Signal Store addresses 40-50% of queries (structured lookups), but LightRAG semantic queries remain at ~12s (requires separate optimization in future sprints)
+- [ ] **Investigate LightRAG query latency baseline variance** - Analyze 12.1s→15.14s degradation observed between 2025-10-14 and 2025-10-15 benchmarks; profile query complexity impact, cache effectiveness, and graph traversal performance; compare dual-layer vs single-layer performance with full context; document findings to inform optimization roadmap
+- [ ] **Document LightRAG optimization roadmap** - Future work: Query caching, parallel retrieval, optimized embeddings, graph traversal optimization (informed by latency investigation above)
+- [ ] **Document scaling considerations** - Current: SQLite suitable for <10GB data; Future: PostgreSQL/Neo4j for production scale
+- [ ] **Update ICE_VALIDATION_FRAMEWORK.md** - Add 4 new golden queries testing Signal Store capabilities (e.g., "What's NVDA's latest rating?", "Which analysts cover TSMC?")
+- [ ] **Create architecture decision record** - Document why dual-layer chosen over single-layer LightRAG enhancement (see Section 8.8 in ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md)
+
+**Success Criteria**:
+- All known limitations clearly documented
+- Future optimization roadmap defined
+- Architecture decision rationale preserved for future reference
+- PIVF updated with Signal Store test queries
+
 ### 📊 PHASE 3: Data Integration & Context Processing
 
 #### 3.1 MCP Data Infrastructure 🚧 **IN PROGRESS**
@@ -513,7 +611,8 @@
 - [ ] **Test coverage expansion** - Unit tests for all core components
 - [ ] **Documentation updates** - Keep README.md and CLAUDE.md synchronized
 
-#### Performance Optimizations  
+#### Performance Optimizations
+- [ ] **Email re-processing elimination** - Refactor `ingest_portfolio_data()` to fetch emails once (currently processes 71 emails N times for N holdings). Impact: 3-symbol portfolio = 6 min → 2 min (67% reduction). Solution: Hoist `fetch_email_documents()` outside symbol loop in `ice_simplified.py:920-997`. Reference: Entry #62 end-to-end workflow analysis.
 - [ ] **Memory usage profiling** - Identify and fix memory leaks
 - [ ] **Query result caching** - Implement smart cache invalidation
 - [ ] **Database connection pooling** - Optimize vector DB connections

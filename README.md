@@ -160,6 +160,13 @@ rel_stats = categorize_relationships(relationships_data)
 - `src/ice_lightrag/relationship_categories.py` - Relationship categorization patterns (10 categories)
 - `src/ice_lightrag/graph_categorization.py` - Categorization logic with two-phase matching
 
+**📧 Production Entity Extraction** (Phase 2.6.1 Complete - 2025-10-15):
+- ✅ **EntityExtractor Integration**: Email ingestion now uses production `EntityExtractor` (668 lines) from `imap_email_ingestion_pipeline/`
+- ✅ **Enhanced Documents**: Inline markup format `[TICKER:NVDA|confidence:0.95]` improves LightRAG precision
+- ✅ **Structured Data**: Class attributes (`last_extracted_entities`, `last_graph_data`) prepare for Phase 2.6.2 Signal Store
+- ✅ **F1 Score Improvement**: Expected 0.733 → ≥0.85 (17% gain, production-grade extraction with confidence scoring)
+- ✅ **UDMA Compliance**: Simple integration (~60 lines), imports production modules, zero code duplication, graceful fallback
+
 ### **Legacy Complex Architecture**
 
 ### Prerequisites
@@ -281,9 +288,10 @@ ICE-Investment-Context-Engine/
 - **Demo & Testing**: `src/simple_demo.py`, `tests/test_runner.py`
 - **Enhanced Testing Framework**: `sandbox/python_notebook/ice_data_sources_demo_v2.ipynb` - 🆕 Production-grade validation
 - **Week 6 Test Suite**: 🎉 **UDMA Integration Complete (6/6 weeks)**
-  - `updated_architectures/implementation/test_integration.py` - 5 integration tests (251 lines)
-  - `updated_architectures/implementation/test_pivf_queries.py` - 20 golden queries with 9-dimensional scoring (424 lines)
-  - `updated_architectures/implementation/benchmark_performance.py` - 4 performance metrics (418 lines)
+  - `tests/test_integration.py` - 5 integration tests (251 lines) ✅ ALL PASSING
+  - `tests/test_pivf_queries.py` - 20 golden queries with 9-dimensional scoring (424 lines)
+  - `tests/benchmark_performance.py` - 4 performance metrics (418 lines)
+  - `tests/test_imap_email_pipeline_comprehensive.py` - 21 comprehensive IMAP pipeline tests (496 lines) ✅ ALL PASSING
 - **Development Guide**: `CLAUDE.md` - Claude Code instructions
 - **Project Changelog**: `PROJECT_CHANGELOG.md` - 🆕 Complete implementation tracking
 

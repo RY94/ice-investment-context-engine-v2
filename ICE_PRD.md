@@ -4,7 +4,7 @@
 
 > **Location**: `/ICE_PRD.md`
 > **Purpose**: Unified requirements specification for Claude Code development instances
-> **Last Updated**: 2025-01-22
+> **Last Updated**: 2025-10-15
 > **Status**: Living document - updated with each major milestone
 
 ---
@@ -20,9 +20,9 @@
 - Cross-reference detailed documentation for deep dives
 
 **Cross-References**:
-- **Detailed Roadmap**: `ICE_DEVELOPMENT_TODO.md` (115 tasks, 39% complete)
+- **Detailed Roadmap**: `ICE_DEVELOPMENT_TODO.md` (128 tasks, 57% complete - Week 6 complete)
 - **Validation Framework**: `ICE_VALIDATION_FRAMEWORK.md` (PIVF with 20 golden queries)
-- **Architecture Plan**: `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` (UDMA implementation guide)
+- **Architecture Plan**: `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` (UDMA implementation guide with Phase 2.2)
 - **Architecture History**: `archive/strategic_analysis/README.md` (all 5 options analyzed)
 - **Developer Guide**: `CLAUDE.md` (commands, workflows, standards)
 - **User Documentation**: `README.md` (product overview, quick start)
@@ -32,18 +32,18 @@
 ## 1. Executive Summary
 
 ### TL;DR (Quick Scan)
-- **Current Phase**: Week 2/6 integration - ICESystemManager orchestration with health monitoring
-- **Completion**: 39% (45/115 tasks) - Email Phase 1 validated ✅, Week 1 integration complete ✅
-- **Architecture**: Simple orchestrator (879 lines) + production modules (34K+ lines)
-- **Validation**: PIVF framework with 20 golden queries, target >7.5/10 overall score
-- **Next Milestone**: Orchestration integration → Query enhancement → End-to-end validation
+- **Current Phase**: Phase 2.2 Planning - Investment Signal Integration (dual-layer architecture)
+- **Completion**: 57% (73/128 tasks) - Week 6 UDMA integration complete ✅, Phase 2.2 planning complete ✅
+- **Architecture**: Simple orchestrator (879 lines) + production modules (34K+ lines) + planned dual-layer (LightRAG + Signal Store)
+- **Validation**: PIVF framework with 20 golden queries, F1=0.933 achieved ✅, 5/5 integration tests passing ✅
+- **Next Milestone**: Phase 2.2 implementation → Email pipeline integration → Dual-layer validation
 
-### Current Status (2025-01-22)
+### Current Status (2025-10-15)
 
-**Project Phase**: Phase 2 - Architecture Integration (Week 1 Complete ✅, Week 2 Starting)
-**Completion**: 39% (45/115 tasks)
+**Project Phase**: Phase 2 - Architecture Integration (Week 6 Complete ✅, Phase 2.2 Planning Complete ✅)
+**Completion**: 57% (73/128 tasks)
 **Primary Interfaces**: Dual workflow notebooks (building + query)
-**Architecture Strategy**: Simple Orchestration + Production Modules (34K+ lines)
+**Architecture Strategy**: Simple Orchestration + Production Modules (34K+ lines) + Dual-Layer (LightRAG + Investment Signal Store)
 
 ### Recent Milestones ✅
 
@@ -125,6 +125,31 @@ Boutique hedge funds face critical pain points that ICE addresses:
 
 **Primary**: Lean boutique hedge funds (1-10 person teams)
 **Secondary**: Independent investment professionals and research analysts
+
+---
+
+## 2.1 Design Principles & Philosophy
+
+> **Strategic Positioning**: ICE follows the **LEAN PATH** - delivering professional-grade investment intelligence at boutique fund scale (<$100M AUM, <$200/month) through cost-conscious, relationship-focused architecture.
+
+**Core Development Principles** (in priority order):
+
+1. **Quality Within Resource Constraints**: Target 80-90% analytical capability at <20% enterprise cost. Professional-grade insights over academic perfection. (F1≥0.85, <$200/month operational budget)
+
+2. **Hidden Relationships Over Surface Facts**: Graph-first strategy enabling multi-hop reasoning (1-3 hops) for non-obvious investment connections. Trust LightRAG semantic search for relevance filtering.
+
+3. **Fact-Grounded with Source Attribution**: 100% source traceability requirement. All entities and relationships include confidence scores (0.0-1.0). Complete audit trail for compliance.
+
+4. **User-Directed Evolution**: Evidence-driven development - build for actual problems, not imagined ones. Test → Decide → Integrate workflow. (<10,000 line complexity budget)
+
+5. **Simple Orchestration + Battle-Tested Modules**: Delegate to production modules (34K+ lines), keep orchestration logic simple (<2,000 lines). Import robust code, don't reinvent.
+
+6. **Cost-Consciousness as Design Constraint**: Architecture decisions must respect budget constraints. 80% local LLM processing, 20% cloud APIs. Semantic caching (70% target hit rate). Free-tier data sources prioritized.
+
+**Critical Clarification**: ICE targets boutique hedge funds, NOT large enterprise funds. All architectural decisions (UDMA, dual-layer architecture, "Trust the Graph" strategy) optimize for cost-constrained, relationship-discovery-focused intelligence.
+
+> **📖 For detailed architecture philosophy**: See `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` (UDMA strategy)
+> **📖 For Lean ICE details**: See `project_information/development_plans/Development Brainstorm Plans (md files)/Lean_ICE_Architecture.md`
 
 ---
 

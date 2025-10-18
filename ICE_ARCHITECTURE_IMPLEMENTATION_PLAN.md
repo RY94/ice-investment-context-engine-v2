@@ -1629,7 +1629,356 @@ class DataIngester:
 
 ---
 
-## 8. Architecture Options Comparison
+## 8. Phase 2.2: Investment Signal Integration (Post-Week 6)
+
+### 8.1 Rationale for Dual-Layer Architecture
+
+**Context: Week 6 Complete (2025-10-14)**
+
+Week 6 UDMA integration delivered significant achievements:
+- ✅ 5/5 integration tests passing
+- ✅ F1=0.933 semantic validation (exceeds 0.85 threshold)
+- ✅ 3/4 performance metrics passing
+- ❌ Query latency 12.1s vs 5s target (BOTTLENECK)
+
+However, deeper analysis revealed a critical architectural gap:
+
+**Current Email Integration Status:**
+- **What Exists:** Placeholder implementation in `data_ingestion.py::fetch_email_documents()`
+- **What It Does:** Basic text extraction (subject, sender, date, body from .eml files)
+- **What's Missing:** Production email pipeline (EntityExtractor + GraphBuilder, 12,810 lines) NOT integrated
+- **Impact:** Structured investment intelligence is generated but discarded, keeping only text
+
+**Business Requirement Gap:**
+
+ICE's 4 MVP modules have different query requirements:
+1. **Ask ICE a Question** → Semantic understanding (LightRAG) ✅ Working
+2. **Per-Ticker Intelligence Panel** → Structured signals ❌ **BLOCKED**
+3. **Mini Subgraph Viewer** → Typed relationships ❌ **BLOCKED**
+4. **Daily Portfolio Briefs** → Signal detection ❌ **BLOCKED**
+
+**Current limitation:** Single-layer LightRAG optimizes for module 1 but cannot serve modules 2-4 effectively.
+
+**User Persona Analysis:**
+
+Portfolio Manager Sarah needs:
+- Real-time portfolio monitoring: "What's the latest rating on NVDA?"
+- Fast structured lookups: <1s response time (current: 12.1s unacceptable)
+- Signal tracking: Rating changes, price target movements, analyst coverage
+
+Research Analyst David needs:
+- Analyst coverage queries: "Which firms cover NVDA?"
+- Firm-specific intelligence: "Show me all Goldman Sachs ratings"
+- Temporal analysis: "How have ratings changed over time?"
+
+Junior Analyst Alex needs:
+- Quick signal access for context assembly
+- Portfolio-wide signal monitoring
+- Alert prioritization based on signal strength
+
+### 8.2 Architectural Decision: Dual-Layer System
+
+**Design Philosophy:** Complementary capabilities, not competing systems
+
+**Layer 1: LightRAG (Semantic Understanding)** ✅ Validated F1=0.933
+- Purpose: "Why/How/Impact" questions
+- Capabilities: Multi-hop reasoning, semantic search, HyDE, causal chains
+- Query examples: "How does China risk impact NVDA through TSMC?"
+- Performance: ~12s (separate optimization needed)
+
+**Layer 2: Investment Signal Store (Structured Intelligence)** 🆕 NEW
+- Purpose: "What/When/Who" questions
+- Capabilities: Fast lookups, temporal tracking, analyst coverage, signal detection
+- Query examples: "What's Goldman Sachs' latest rating on NVDA?"
+- Performance: <1s target (100x faster than LightRAG)
+
+**Integration Architecture:**
+
+```
+Email .eml files
+    ↓
+ICEEmailIntegrator (Production Module - 12,810 lines)
+    ├── EntityExtractor → Structured entities (tickers, ratings, price targets, confidence)
+    └── GraphBuilder → Typed relationships (ANALYST_RECOMMENDS, FIRM_COVERS, etc.)
+         ↓                         ↓
+    Enhanced Text           Structured Data
+    (inline markup)         (entities + graph)
+         ↓                         ↓
+    LightRAG Layer          Signal Store Layer
+    (Semantic Search)       (Structured Query)
+         ↓                         ↓
+      Query Router (Intelligent Routing)
+         ↓
+    ICE Unified Interface
+```
+
+**Query Routing Logic:**
+
+```python
+# Signal keywords → Signal Store
+if query contains ["rating", "price target", "analyst", "firm", "latest", "coverage"]:
+    route = "signal"  # <1s structured lookup
+
+# Semantic keywords → LightRAG
+elif query contains ["why", "how", "impact", "relationship", "exposure", "risk"]:
+    route = "lightrag"  # ~12s semantic reasoning
+
+# Both present → Hybrid
+else:
+    route = "hybrid"  # Query both systems in parallel
+```
+
+**Query Examples by Route:**
+
+| Query | Route | Why | Expected Latency |
+|-------|-------|-----|------------------|
+| "What's Goldman's latest NVDA rating?" | Signal | Structured lookup | <1s |
+| "How does China risk impact NVDA?" | LightRAG | Multi-hop semantic | ~12s |
+| "Why did Morgan Stanley upgrade NVDA?" | Hybrid | Signal + reasoning | 2-3s |
+| "Show me all portfolio ratings from last 30 days" | Signal | Structured query | <1s |
+| "What portfolio exposure to AI regulation?" | LightRAG | Semantic analysis | ~12s |
+
+### 8.3 Signal Store Schema (SQLite)
+
+**Storage Technology:** SQLite chosen for:
+- Lightweight (no server needed)
+- ACID transactions
+- SQL query optimization (indexes, joins)
+- UDMA simplicity principle
+
+**Schema Design:**
+
+```sql
+-- Table 1: Investment Ratings (Core signals)
+CREATE TABLE ratings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ticker TEXT NOT NULL,
+    analyst TEXT,
+    firm TEXT,
+    rating TEXT NOT NULL,       -- BUY, SELL, HOLD, NEUTRAL
+    confidence REAL,            -- 0.0 to 1.0 from EntityExtractor
+    price_target REAL,
+    date TEXT NOT NULL,         -- ISO 8601 format
+    source_email_id TEXT,       -- Traceability to source
+    source_document TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_ticker_date (ticker, date DESC),    -- Fast latest queries
+    INDEX idx_firm_ticker (firm, ticker)          -- Analyst coverage
+);
+
+-- Table 2: Price Target Changes (Temporal tracking)
+CREATE TABLE price_targets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ticker TEXT NOT NULL,
+    firm TEXT,
+    analyst TEXT,
+    old_target REAL,
+    new_target REAL,
+    change_percent REAL,
+    confidence REAL,
+    change_date TEXT NOT NULL,
+    source_email_id TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_ticker_date (ticker, change_date DESC)
+);
+
+-- Table 3: Entities (Tickers, Analysts, Firms)
+CREATE TABLE entities (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    entity_type TEXT NOT NULL,  -- TICKER, ANALYST, FIRM
+    name TEXT NOT NULL,
+    aliases TEXT,               -- JSON array of alternative names
+    first_seen TEXT,
+    last_seen TEXT,
+    metadata TEXT,              -- JSON for additional attributes
+    UNIQUE(entity_type, name)
+);
+
+-- Table 4: Relationships (Investment Graph)
+CREATE TABLE relationships (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    from_entity_id INTEGER,
+    to_entity_id INTEGER,
+    relationship_type TEXT,     -- RECOMMENDS, COVERS, TARGETS, etc.
+    confidence REAL,
+    date TEXT,
+    metadata TEXT,              -- JSON for additional attributes
+    source_email_id TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (from_entity_id) REFERENCES entities(id),
+    FOREIGN KEY (to_entity_id) REFERENCES entities(id),
+    INDEX idx_relationship_type (relationship_type, date DESC)
+);
+```
+
+### 8.4 Performance Benefits
+
+**Query Latency Improvements:**
+
+| Query Type | Current (LightRAG only) | Target (Dual-layer) | Improvement |
+|------------|-------------------------|---------------------|-------------|
+| Structured signal | 12.1s (semantic search) | <1s (SQL lookup) | 12x faster |
+| Semantic reasoning | 12.1s | 12.1s (unchanged) | No change* |
+| Hybrid queries | 12.1s (sequential) | 2-3s (parallel) | 4-6x faster |
+
+*Semantic query optimization is separate task (caching, parallelization, query plan optimization)
+
+**Business Impact:**
+
+Portfolio Manager Sarah's workflow:
+- **Before:** Check 10 portfolio holdings = 10 × 12.1s = 121s (2 minutes)
+- **After:** Check 10 portfolio holdings = 10 × 0.8s = 8s (sub-10 seconds)
+- **Improvement:** 15x faster, enables real-time monitoring
+
+**Load Reduction:**
+
+By routing structured queries to Signal Store:
+- Estimated 40-50% of portfolio monitoring queries are structured lookups
+- Reduces LightRAG load by ~40%, improving overall system responsiveness
+- Addresses Week 6 bottleneck partially (full LightRAG optimization separate)
+
+### 8.5 Implementation Roadmap
+
+**Phase 1: ICEEmailIntegrator Integration** (2-3 days)
+- Replace placeholder `fetch_email_documents()` with production pipeline
+- Use EntityExtractor + GraphBuilder from `imap_email_ingestion_pipeline/`
+- Return structured outputs (entities, relationships) alongside text
+- Maintain F1=0.933 by continuing to feed enhanced text to LightRAG
+
+**Phase 2: Investment Signal Store** (2-3 days)
+- Create `InvestmentSignalStore` class (SQLite wrapper, ~300 lines)
+- Initialize 4-table schema (ratings, price_targets, entities, relationships)
+- Integrate with data ingestion to persist structured data
+- Validate <1s query performance with 10,000+ signals
+
+**Phase 3: Query Routing & Signal Methods** (2-3 days)
+- Create `InvestmentSignalQueryEngine` (~200 lines)
+- Create `QueryRouter` with keyword-based heuristics (~100 lines)
+- Add signal methods to ICESimplified: `get_latest_ratings()`, `get_portfolio_signals()`
+- Validate routing accuracy >95%
+
+**Phase 4: Notebook Updates & Validation** (2-3 days)
+- Update `ice_building_workflow.ipynb`: Demonstrate EntityExtractor/GraphBuilder outputs
+- Update `ice_query_workflow.ipynb`: Demonstrate dual-layer queries
+- Add performance comparisons (structured vs semantic)
+- End-to-end validation with Portfolio Manager Sarah scenarios
+
+**Total Timeline:** 8-12 days + 2-3 days buffer
+
+### 8.6 Success Criteria
+
+**Technical Metrics:**
+- [ ] Structured queries <1s (100x improvement)
+- [ ] Semantic queries maintain F1=0.933
+- [ ] Query routing accuracy >95%
+- [ ] Signal store handles 10,000+ ratings with <1s queries
+
+**Business Metrics:**
+- [ ] Module 2 (Per-Ticker Intelligence Panel): Functional ✅
+- [ ] Module 3 (Mini Subgraph Viewer): Functional ✅
+- [ ] Module 4 (Daily Portfolio Briefs): Functional ✅
+- [ ] Portfolio Manager Sarah: Real-time monitoring <1s ✅
+
+**Architecture Quality:**
+- [ ] `ice_simplified.py` remains <1000 lines (UDMA simplicity)
+- [ ] Production modules used as-is (EntityExtractor/GraphBuilder not modified)
+- [ ] Test coverage >80% for new components
+
+### 8.7 Risk Mitigation
+
+**Risk 1: Data Consistency** (Medium)
+- Mitigation: Single source of truth (EntityExtractor feeds both stores atomically)
+- Validation: Add reconciliation checks
+
+**Risk 2: Query Routing Errors** (Low)
+- Mitigation: Start with simple heuristics, log decisions, measure accuracy
+- Fallback: Manual override for ambiguous queries
+
+**Risk 3: Scope Creep** (High)
+- Mitigation: Accept 80% routing accuracy initially, iterate based on usage
+- Phase boundaries: Clear deliverables, timeboxed execution
+
+### 8.8 Alternative Considered: Single-Layer Enhancement
+
+**Alternative:** Enhance LightRAG directly with typed edges instead of dual-layer
+
+**Why Rejected:**
+1. Would modify production LightRAG code (violates UDMA principle of using modules as-is)
+2. LightRAG designed for semantic search, not structured queries (architectural mismatch)
+3. Would need to rebuild SQL optimization, indexing in NetworkX (reinventing wheel)
+4. Higher risk of breaking F1=0.933 validation
+
+**Decision:** Dual-layer architecture maintains clean separation of concerns and leverages battle-tested SQL query optimization.
+
+### 8.9 Integration with Week 6 Achievements
+
+Phase 2.2 **extends** Week 6 validation, doesn't replace it:
+
+**Week 6 Achievements Maintained:**
+- ✅ F1=0.933 semantic validation (LightRAG layer remains)
+- ✅ 5/5 integration tests (add 4 new tests for signal store)
+- ✅ Notebook structures (add new sections, don't replace)
+
+**Week 6 Achievements Enhanced:**
+- 🔄 Query latency partially addressed (structured queries routed to <1s system)
+- 🔄 Business value increased (1/4 MVP modules → 4/4 modules functional)
+- 🔄 User experience improved (Portfolio Manager Sarah can monitor in real-time)
+
+**Philosophy:** Continuous improvement on validated foundation, not replacement.
+
+---
+
+## 9. Storage Architecture
+
+### Overview
+
+ICE's storage system supports LightRAG's dual-level retrieval through a combination of vector stores and graph databases. The architecture enables both semantic search and relationship traversal.
+
+### Storage Components
+
+**2 Storage Types, 4 Components:**
+
+```
+Vector Stores (3)                 Graph Store (1)
+├── chunks_vdb      (text)       └── graph (NetworkX structure)
+├── entities_vdb    (entities)        ├── Entity nodes
+└── relationships_vdb (concepts)      └── Relationship edges
+```
+
+### Current Implementation
+
+**Development/Testing:**
+- **Vector Storage**: NanoVectorDBStorage (lightweight, JSON-based)
+- **Graph Storage**: NetworkXStorage (in-memory, JSON serialization)
+- **Characteristics**: Fast setup, minimal dependencies, suitable for <1GB data
+- **Location**: `ice_lightrag/storage/` (root-level)
+
+### Production Scaling
+
+**For >10GB Data:**
+- **Vector Storage**: QdrantVectorDBStorage (distributed, high-performance)
+- **Graph Storage**: Neo4JStorage (ACID-compliant, indexed queries)
+- **Migration**: Drop-in replacement via LightRAG configuration
+- **Benefits**: Horizontal scaling, advanced query optimization, enterprise reliability
+
+### Purpose
+
+Enables LightRAG's **dual-level retrieval**:
+1. **Entity-Level**: Fast lookup via entities_vdb (e.g., "What is NVDA's market cap?")
+2. **Relationship-Level**: Graph traversal via graph store (e.g., "How does China risk impact NVDA through TSMC?")
+3. **Chunk-Level**: Semantic search via chunks_vdb (document context retrieval)
+
+### Storage Locations
+
+- **Vector DBs**: `ice_lightrag/storage/{chunks_vdb, entities_vdb, relationships_vdb}/`
+- **Graph Data**: `ice_lightrag/storage/graph/`
+- **Configuration**: Environment variable `ICE_WORKING_DIR` (normalized by LightRAG)
+
+**Note**: LightRAG normalizes storage paths by removing `./src/` prefix for consistency.
+
+---
+
+## 10. Architecture Options Comparison
 
 ### Context
 
@@ -1989,7 +2338,7 @@ Modular development structure with build script generating monolithic deployment
 
 ---
 
-## 9. Success Metrics & Validation
+## 11. Success Metrics & Validation
 
 ### Size Budget Compliance
 

@@ -25,6 +25,7 @@ ICE-Investment-Context-Engine/
 │   ├── ICE_VALIDATION_FRAMEWORK.md        # 🆕 PIVF - Comprehensive validation framework (20 golden queries, 9 dimensions)
 │   ├── ice_building_workflow.ipynb        # 🆕 Knowledge graph building workflow notebook
 │   ├── ice_query_workflow.ipynb           # 🆕 Investment intelligence analysis workflow notebook
+│   ├── test_queries.csv                   # 🆕 Test query dataset for validation (12 queries, 3 personas, 5 modes)
 │   ├── simple_demo.py                     # Standalone LightRAG demo script
 │   ├── ice_main_notebook.ipynb            # ⭐ PRIMARY DEVELOPMENT INTERFACE (New simplified design)
 │   └── ice_main_notebook_20250917.ipynb   # 📋 Original notebook (backed up)
@@ -112,6 +113,13 @@ ICE-Investment-Context-Engine/
 │   │       ├── portfolio_holdings_10_defensive_value.csv      # Defensive value (15 stocks)
 │   │       └── portfolio_holdings_diversified_10.csv          # Multi-sector diversified (10 stocks, 4 sectors)
 │   │
+│   │   **Testing Use Cases**: These 11 diverse portfolios enable comprehensive validation
+│   │   - Sector concentration analysis (single vs multi-sector)
+│   │   - Risk profile validation (growth vs defensive vs balanced)
+│   │   - Portfolio size impact (10 vs 15 stocks)
+│   │   - Investment strategy assessment
+│   │   - Multi-hop reasoning (e.g., "How does China risk impact AI semiconductor portfolio?")
+│   │
 │   └── storage/                          # Organized storage systems
 │       ├── cache/                        # Centralized cache for all APIs
 │       │   ├── alpha_vantage_cache/      # Alpha Vantage API cache
@@ -129,6 +137,7 @@ ICE-Investment-Context-Engine/
 │   │   ├── test_runner.py               # Main test execution runner
 │   │   ├── test_lightrag.py             # LightRAG integration tests
 │   │   ├── test_unified_rag.py          # Unified RAG system tests
+│   │   ├── test_imap_email_pipeline_comprehensive.py  # 🆕 IMAP pipeline comprehensive test (496 lines, 21 tests)
 │   │   ├── ice_data_tests/              # Data ingestion tests
 │   │   ├── ice_lightrag_tests/          # Core AI engine tests
 │   │   └── mock_data/                   # Test data fixtures
@@ -303,9 +312,12 @@ ICE-Investment-Context-Engine/
 - **Dual Notebook Integration Tests**: `tests/test_dual_notebook_integration.py` - 🆕 Complete workflow validation
 - **Basic Tests**: `ice_lightrag/test_basic.py` - Core functionality validation
 - **Health Checks**: `check/health_checks.py` - System monitoring
-- **Integration Tests**: `updated_architectures/implementation/test_integration.py` - 🆕 Week 6: 5 integration tests (251 lines)
-- **PIVF Validation**: `updated_architectures/implementation/test_pivf_queries.py` - 🆕 Week 6: 20 golden queries with 9-dimensional scoring (424 lines)
-- **Performance Benchmarks**: `updated_architectures/implementation/benchmark_performance.py` - 🆕 Week 6: 4 performance metrics (418 lines)
+- **Integration Tests**: `tests/test_integration.py` - 🆕 Week 6: 5 integration tests (251 lines) ✅ ALL PASSING
+- **PIVF Validation**: `tests/test_pivf_queries.py` - 🆕 Week 6: 20 golden queries with 9-dimensional scoring (424 lines)
+- **Performance Benchmarks**: `tests/benchmark_performance.py` - 🆕 Week 6: 4 performance metrics (418 lines)
+- **IMAP Pipeline Tests**: `tests/test_imap_email_pipeline_comprehensive.py` - 🆕 Entry #59: Comprehensive IMAP email pipeline test (496 lines, 21 tests) ✅ ALL PASSING
+- **Entity Extraction Tests**: `tests/test_entity_extraction.py` - 🆕 Phase 2.6.1: EntityExtractor integration validation (182 lines)
+- **Quick Entity Test**: `tests/quick_entity_test.py` - 🆕 Phase 2.6.1: Fast validation script (42 lines)
 
 ### **Data & Storage**
 - **LightRAG Storage**: `ice_lightrag/storage/` - Knowledge graph persistence
