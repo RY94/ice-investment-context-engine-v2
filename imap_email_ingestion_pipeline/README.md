@@ -281,6 +281,27 @@ Email Content Processing
 
 ## Testing
 
+### Component Validation Notebook
+
+`pipeline_demo_notebook.ipynb` validates email pipeline components using **real broker research emails**:
+- **Data Source**: 71 real .eml files from `../data/emails_samples/` (DBS, OCBC, UOB, CGS research)
+- **Purpose**: Developer validation tool for testing components (StateManager, EntityExtractor, GraphBuilder)
+- **Scope**: Loads first 5 emails for demo performance (not all 71)
+- **Transparency**:
+  - Attachment processing shows simulated results (real .eml files don't include attachments)
+  - Query section displays educational examples (LightRAG not available in notebook environment)
+- **Production Integration**: Email pipeline accessed via `DataIngester.fetch_email_documents()`
+
+**Note**: For end-user workflows, use `ice_building_workflow.ipynb` (knowledge graph building) and `ice_query_workflow.ipynb` (investment analysis) instead.
+
+**To Run**:
+```bash
+jupyter notebook pipeline_demo_notebook.ipynb
+# Cells process real emails from data/emails_samples/ directory
+```
+
+---
+
 ### Run All Tests
 ```bash
 python test_pipeline.py
