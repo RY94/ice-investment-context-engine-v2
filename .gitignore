@@ -80,9 +80,8 @@ tmp/
 ice_config.json
 config.json
 
-# MCP server files
-mcp_servers/*/node_modules/
-mcp_servers/*/.env
+# MCP server files (embedded git repos)
+mcp_servers/
 
 # Lock files (OneDrive sync issues)
 *.lock
@@ -112,6 +111,9 @@ archive/misc_files/fortransfer.claude/
 *.docx
 *.pptx
 *.msg
+
+# Email attachments (may contain sensitive data)
+data/attachments/
 
 # Large data files
 *.json
