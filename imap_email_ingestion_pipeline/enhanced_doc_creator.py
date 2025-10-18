@@ -31,9 +31,6 @@ logger = logging.getLogger(__name__)
 # Minimum confidence threshold for including entities in markup
 MIN_CONFIDENCE_THRESHOLD = 0.5
 
-# Maximum document size before truncation (bytes)
-MAX_DOCUMENT_SIZE = 50000
-
 
 def escape_markup_value(value: Any) -> str:
     """
@@ -191,6 +188,28 @@ def create_enhanced_document(
                     f"[PRICE_TARGET:{pt_value}|ticker:{pt_ticker}|currency:{pt_currency}|confidence:{pt_conf:.2f}]"
                 )
 
+        # Inject other financial metrics (revenue, EPS, EBITDA, etc.)
+        financials = financial_metrics.get('financials', [])
+        for metric in financials[:5]:  # Limit to top 5 financial metrics
+            if metric.get('confidence', 0) > MIN_CONFIDENCE_THRESHOLD:
+                metric_value = escape_markup_value(metric.get('value', 'UNKNOWN'))
+                metric_full = escape_markup_value(metric.get('full_match', ''))[:50]  # Truncate for readability
+                metric_conf = metric.get('confidence', 0.0)
+                markup_line.append(
+                    f"[FINANCIAL_METRIC:{metric_value}|context:{metric_full}|confidence:{metric_conf:.2f}]"
+                )
+
+        # Inject percentage metrics (margins, growth rates, etc.)
+        percentages = financial_metrics.get('percentages', [])
+        for pct in percentages[:5]:  # Limit to top 5 percentages
+            if pct.get('confidence', 0) > MIN_CONFIDENCE_THRESHOLD:
+                pct_value = escape_markup_value(pct.get('value', 'UNKNOWN'))
+                pct_context = escape_markup_value(pct.get('context', ''))[:50]  # Truncate for readability
+                pct_conf = pct.get('confidence', 0.0)
+                markup_line.append(
+                    f"[PERCENTAGE:{pct_value}|context:{pct_context}|confidence:{pct_conf:.2f}]"
+                )
+
         # Inject analyst/people information
         people = entities.get('people', [])
         for person in people[:3]:  # Limit to top 3 analysts for readability
@@ -200,6 +219,17 @@ def create_enhanced_document(
                 person_conf = person.get('confidence', 0.0)
                 markup_line.append(
                     f"[ANALYST:{person_name}|firm:{person_firm}|confidence:{person_conf:.2f}]"
+                )
+
+        # Inject company entities
+        companies = entities.get('companies', [])
+        for company in companies[:5]:  # Limit to top 5 companies for readability
+            if company.get('confidence', 0) > MIN_CONFIDENCE_THRESHOLD:
+                company_name = escape_markup_value(company.get('name', 'UNKNOWN'))
+                company_ticker = escape_markup_value(company.get('ticker', 'N/A'))
+                company_conf = company.get('confidence', 0.0)
+                markup_line.append(
+                    f"[COMPANY:{company_name}|ticker:{company_ticker}|confidence:{company_conf:.2f}]"
                 )
 
         # Inject sentiment if high confidence
@@ -262,14 +292,6 @@ def create_enhanced_document(
 
         # === FINAL DOCUMENT ASSEMBLY ===
         enhanced_doc = "\n".join(doc_sections)
-
-        # Validate and truncate document size if needed
-        if len(enhanced_doc) > MAX_DOCUMENT_SIZE:
-            logger.warning(
-                f"Document too large ({len(enhanced_doc)} bytes), truncating to {MAX_DOCUMENT_SIZE} bytes. "
-                f"Email UID: {email_uid}"
-            )
-            enhanced_doc = enhanced_doc[:MAX_DOCUMENT_SIZE] + "\n... [document truncated due to size limit] ..."
 
         logger.info(
             f"Created enhanced document: {len(enhanced_doc)} bytes, "

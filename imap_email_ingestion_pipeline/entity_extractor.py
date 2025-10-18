@@ -18,6 +18,44 @@ except ImportError:
     SPACY_AVAILABLE = False
     logging.warning("spaCy not available - using regex-based extraction")
 
+# Financial acronyms that should NOT be treated as stock tickers
+# These are commonly appearing uppercase words in financial texts
+FINANCIAL_ACRONYMS = {
+    # Financial Metrics
+    'EPS', 'PE', 'PB', 'PS', 'ROE', 'ROA', 'ROI', 'ROIC', 'ROCE',
+    'EBIT', 'EBITDA', 'EBITD', 'FCF', 'OCF', 'NPV', 'IRR', 'CAGR', 'WACC',
+    'NAV', 'NTA', 'BV', 'MV', 'EV', 'P', 'E',  # P and E often appear separately
+
+    # Currencies
+    'USD', 'EUR', 'GBP', 'JPY', 'CNY', 'RMB', 'HKD', 'SGD', 'AUD', 'CAD',
+    'CHF', 'INR', 'KRW', 'TWD', 'THB', 'MYR', 'IDR', 'VND', 'PHP', 'NZD',
+
+    # Time Periods & Comparisons
+    'YOY', 'QOQ', 'MOM', 'YTD', 'MTD', 'QTD', 'FY', 'CY',
+    'Q1', 'Q2', 'Q3', 'Q4', 'H1', 'H2',
+
+    # Corporate Titles
+    'CEO', 'CFO', 'CTO', 'COO', 'CIO', 'CMO', 'VP', 'SVP', 'EVP', 'MD', 'GM',
+
+    # Market & Financial Terms
+    'IPO', 'SPO', 'M&A', 'MA', 'LBO', 'MBO', 'OTC', 'ETF', 'REIT', 'ADR', 'GDR',
+    'P&L', 'PL', 'IR', 'PR', 'HR', 'IT', 'ESG',
+
+    # Accounting & Reporting
+    'GAAP', 'IFRS', 'FASB', 'SEC', 'EDGAR', 'XBRL',
+    'AR', 'AP', 'COGS', 'SG&A', 'SGA', 'CAPEX', 'OPEX',
+
+    # Common Words in Financial Context
+    'VS', 'VIA', 'PER', 'ON', 'IN', 'TO', 'AT', 'BY', 'OF', 'OR', 'AS',
+    'THE', 'AND', 'FOR', 'WITH', 'FROM', 'THIS', 'THAT', 'ARE', 'HAS', 'WAS', 'CAN',
+
+    # Statistical & Analysis Terms
+    'AVG', 'MEAN', 'STD', 'VAR', 'CI', 'DF', 'MAX', 'MIN', 'SUM',
+
+    # Geographic/Exchange Suffixes (not standalone tickers)
+    'US', 'UK', 'CN', 'JP', 'HK', 'SG', 'AU', 'EU', 'APAC', 'EMEA', 'LATAM'
+}
+
 class EntityExtractor:
     def __init__(self, config_path: str = "./config"):
         self.logger = logging.getLogger(__name__)
@@ -289,12 +327,13 @@ class EntityExtractor:
         """Extract stock tickers with confidence scores"""
         tickers = []
         matches = self.ticker_pattern.findall(text)
-        
+
         for match in matches:
-            # Skip common false positives
-            if match.upper() in ['THE', 'AND', 'FOR', 'WITH', 'FROM', 'THIS', 'THAT', 'ARE', 'HAS', 'WAS', 'CAN']:
+            # Skip financial acronyms and common words (comprehensive filter)
+            # This prevents false positives like EPS, EBIT, RMB, etc.
+            if match.upper() in FINANCIAL_ACRONYMS:
                 continue
-            
+
             # Check if it's a known ticker
             if match.upper() in self.tickers:
                 confidence = 0.95
@@ -307,6 +346,7 @@ class EntityExtractor:
                 tickers.append(ticker_info)
             elif len(match) <= 4 and match.isupper():
                 # Possible ticker but not in known list
+                # Only include if not in financial acronyms (already filtered above)
                 confidence = 0.6
                 ticker_info = {
                     'ticker': match.upper(),
@@ -512,20 +552,28 @@ class EntityExtractor:
     def _analyze_sentiment(self, text: str) -> Dict[str, Any]:
         """Analyze investment sentiment"""
         text_lower = text.lower()
-        
+
         bullish_terms = [
             'buy', 'bullish', 'positive', 'outperform', 'strong buy', 'upgrade',
             'raised', 'increased', 'beat', 'exceed', 'strong', 'growth', 'momentum'
         ]
-        
+
         bearish_terms = [
             'sell', 'bearish', 'negative', 'underperform', 'strong sell', 'downgrade',
             'lowered', 'decreased', 'miss', 'weak', 'decline', 'concern', 'risk'
         ]
-        
+
         bullish_score = sum(1 for term in bullish_terms if term in text_lower)
         bearish_score = sum(1 for term in bearish_terms if term in text_lower)
-        
+
+        # Calculate normalized sentiment score (-1.0 to +1.0)
+        # Positive = bullish, Negative = bearish, Near-zero = neutral
+        total_signals = bullish_score + bearish_score
+        if total_signals > 0:
+            score = (bullish_score - bearish_score) / total_signals
+        else:
+            score = 0.0
+
         if bullish_score > bearish_score:
             sentiment = 'bullish'
             confidence = min(0.9, 0.5 + (bullish_score - bearish_score) * 0.1)
@@ -535,11 +583,12 @@ class EntityExtractor:
         else:
             sentiment = 'neutral'
             confidence = 0.5
-        
+
         return {
             'sentiment': sentiment,
+            'score': score,                       # Normalized score: -1.0 (bearish) to +1.0 (bullish)
             'confidence': confidence,
-            'bullish_score': bullish_score,
+            'bullish_score': bullish_score,       # Raw counts for debugging
             'bearish_score': bearish_score
         }
     

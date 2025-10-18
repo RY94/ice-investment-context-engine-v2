@@ -124,6 +124,13 @@ ENTITY_PATTERNS: Dict[str, Dict[str, any]] = {
             'SEMICONDUCTOR',
             'SOC',
             'SYSTEM ON',
+            # Brand names and product lines (avoid duplicates with Company category)
+            'INTEL',       # Intel products (company name in Company category)
+            'QUALCOMM',    # Qualcomm products (company name may be in Company category)
+            'CORE',        # Intel Core i3/i5/i7/i9/Ultra
+            'RYZEN',       # AMD Ryzen (AMD itself in Company category)
+            'SNAPDRAGON',  # Qualcomm Snapdragon
+            'ULTRA',       # Intel Core Ultra, AMD Ultra
             # Software/AI
             'AI ',
             'ARTIFICIAL INTELLIGENCE',
@@ -139,7 +146,9 @@ ENTITY_PATTERNS: Dict[str, Dict[str, any]] = {
         'examples': [
             'Graphics Processing Units (GPUs)',
             'AI Technologies',
-            'System on a Chip (SoC)'
+            'System on a Chip (SoC)',
+            'Intel Core Ultra',
+            'AMD Ryzen'
         ],
         'priority': 4
     },

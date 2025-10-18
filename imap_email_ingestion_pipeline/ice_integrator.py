@@ -12,7 +12,11 @@ from datetime import datetime
 from pathlib import Path
 
 # Import enhanced document creator (Week 1.5 addition)
-from .enhanced_doc_creator import create_enhanced_document
+# Support both package import (relative) and direct import (absolute)
+try:
+    from .enhanced_doc_creator import create_enhanced_document
+except ImportError:
+    from enhanced_doc_creator import create_enhanced_document
 
 # Add parent directory to path to import ICE modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -231,12 +235,7 @@ class ICEEmailIntegrator:
             
             # Create final document
             comprehensive_doc = "\n".join(doc_sections)
-            
-            # Validate document length
-            if len(comprehensive_doc) > 50000:  # Limit document size
-                self.logger.warning(f"Document too large ({len(comprehensive_doc)} chars), truncating")
-                comprehensive_doc = comprehensive_doc[:50000] + "\n... [document truncated] ..."
-            
+
             return comprehensive_doc
             
         except Exception as e:

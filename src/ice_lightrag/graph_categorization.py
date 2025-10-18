@@ -431,6 +431,200 @@ def categorize_entity_llm_only(
         return ('Other', 0.50)
 
 
+def categorize_relationship_with_confidence(relationship_content: str) -> Tuple[str, float]:
+    """
+    Categorize relationship with confidence score based on pattern priority.
+
+    Extracts relationship types from LightRAG content format and matches
+    against predefined patterns with confidence scoring.
+
+    Confidence levels (based on pattern specificity):
+    - Priority 1-2: 0.95 (Financial, Regulatory - highly specific)
+    - Priority 3-4: 0.85 (Supply Chain, Product/Tech - clear patterns)
+    - Priority 5-7: 0.75 (Corporate, Industry, Market - moderate)
+    - Priority 8-10: 0.60 (Impact, Media, Other - weak/fallback)
+
+    Args:
+        relationship_content: Full relationship content from LightRAG
+
+    Returns:
+        Tuple of (category_name, confidence_score)
+    """
+    # Extract relationship types (comma-separated keywords on line 2)
+    rel_types = extract_relationship_types(relationship_content)
+
+    if not rel_types:
+        return ('Other', 0.50)
+
+    # Check patterns in priority order
+    sorted_categories = sorted(
+        RELATIONSHIP_PATTERNS.items(),
+        key=lambda x: x[1].get('priority', 999)
+    )
+
+    for category_name, category_info in sorted_categories:
+        patterns = category_info.get('patterns', [])
+        priority = category_info.get('priority', 999)
+
+        # Empty patterns = fallback category (Other)
+        if not patterns:
+            return (category_name, 0.50)
+
+        # Check if any pattern matches
+        for pattern in patterns:
+            if pattern.lower() in rel_types.lower():
+                # Confidence based on priority level
+                if priority <= 2:
+                    confidence = 0.95
+                elif priority <= 4:
+                    confidence = 0.85
+                elif priority <= 7:
+                    confidence = 0.75
+                else:
+                    confidence = 0.60
+                return (category_name, confidence)
+
+    return ('Other', 0.50)
+
+
+def categorize_relationship_hybrid(
+    relationship_content: str,
+    confidence_threshold: float = 0.70,
+    use_llm: bool = True
+) -> Tuple[str, float]:
+    """
+    Hybrid categorization: keyword matching with LLM fallback for ambiguous cases.
+
+    Pipeline:
+    1. Try keyword matching first
+    2. If confidence < threshold, use Ollama for better accuracy
+    3. Return (category, confidence)
+
+    Args:
+        relationship_content: Full relationship content from LightRAG
+        confidence_threshold: Minimum confidence for keyword match (default: 0.70)
+        use_llm: Enable LLM fallback (default: True)
+
+    Returns:
+        Tuple of (category_name, confidence_score)
+    """
+    # Step 1: Try keyword matching
+    category, confidence = categorize_relationship_with_confidence(relationship_content)
+
+    # Step 2: If high confidence or LLM disabled, return keyword result
+    if confidence >= confidence_threshold or not use_llm:
+        return (category, confidence)
+
+    # Step 3: Low confidence - use LLM with full context
+    try:
+        # Extract relationship types and description for LLM prompt
+        rel_types = extract_relationship_types(relationship_content)
+        lines = relationship_content.split('\n')
+        description = '\n'.join(lines[2:]) if len(lines) > 2 else ''
+
+        # Include ALL 10 categories (including 'Other') for LLM fallback
+        category_list = ', '.join(REL_DISPLAY_ORDER)
+
+        # Build prompt with relationship types and description
+        if rel_types and description:
+            prompt = (
+                f"Categorize this relationship into ONE category.\n"
+                f"Relationship: {rel_types}\n"
+                f"Description: {description[:200]}\n"
+                f"Categories: {category_list}\n"
+                f"Note: 'Other' is for uncategorized relationships.\n"
+                f"Answer with ONLY the category name, nothing else."
+            )
+        elif rel_types:
+            prompt = (
+                f"Categorize this relationship into ONE category.\n"
+                f"Relationship: {rel_types}\n"
+                f"Categories: {category_list}\n"
+                f"Note: 'Other' is for uncategorized relationships.\n"
+                f"Answer with ONLY the category name, nothing else."
+            )
+        else:
+            # No relationship types - return keyword result
+            return (category, confidence)
+
+        llm_category = _call_ollama(prompt)
+
+        # Validate LLM response is a known category
+        if llm_category in REL_DISPLAY_ORDER:
+            return (llm_category, 0.90)  # High confidence for LLM results
+        else:
+            logger.warning(f"LLM returned invalid category '{llm_category}', using keyword result")
+            return (category, confidence)
+
+    except Exception as e:
+        logger.warning(f"LLM fallback failed, using keyword result: {e}")
+        return (category, confidence)
+
+
+def categorize_relationship_llm_only(
+    relationship_content: str,
+    model: str = OLLAMA_MODEL
+) -> Tuple[str, float]:
+    """
+    Pure LLM categorization using local Ollama model (no preprocessing).
+
+    Uses Ollama LLM for ALL relationships with NO rule-based preprocessing.
+    Useful for benchmarking true LLM accuracy vs keyword/hybrid approaches.
+
+    Args:
+        relationship_content: Full relationship content from LightRAG
+        model: Ollama model to use (default: OLLAMA_MODEL constant)
+
+    Returns:
+        Tuple of (category_name, confidence_score)
+        - Returns ('Other', 0.50) if LLM call fails or returns invalid category
+        - Returns (category, 0.90) for successful LLM categorization
+    """
+    try:
+        # Extract relationship types and description for LLM prompt
+        rel_types = extract_relationship_types(relationship_content)
+        lines = relationship_content.split('\n')
+        description = '\n'.join(lines[2:]) if len(lines) > 2 else ''
+
+        # Include ALL 10 categories (including 'Other')
+        category_list = ', '.join(REL_DISPLAY_ORDER)
+
+        # Build prompt with relationship types and description
+        if rel_types and description:
+            prompt = (
+                f"Categorize this relationship into ONE category.\n"
+                f"Relationship: {rel_types}\n"
+                f"Description: {description[:200]}\n"
+                f"Categories: {category_list}\n"
+                f"Note: 'Other' is for uncategorized relationships.\n"
+                f"Answer with ONLY the category name, nothing else."
+            )
+        elif rel_types:
+            prompt = (
+                f"Categorize this relationship into ONE category.\n"
+                f"Relationship: {rel_types}\n"
+                f"Categories: {category_list}\n"
+                f"Note: 'Other' is for uncategorized relationships.\n"
+                f"Answer with ONLY the category name, nothing else."
+            )
+        else:
+            # No relationship types - default to 'Other'
+            return ('Other', 0.50)
+
+        llm_category = _call_ollama(prompt, model=model)
+
+        # Validate LLM response is a known category
+        if llm_category in REL_DISPLAY_ORDER:
+            return (llm_category, 0.90)  # High confidence for LLM results
+        else:
+            logger.warning(f"LLM returned invalid category '{llm_category}', returning 'Other'")
+            return ('Other', 0.50)
+
+    except Exception as e:
+        logger.warning(f"Pure LLM categorization failed: {e}")
+        return ('Other', 0.50)
+
+
 def categorize_entities(entities_data: List[Dict]) -> Dict[str, int]:
     """
     Categorize multiple entities and return category distribution.

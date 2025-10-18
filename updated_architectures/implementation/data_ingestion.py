@@ -22,6 +22,10 @@ sys.path.insert(0, str(project_root))
 from ice_data_ingestion.robust_client import RobustHTTPClient
 from ice_data_ingestion.sec_edgar_connector import SECEdgarConnector
 from imap_email_ingestion_pipeline.email_connector import EmailConnector
+from imap_email_ingestion_pipeline.entity_extractor import EntityExtractor
+from imap_email_ingestion_pipeline.graph_builder import GraphBuilder
+from imap_email_ingestion_pipeline.attachment_processor import AttachmentProcessor
+from imap_email_ingestion_pipeline.enhanced_doc_creator import create_enhanced_document
 
 logger = logging.getLogger(__name__)
 
@@ -78,8 +82,32 @@ class DataIngester:
         # 3. SEC EDGAR Connector (regulatory filings: 10-K, 10-Q, 8-K)
         self.sec_connector = SECEdgarConnector()
 
+        # 4. Entity Extractor (Phase 2.6.1: Production-grade entity extraction)
+        self.entity_extractor = EntityExtractor()
+
+        # 5. Graph Builder (Phase 2.6.1: Typed relationship extraction)
+        self.graph_builder = GraphBuilder()
+
+        # 6. Attachment Processor (Phase 2.6.1: Multi-format document processing)
+        # Note: Only 3/71 emails have attachments, but processor handles PDF, Excel
+        try:
+            attachment_storage = Path(__file__).parent.parent.parent / 'data' / 'attachments'
+            attachment_storage.mkdir(parents=True, exist_ok=True)
+            self.attachment_processor = AttachmentProcessor(str(attachment_storage))
+            logger.info("AttachmentProcessor initialized for PDF, Excel, Word, PowerPoint processing")
+        except Exception as e:
+            logger.warning(f"AttachmentProcessor initialization failed: {e}")
+            self.attachment_processor = None
+
+        # Storage for structured data (Phase 2.6.2: Signal Store will use these)
+        self.last_extracted_entities = []  # List of entity dicts from EntityExtractor
+        self.last_graph_data = {}  # Graph data for dual-layer architecture
+
         logger.info(f"Data Ingester initialized with {len(self.available_services)} API services: {self.available_services}")
-        logger.info("Production modules initialized: SEC EDGAR connector ready, Email reads from samples")
+        modules_status = "SEC EDGAR connector, EntityExtractor, GraphBuilder"
+        if self.attachment_processor:
+            modules_status += ", AttachmentProcessor"
+        logger.info(f"Production modules initialized: {modules_status} ready")
 
     def is_service_available(self, service: str) -> bool:
         """Check if specific API service is configured"""
@@ -269,24 +297,31 @@ Entities: {', '.join(article.get('entities', []))}
         logger.info(f"Fetched {len(documents)} financial documents for {symbol}")
         return documents
 
-    def fetch_email_documents(self, tickers: Optional[List[str]] = None, limit: int = 10) -> List[str]:
+    def fetch_email_documents(self, tickers: Optional[List[str]] = None, limit: int = 71) -> List[str]:
         """
-        Fetch broker research emails from sample emails directory
+        Fetch broker research emails with production-grade entity extraction
+
+        Phase 2.6.1: Uses EntityExtractor for structured entity extraction
+        Creates enhanced documents with inline markup for improved LightRAG precision
 
         During development, reads from data/emails_samples/ directory
         In production, can switch to real IMAP using imap_email_ingestion_pipeline
 
         Args:
             tickers: Optional list of ticker symbols to filter emails
-            limit: Maximum number of emails to return
+            limit: Maximum number of emails to return (default: 71 - all sample emails)
 
         Returns:
-            List of email document texts ready for LightRAG ingestion
+            List of enhanced email document texts with inline entity markup
+            Structured entities stored in self.last_extracted_entities for Phase 2.6.2
         """
         import email
         from pathlib import Path
 
         documents = []
+        # Reset structured data storage
+        self.last_extracted_entities = []
+
         # Path relative to this file: updated_architectures/implementation/data_ingestion.py
         # Need to go up 2 levels to reach project root, then into data/emails_samples/
         emails_dir = Path(__file__).parent.parent.parent / "data" / "emails_samples"
@@ -300,8 +335,9 @@ Entities: {', '.join(article.get('entities', []))}
         logger.info(f"Found {len(eml_files)} sample email files")
 
         # Process each email file
-        filtered_docs = []
-        all_docs = []
+        # Use tuples to maintain alignment between documents and extracted entities
+        filtered_items = []  # List of (document, entities) tuples
+        all_items = []       # List of (document, entities) tuples
 
         for eml_file in eml_files:
             try:
@@ -326,8 +362,111 @@ Entities: {', '.join(article.get('entities', []))}
                     if payload:
                         body = payload.decode('utf-8', errors='ignore')
 
-                # Format as document for LightRAG
-                email_doc = f"""
+                # Extract attachments if processor available (Phase 2.6.1)
+                # Only 3/71 emails have attachments, so this is optional
+                attachments_data = []
+                if self.attachment_processor and msg.is_multipart():
+                    for part in msg.walk():
+                        content_disposition = part.get('Content-Disposition', '')
+                        if 'attachment' in content_disposition.lower():
+                            filename = part.get_filename()
+                            if filename:
+                                try:
+                                    # Process attachment using AttachmentProcessor interface
+                                    # Requires: attachment_data (Dict with 'part' and 'filename' keys) and email_uid
+                                    attachment_dict = {
+                                        'part': part,
+                                        'filename': filename,
+                                        'content_type': part.get_content_type()
+                                    }
+                                    email_uid = eml_file.stem  # Use filename without extension as UID
+
+                                    result = self.attachment_processor.process_attachment(attachment_dict, email_uid)
+                                    if result.get('status') == 'success':
+                                        attachments_data.append(result)
+                                        logger.debug(f"Processed attachment: {filename} ({result.get('type')})")
+
+                                except Exception as e:
+                                    logger.warning(f"Failed to process attachment {filename}: {e}")
+
+                # Phase 2.6.1: Use EntityExtractor for structured extraction
+                document = None  # Will store either enhanced or fallback document
+                try:
+                    # Prepare email data for entity extraction
+                    # Validate and sanitize metadata to prevent 'unknown' values in enhanced documents
+                    # Use filename stem (without extension) as UID, fallback to full name if stem is empty
+                    email_uid = str(eml_file.stem).strip() if eml_file.stem else eml_file.name
+
+                    # Handle missing/invalid sender - extract email or create synthetic one
+                    if not sender or sender in ('Unknown Sender', '', 'None'):
+                        # Try to extract from subject or create synthetic sender
+                        email_sender = f"research@{eml_file.stem.replace('_', '').replace('-', '')}.com"
+                    else:
+                        email_sender = sender.strip()
+
+                    # Ensure uid is not empty (could happen with .eml files named just ".eml")
+                    if not email_uid:
+                        email_uid = f"email_{eml_file.name.replace('.', '_')}"
+
+                    email_data = {
+                        'uid': email_uid,              # Unique ID from filename (e.g., 'dbs_research_001')
+                        'from': email_sender,          # RFC 5322 standard key for sender email
+                        'sender': email_sender,        # Backward compatibility for legacy code
+                        'subject': subject,
+                        'date': date,
+                        'body': body,
+                        'source_file': eml_file.name
+                    }
+
+                    # Debug logging to track email_data before entity extraction
+                    logger.debug(f"Email data for {eml_file.name}: uid={email_uid!r}, from={email_sender!r}, subject={subject[:50]!r}")
+
+                    # Extract entities using production EntityExtractor
+                    entities = self.entity_extractor.extract_entities(
+                        body,
+                        metadata={
+                            'subject': subject,
+                            'date': date,
+                            'source': f'Email: {eml_file.name}'
+                        }
+                    )
+
+                    # Build typed relationship graph using GraphBuilder (Phase 2.6.1)
+                    # Creates edges like ANALYST_RECOMMENDS, FIRM_COVERS, PRICE_TARGET_SET
+                    # Includes attachment data for 3/71 emails that have PDF/Excel attachments
+                    graph_data = self.graph_builder.build_email_graph(
+                        email_data=email_data,
+                        extracted_entities=entities,
+                        attachments_data=attachments_data if attachments_data else None
+                    )
+
+                    # Store graph data for dual-layer architecture (Phase 2.6.2)
+                    email_id = email_data.get('source_file', 'unknown')
+                    self.last_graph_data[email_id] = graph_data
+
+                    # Debug: Verify email_data before creating enhanced document
+                    logger.debug(f"Before create_enhanced_document - email_data keys: {list(email_data.keys())}")
+                    logger.debug(f"Before create_enhanced_document - uid: {email_data.get('uid')}, from: {email_data.get('from')}")
+
+                    # Create enhanced document with inline entity markup
+                    # Format: [TICKER:NVDA|confidence:0.95]
+                    document = create_enhanced_document(email_data, entities, graph_data=graph_data)
+
+                    # Debug: Check if document was created successfully
+                    if document and 'unknown' in document[:200]:
+                        logger.warning(f"Enhanced document contains 'unknown' values for {eml_file.name}")
+                        logger.warning(f"email_data: uid={email_data.get('uid')}, from={email_data.get('from')}")
+
+                    logger.debug(f"EntityExtractor: Found {len(entities.get('tickers', []))} tickers, "
+                                f"GraphBuilder: Created {len(graph_data.get('nodes', []))} nodes, "
+                                f"{len(graph_data.get('edges', []))} edges in {eml_file.name}")
+
+                except Exception as e:
+                    # Graceful fallback to basic text extraction if EntityExtractor/GraphBuilder fails
+                    logger.warning(f"Entity/Graph extraction failed for {eml_file.name}, using fallback: {e}")
+                    entities = {}  # Empty dict for failed extraction
+                    graph_data = {'nodes': [], 'edges': [], 'metadata': {}}  # Empty graph for fallback
+                    document = f"""
 Broker Research Email: {subject}
 
 From: {sender}
@@ -341,26 +480,32 @@ Email Type: Broker Research
 Category: Investment Intelligence
 Tickers Mentioned: {', '.join(tickers) if tickers else 'All'}
 """
-                all_docs.append(email_doc.strip())
+
+                # Add (document, entities) tuple to maintain alignment
+                all_items.append((document.strip(), entities))
 
                 # Check if matches ticker filter
                 if tickers:
                     content_text = f"{subject} {body}".upper()
                     if any(ticker.upper() in content_text for ticker in tickers):
-                        filtered_docs.append(email_doc.strip())
+                        filtered_items.append((document.strip(), entities))
 
             except Exception as e:
                 logger.warning(f"Failed to parse email {eml_file.name}: {e}")
                 continue
 
         # Return filtered results if any, otherwise return first N unfiltered results
-        if tickers and filtered_docs:
-            documents = filtered_docs[:limit]
-            logger.info(f"Fetched {len(documents)} email documents filtered by tickers: {tickers}")
+        # Split tuples to maintain alignment between documents and entities
+        if tickers and filtered_items:
+            items = filtered_items[:limit]
+            logger.info(f"Fetched {len(items)} email documents filtered by tickers: {tickers}")
         else:
-            documents = all_docs[:limit]
-            logger.info(f"Fetched {len(documents)} email documents (no ticker filter applied)")
+            items = all_items[:limit]
+            logger.info(f"Fetched {len(items)} email documents (no ticker filter applied)")
 
+        # Extract documents and entities from tuples - guaranteed aligned
+        documents = [doc for doc, _ in items]
+        self.last_extracted_entities = [ent for _, ent in items]
 
         return documents
 
@@ -561,7 +706,7 @@ Retrieved: {datetime.now().isoformat()}
 """
         return [details_text.strip()]
 
-    def fetch_comprehensive_data(self, symbols: List[str], news_limit: int = 5, email_limit: int = 5, sec_limit: int = 3) -> List[str]:
+    def fetch_comprehensive_data(self, symbols: List[str], news_limit: int = 5, email_limit: int = 71, sec_limit: int = 3) -> List[str]:
         """
         Fetch comprehensive data from ALL 3 sources: API + Email + SEC filings
 
@@ -572,9 +717,9 @@ Retrieved: {datetime.now().isoformat()}
 
         Args:
             symbols: List of stock ticker symbols
-            news_limit: Maximum number of news articles per symbol
-            email_limit: Maximum number of emails to fetch
-            sec_limit: Maximum number of SEC filings per symbol
+            news_limit: Maximum number of news articles per symbol (default: 5)
+            email_limit: Maximum number of emails to fetch (default: 71 - all samples)
+            sec_limit: Maximum number of SEC filings per symbol (default: 3)
 
         Returns:
             Combined list of all documents from all 3 sources ready for LightRAG ingestion
@@ -584,10 +729,13 @@ Retrieved: {datetime.now().isoformat()}
         logger.info(f"🚀 Fetching comprehensive data from 3 sources for symbols: {symbols}")
 
         # SOURCE 1: Email documents (CORE data source - broker research and signals)
+        # Changed to tickers=None for full relationship discovery (Stage 1: Trust the Graph)
+        # Rationale: LightRAG semantic search handles relevance filtering better than manual ticker matching
+        # Impact: Enables multi-hop reasoning, competitor intelligence, sector context
         try:
-            email_docs = self.fetch_email_documents(tickers=symbols, limit=email_limit)
+            email_docs = self.fetch_email_documents(tickers=None, limit=email_limit)
             all_documents.extend(email_docs)
-            logger.info(f"✅ Source 1 (Email): Added {len(email_docs)} email documents")
+            logger.info(f"✅ Source 1 (Email): Added {len(email_docs)} email documents (unfiltered for relationship discovery)")
         except Exception as e:
             logger.error(f"❌ Source 1 (Email) failed: {e}")
 
@@ -694,7 +842,7 @@ def test_data_ingestion(symbols: List[str] = ["NVDA", "TSMC", "AMD", "ASML"]) ->
         documents = ingester.fetch_comprehensive_data(
             symbols=symbols,
             news_limit=2,      # 2 news articles per symbol
-            email_limit=5,     # 5 broker emails
+            email_limit=71,    # All 71 broker emails from data/emails_samples/
             sec_limit=2        # 2 SEC filings per symbol
         )
 

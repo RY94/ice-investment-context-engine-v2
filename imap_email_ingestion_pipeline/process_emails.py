@@ -29,6 +29,7 @@ from state_manager import StateManager
 from entity_extractor import EntityExtractor
 from graph_builder import GraphBuilder
 from ice_integrator import ICEEmailIntegrator
+from email_classifier import classify_email
 
 class FullPipelineRunner:
     def __init__(self, email: str, password: str):
@@ -95,46 +96,19 @@ class FullPipelineRunner:
             )
             
             print(f"📬 Retrieved {len(all_emails)} total emails")
-            
-            # Filter for investment-related content
-            investment_keywords = [
-                'earnings', 'portfolio', 'stock', 'equity', 'analysis', 'research',
-                'recommendation', 'rating', 'target', 'price', 'market', 'financial',
-                'investment', 'fund', 'ticker', 'trading', 'shares', 'dividend',
-                'merger', 'acquisition', 'guidance', 'outlook', 'analyst',
-                'upgrade', 'downgrade', 'alert', 'report', 'sector', 'company'
-            ]
-            
-            # Financial institutions and sources
-            financial_domains = [
-                'bloomberg', 'reuters', 'marketwatch', 'cnbc', 'wsj', 'ft.com',
-                'research', 'analyst', 'investment', 'capital', 'securities',
-                'fund', 'equity', 'agtpartners', 'goldmansachs', 'jpmorgan',
-                'morganstanley', 'barclays', 'ubs', 'citi', 'wells'
-            ]
-            
+
+            # Filter using semantic classification (whitelist + vector similarity)
             investment_emails = []
-            
+
             for email in all_emails:
-                subject = email.get('subject', '').lower()
-                body = email.get('body', '').lower() 
-                sender = email.get('from', '').lower()
-                
-                # Check for investment keywords
-                content_text = f"{subject} {body} {sender}"
-                has_investment_keywords = any(
-                    keyword in content_text for keyword in investment_keywords
-                )
-                
-                # Check for financial institution senders
-                has_financial_sender = any(
-                    domain in sender for domain in financial_domains
-                )
-                
-                # Include high priority emails
-                is_high_priority = email.get('priority', 0) > 30
-                
-                if has_investment_keywords or has_financial_sender or is_high_priority:
+                subject = email.get('subject', '')
+                body = email.get('body', '')
+                sender = email.get('from', '')
+
+                # Classify email using 2-tier system
+                classification, confidence = classify_email(subject, body, sender)
+
+                if classification == 'INVESTMENT':
                     investment_emails.append(email)
             
             print(f"🎯 Found {len(investment_emails)} investment-related emails")

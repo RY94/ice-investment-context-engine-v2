@@ -868,6 +868,56 @@ class ICESimplified:
         except Exception as e:
             logger.warning(f"Failed to log system health: {e}")
 
+    def _aggregate_investment_signals(self, entities: List[Dict]) -> Dict[str, Any]:
+        """
+        Aggregate investment signals from extracted entity data
+
+        Processes EntityExtractor output to calculate investment intelligence metrics:
+        - Email count and ticker coverage
+        - BUY/SELL rating distribution
+        - Average confidence scores
+
+        Args:
+            entities: List of entity dicts from EntityExtractor
+
+        Returns:
+            Dict with aggregated investment signal metrics
+        """
+        if not entities:
+            return {
+                'email_count': 0,
+                'tickers_covered': 0,
+                'buy_ratings': 0,
+                'sell_ratings': 0,
+                'avg_confidence': 0.0
+            }
+
+        tickers = set()
+        buy_ratings = 0
+        sell_ratings = 0
+        confidences = []
+
+        for ent in entities:
+            # Aggregate tickers
+            tickers.update(ent.get('tickers', []))
+
+            # Count BUY/SELL ratings
+            ratings = ent.get('ratings', [])
+            buy_ratings += sum(1 for r in ratings if 'BUY' in str(r).upper())
+            sell_ratings += sum(1 for r in ratings if 'SELL' in str(r).upper())
+
+            # Collect confidence scores
+            if ent.get('confidence'):
+                confidences.append(ent['confidence'])
+
+        return {
+            'email_count': len(entities),
+            'tickers_covered': len(tickers),
+            'buy_ratings': buy_ratings,
+            'sell_ratings': sell_ratings,
+            'avg_confidence': sum(confidences) / len(confidences) if confidences else 0.0
+        }
+
     def ingest_portfolio_data(self, holdings: List[str]) -> Dict[str, Any]:
         """
         Ingest data for portfolio holdings and add to knowledge base with metrics
@@ -900,7 +950,7 @@ class ICESimplified:
 
             try:
                 # Fetch documents using simple ingestion
-                documents = self.ingester.fetch_comprehensive_data(symbol)
+                documents = self.ingester.fetch_comprehensive_data([symbol])
 
                 if documents:
                     # Add documents to knowledge base
@@ -1027,11 +1077,18 @@ class ICESimplified:
 
         logger.info(f"Starting historical data ingestion for {len(holdings)} holdings ({years} years)")
 
+        # Initialize entity aggregation for Phase 2.6.1
+        all_entities = []
+
         for symbol in holdings:
             try:
                 # Use existing ingestion but log as historical
                 logger.info(f"Fetching {years} years of historical data for {symbol}")
-                documents = self.ingester.fetch_comprehensive_data(symbol)
+                documents = self.ingester.fetch_comprehensive_data([symbol])
+
+                # Capture entities before next call overwrites them
+                if hasattr(self.ingester, 'last_extracted_entities'):
+                    all_entities.extend(self.ingester.last_extracted_entities)
 
                 if documents:
                     # Add to knowledge base with historical context
@@ -1074,6 +1131,9 @@ class ICESimplified:
         processing_time = (datetime.now() - start_time).total_seconds()
         results['metrics']['processing_time'] = processing_time
         results['metrics']['data_sources_used'] = self.ingester.available_services
+
+        # Aggregate investment signals from Phase 2.6.1 EntityExtractor
+        results['metrics']['investment_signals'] = self._aggregate_investment_signals(all_entities)
 
         # Set status based on success rate
         success_rate = len(results['holdings_processed']) / len(holdings) if holdings else 0
@@ -1120,7 +1180,7 @@ class ICESimplified:
             try:
                 # Use existing ingestion but log as incremental
                 logger.info(f"Fetching recent data for {symbol} (last {days} days)")
-                documents = self.ingester.fetch_comprehensive_data(symbol)
+                documents = self.ingester.fetch_comprehensive_data([symbol])
 
                 if documents:
                     # Add to existing knowledge base with incremental context
