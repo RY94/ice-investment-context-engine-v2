@@ -1,0 +1,18 @@
+The following table sets forth a breakdown of our adjusted EBITA by segment for the periods indicated:
+
+|                                                                    | Three months ended June 30,       | Three months ended June 30,       | Three months ended June 30,       |                                   |
+|--------------------------------------------------------------------|-----------------------------------|-----------------------------------|-----------------------------------|-----------------------------------|
+|                                                                    | 2024                              | 2025                              | 2025                              |                                   |
+|                                                                    | RMB                               | RMB                               | USS                               | YoY % Change:*                    |
+|                                                                    | (in millions, exeept percentages) | (in millions, exeept percentages) | (in millions, exeept percentages) | (in millions, exeept percentages) |
+| Alibaba China E-commerce Group                                     | 48,753                            | 38,389                            | 5,359                             | (21)%                             |
+| Alibaba International Digital Commerce Group                       | (3,706)                           | (59)                              | (8)                               | 98%                               |
+| Cloud Intelligence Group                                           | 2,337                             | 2,954                             | 412                               | 26%                               |
+| All others                                                         | (1,077)                           | (1,415)                           | (198)                             | (31)%                             |
+| Unallocated?                                                       | (871)                             | (419)                             | (S8)                              |                                   |
+| Inter-segment elimination                                          | (401)                             | (606)                             | (85)                              |                                   |
+| Consolidated adjusted EBITA                                        | 45,035                            | 38,844                            | 5,422                             | (14)%                             |
+| Less: Non-cash share-based compensation expense                    | (4,109)                           | (3,194)                           | (446)                             |                                   |
+| Less: Amortization and impairment of intangible assets, and others | (1,792)                           | (662)                             | (92)                              |                                   |
+| Less: Provision for the shareholder class action lawsuits          | (3,145)                           |                                   |                                   |                                   |
+| Income from operations                                             | 35,989                            | 34,988                            | 4,884                             | (3)%                              |

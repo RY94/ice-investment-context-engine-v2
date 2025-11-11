@@ -5,6 +5,7 @@
     "given my working directory and this github repo, what git command should we use?",
     "if we choose stage everything, what does it mean? Does it mean that the updated github repo will contain exactly this CAPSTONE PROJECT project directory?",
     "should we create another github repo to store this project directory so that we can still refer to this old github repo?",
-    "option 2"
+    "option 2",
+    "which github repo is this project working directory connected to?"
   ]
 }

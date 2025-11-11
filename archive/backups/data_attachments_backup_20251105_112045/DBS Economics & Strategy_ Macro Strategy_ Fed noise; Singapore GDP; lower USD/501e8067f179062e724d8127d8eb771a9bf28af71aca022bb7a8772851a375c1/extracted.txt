@@ -1,0 +1,55 @@
+%yoy
+
+7.0
+
+6.0
+
+5.0
+
+4.0
+
+3.0
+
+2.0
+
+1.0
+
+0.0
+
+Dec-22
+
+-
+
+Sep-22
+
+Mar-23
+
+GDP Nowcasting--Singapore
+
+- Actual
+
+- Estimated
+
+Jun-23
+
+Sep-23
+
+Source: CEIC, DBS
+
+Dec-23 •
+
+-
+
+Mar-24 -
+
+Jun-24 •
+
+Sep-24 -
+
+Dec-24
+
+Mar-25 -
+
+Jun-25
+
+Sep-25

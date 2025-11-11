@@ -51,7 +51,64 @@ class GraphBuilder:
         self.min_confidence = 0.5
         self.high_confidence = 0.8
     
-    def build_email_graph(self, email_data: Dict[str, Any], 
+    def build_graph(self, email_data: Dict[str, Any],
+                   entities: Dict[str, Any],
+                   metadata: Dict[str, Any] = None) -> Dict[str, Any]:
+        """
+        Build knowledge graph from URL PDFs (minimal adapter for URL processing path).
+
+        Args:
+            email_data: Dict with 'content' (text) and 'url' (source URL)
+            entities: Extracted entities from EntityExtractor
+            metadata: Optional metadata (e.g., source_type='linked_report')
+
+        Returns:
+            Graph data with nodes and edges in same format as build_email_graph()
+        """
+        try:
+            graph_data = {
+                'nodes': [],
+                'edges': [],
+                'metadata': {
+                    'url': email_data.get('url', 'unknown'),
+                    'source_type': metadata.get('source_type', 'url_pdf') if metadata else 'url_pdf',
+                    'processed_at': datetime.now().isoformat(),
+                    'confidence': entities.get('confidence', 0.0)
+                }
+            }
+
+            # Create URL node (instead of email node)
+            url = email_data.get('url', 'unknown')
+            url_id = f"url_{hashlib.md5(url.encode()).hexdigest()[:8]}"
+
+            url_node = {
+                'id': url_id,
+                'type': 'url_document',
+                'properties': {
+                    'url': url,
+                    'content_length': len(email_data.get('content', '')),
+                    'source_type': metadata.get('source_type', 'url_pdf') if metadata else 'url_pdf'
+                },
+                'created_at': datetime.now().isoformat()
+            }
+            graph_data['nodes'].append(url_node)
+
+            # Process entities using existing helper method (reuse email graph logic)
+            entity_nodes_edges = self._process_entities(
+                entities, url_id, email_data
+            )
+            graph_data['nodes'].extend(entity_nodes_edges['nodes'])
+            graph_data['edges'].extend(entity_nodes_edges['edges'])
+
+            self.logger.info(f"Built URL graph with {len(graph_data['nodes'])} nodes and {len(graph_data['edges'])} edges")
+
+            return graph_data
+
+        except Exception as e:
+            self.logger.error(f"Error building URL graph: {e}")
+            return {'nodes': [], 'edges': [], 'error': str(e)}
+
+    def build_email_graph(self, email_data: Dict[str, Any],
                          extracted_entities: Dict[str, Any],
                          attachments_data: List[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Build knowledge graph structure from email and entities"""
@@ -65,24 +122,24 @@ class GraphBuilder:
                     'confidence': extracted_entities.get('confidence', 0.0)
                 }
             }
-            
+
             # Create email node
             email_node = self._create_email_node(email_data)
             graph_data['nodes'].append(email_node)
-            
+
             # Create sender node and edge
             sender_data = self._create_sender_relationship(email_data, email_node['id'])
             if sender_data:
                 graph_data['nodes'].append(sender_data['node'])
                 graph_data['edges'].append(sender_data['edge'])
-            
+
             # Process extracted entities
             entity_nodes_edges = self._process_entities(
                 extracted_entities, email_node['id'], email_data
             )
             graph_data['nodes'].extend(entity_nodes_edges['nodes'])
             graph_data['edges'].extend(entity_nodes_edges['edges'])
-            
+
             # Process attachments if provided
             if attachments_data:
                 attachment_nodes_edges = self._process_attachments(
@@ -90,15 +147,15 @@ class GraphBuilder:
                 )
                 graph_data['nodes'].extend(attachment_nodes_edges['nodes'])
                 graph_data['edges'].extend(attachment_nodes_edges['edges'])
-            
+
             # Add thread relationships
             thread_edges = self._create_thread_relationships(email_data, email_node['id'])
             graph_data['edges'].extend(thread_edges)
-            
+
             self.logger.info(f"Built graph with {len(graph_data['nodes'])} nodes and {len(graph_data['edges'])} edges")
-            
+
             return graph_data
-            
+
         except Exception as e:
             self.logger.error(f"Error building email graph: {e}")
             return {'nodes': [], 'edges': [], 'error': str(e)}
@@ -216,13 +273,29 @@ class GraphBuilder:
                     nodes.append(person_nodes_edges['node'])
                     edges.append(person_nodes_edges['edge'])
             
-            # Process financial metrics
+            # Process financial metrics (from body AND tables)
             metrics_nodes_edges = self._process_financial_metrics(
                 entities.get('financial_metrics', {}), email_node_id, email_data
             )
             nodes.extend(metrics_nodes_edges['nodes'])
             edges.extend(metrics_nodes_edges['edges'])
-            
+
+            # Process margin metrics (from tables - Phase 2.6.2)
+            margin_metrics = entities.get('margin_metrics', [])
+            for metric in margin_metrics:
+                margin_node_edge = self._create_margin_node(metric, email_node_id)
+                if margin_node_edge:
+                    nodes.append(margin_node_edge['node'])
+                    edges.append(margin_node_edge['edge'])
+
+            # Process metric comparisons (from tables - Phase 2.6.2)
+            comparisons = entities.get('metric_comparisons', [])
+            for comp in comparisons:
+                comp_node_edge = self._create_comparison_node(comp, email_node_id)
+                if comp_node_edge:
+                    nodes.append(comp_node_edge['node'])
+                    edges.append(comp_node_edge['edge'])
+
             # Process topics
             for topic in entities.get('topics', []):
                 topic_nodes_edges = self._create_topic_relationship(
@@ -443,7 +516,111 @@ class GraphBuilder:
         except Exception as e:
             self.logger.warning(f"Failed to create topic relationship: {e}")
             return None
-    
+
+    def _create_margin_node(self, metric: Dict, email_node_id: str) -> Optional[Dict]:
+        """
+        Create margin metric node with typed edge (Phase 2.6.2).
+
+        Args:
+            metric: Margin metric entity from TableEntityExtractor
+            email_node_id: Source email node ID
+
+        Returns:
+            Dict with node and edge, or None if confidence too low
+        """
+        if metric.get('confidence', 0) < self.min_confidence:
+            return None
+
+        try:
+            # Generate unique node ID
+            metric_name = metric.get('metric', 'unknown').replace(' ', '_')
+            period = metric.get('period', 'unknown').replace(' ', '_')
+            node_id = f"margin_{metric_name}_{period}"
+
+            margin_node = {
+                'id': node_id,
+                'type': 'margin_metric',
+                'properties': {
+                    'margin_type': metric.get('metric'),
+                    'value': metric.get('value'),
+                    'period': metric.get('period'),
+                    'ticker': metric.get('ticker', 'N/A'),
+                    'source': metric.get('source', 'table'),
+                    'table_index': metric.get('table_index'),
+                    'confidence': metric.get('confidence', 0.0),
+                    'raw_value': metric.get('raw_value', '')
+                },
+                'created_at': datetime.now().isoformat()
+            }
+
+            # Create typed edge: EMAIL --REPORTS_MARGIN--> MARGIN_METRIC
+            edge = self._create_edge(
+                source_id=email_node_id,
+                target_id=node_id,
+                edge_type='REPORTS_MARGIN',
+                confidence=metric.get('confidence', 0.0),
+                properties={
+                    'margin_type': metric.get('metric'),
+                    'period': metric.get('period')
+                }
+            )
+
+            return {'node': margin_node, 'edge': edge}
+
+        except Exception as e:
+            self.logger.warning(f"Failed to create margin node: {e}")
+            return None
+
+    def _create_comparison_node(self, comp: Dict, email_node_id: str) -> Optional[Dict]:
+        """
+        Create metric comparison node for YoY/QoQ changes (Phase 2.6.2).
+
+        Args:
+            comp: Metric comparison entity from TableEntityExtractor
+            email_node_id: Source email node ID
+
+        Returns:
+            Dict with node and edge, or None if confidence too low
+        """
+        if comp.get('confidence', 0) < self.min_confidence:
+            return None
+
+        try:
+            # Generate unique node ID
+            metric_name = comp.get('metric', 'unknown').replace(' ', '_')
+            node_id = f"comparison_{metric_name}_{comp.get('period', 'unknown')}"
+
+            comp_node = {
+                'id': node_id,
+                'type': 'metric_comparison',
+                'properties': {
+                    'metric': comp.get('metric'),
+                    'current_value': comp.get('current_value'),
+                    'prior_value': comp.get('prior_value'),
+                    'change_pct': comp.get('change_pct'),
+                    'period_type': comp.get('period_type', 'YoY'),
+                    'ticker': comp.get('ticker', 'N/A'),
+                    'source': comp.get('source', 'table'),
+                    'confidence': comp.get('confidence', 0.0)
+                },
+                'created_at': datetime.now().isoformat()
+            }
+
+            # Create typed edge: EMAIL --SHOWS_COMPARISON--> METRIC_COMPARISON
+            edge = self._create_edge(
+                source_id=email_node_id,
+                target_id=node_id,
+                edge_type='SHOWS_COMPARISON',
+                confidence=comp.get('confidence', 0.0),
+                properties={'metric': comp.get('metric')}
+            )
+
+            return {'node': comp_node, 'edge': edge}
+
+        except Exception as e:
+            self.logger.warning(f"Failed to create comparison node: {e}")
+            return None
+
     def _process_attachments(self, attachments_data: List[Dict[str, Any]], 
                            email_node_id: str, email_data: Dict[str, Any]) -> Dict[str, List]:
         """Process email attachments and create nodes/edges"""

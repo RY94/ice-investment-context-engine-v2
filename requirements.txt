@@ -15,7 +15,7 @@ numpy>=1.24.0
 # AI/ML CORE - CRITICAL (with specific versions for stability)
 # ============================================================================
 
-lightrag>=0.1.0  # Core knowledge graph engine
+lightrag-hku>=1.4.9  # Core knowledge graph engine (v1.4.9+ required for QueryResult with references)
 openai>=1.0.0  # OpenAI API client
 
 # ============================================================================

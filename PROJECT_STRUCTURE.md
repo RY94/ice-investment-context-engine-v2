@@ -1,6 +1,6 @@
 # ICE Project Structure Guide
 
-> **🔗 LINKED DOCUMENTATION**: This is one of 6 essential core files that must stay synchronized. When updating this file, always cross-check and update the related files (if applicable): `CLAUDE.md`, `README.md`, `ICE_DEVELOPMENT_TODO.md`, `PROJECT_CHANGELOG.md`, and `ICE_PRD.md` to maintain consistency across project documentation.
+> **🔗 LINKED DOCUMENTATION**: This is one of 8 essential core files that must stay synchronized. When updating this file, always cross-check and update the related files (if applicable): `ARCHITECTURE.md`, `CLAUDE.md`, `README.md`, `ICE_DEVELOPMENT_TODO.md`, `PROJECT_CHANGELOG.md`, `ICE_PRD.md`, and `PROGRESS.md` to maintain consistency across project documentation.
 
 **Location**: `/PROJECT_STRUCTURE.md`
 **Purpose**: Comprehensive directory structure guide for Claude Code navigation and understanding
@@ -11,19 +11,53 @@
 
 > **🔄 SELF-MAINTAINING**: When adding/removing directories, moving files, or changing project organization, update the directory tree below and file location references throughout this document.
 
+## 🔧 CONTEXT OPTIMIZATION (2025-11-05)
+
+**Purpose**: Reduce Claude Code baseline context by ~743MB through intelligent directory exclusion
+
+**Implementation**: 3-layer protection strategy
+1. **Serena MCP** (`.serena/project.yml`): Excludes from indexing but allows access when needed
+2. **Claude Settings** (`.claude/settings.local.json`): Hard deny for archive/* (historical files only)
+3. **Gitignore** (`.gitignore`): Standard exclusions for build artifacts
+
+**Excluded Directories** (automatically excluded from context but preserved on disk):
+- `archive/**` (438MB) - Historical files, fully blocked
+- `tmp/**` (299MB) - Old temp files excluded, new temp files still writable per CLAUDE.md workflow
+- `logs/**` (3.8MB) - Excluded from indexing but readable for debugging
+- `.claude/data/sessions/**` (1.9MB) - Old session data
+- `mcp_servers/**` - Embedded git repos
+- `data/attachments/**` - Large email attachments
+- Build artifacts: `__pycache__/`, `.ipynb_checkpoints/`, `*.pyc`, `.venv/`, `node_modules/`
+
+**Total Context Saved**: ~743MB
+
+**Verification**:
+- tmp/ workflow tested: ✅ Write, Execute, Delete working
+- logs/ access tested: ✅ Readable for debugging
+- Settings backed up to: `.serena/project.yml.backup_20251105_192728`, `.claude/settings.local.json.backup_20251105_192728`
+
+**See Also**: CLAUDE.md Section 6 (Temp files workflow)
+
+---
+
 ## 📁 CURRENT PROJECT STRUCTURE (Post-Organization)
 
 ```
 ICE-Investment-Context-Engine/
 ├── 📄 Core Project Files
 │   ├── README.md                           # Project overview & getting started guide
-│   ├── CLAUDE.md                          # Claude Code development guidance & power user docs
+│   ├── ARCHITECTURE.md                    # 🆕 North star architectural blueprint (invariants, interfaces, design rules)
+│   ├── CLAUDE.md                          # 🆕 Claude Code quick reference (293 lines, streamlined 2025-11-05)
+│   ├── CLAUDE_PATTERNS.md                 # 🆕 ICE coding patterns with examples (~400 lines)
+│   ├── CLAUDE_INTEGRATIONS.md             # 🆕 Docling & Crawl4AI integration guide (~450 lines)
+│   ├── CLAUDE_TROUBLESHOOTING.md          # 🆕 Complete troubleshooting reference (~350 lines)
 │   ├── ICE_PRD.md                         # 🆕 Product Requirements Document - Unified requirements for Claude Code instances
 │   ├── PROJECT_STRUCTURE.md               # This file - comprehensive directory guide
 │   ├── PROJECT_CHANGELOG.md               # 🆕 Detailed dev log (day-by-day changes, see also: md_files/CHANGELOG.md for versions)
+│   ├── PROGRESS.md                        # 🆕 Session-level state tracker (updated every session, ~50 lines)
 │   ├── ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md  # 🆕 UDMA implementation guide (User-Directed Modular Architecture)
 │   ├── ICE_VALIDATION_FRAMEWORK.md        # 🆕 PIVF - Comprehensive validation framework (20 golden queries, 9 dimensions)
-│   ├── ice_building_workflow.ipynb        # 🆕 Knowledge graph building workflow notebook
+│   ├── ice_building_workflow.ipynb        # 🆕 Knowledge graph building workflow notebook (Cell 26: Two-layer control system)
 │   ├── ice_query_workflow.ipynb           # 🆕 Investment intelligence analysis workflow notebook
 │   ├── test_queries.csv                   # 🆕 Test query dataset for validation (12 queries, 3 personas, 5 modes)
 │   ├── simple_demo.py                     # Standalone LightRAG demo script
@@ -36,7 +70,7 @@ ICE-Investment-Context-Engine/
 │   │   ├── implementation/                # Simple orchestration layer (Week 1-4 INTEGRATED)
 │   │   │   ├── ice_simplified.py         # Main interface (Week 4: ICEQueryProcessor enabled)
 │   │   │   ├── ice_core.py               # Direct LightRAG wrapper (374 lines)
-│   │   │   ├── data_ingestion.py         # Data sources (Week 1: Email + SEC + API integrated)
+│   │   │   ├── data_ingestion.py         # Data sources with 6-category control (Email + News + Financial + Market + SEC + Research)
 │   │   │   ├── query_engine.py           # Portfolio analysis (Week 4: Uses ICEQueryProcessor via delegation)
 │   │   │   ├── config.py                 # Basic environment config
 │   │   │   ├── test_secure_config.py     # ✅ Week 3: SecureConfig validation suite (145 lines)
@@ -198,16 +232,41 @@ ICE-Investment-Context-Engine/
 │   │   ├── ice_graph_builder.py         # Graph construction utilities
 │   │   └── ice_data_manager.py          # Data management coordination
 │   │
+│   ├── src/ice_docling/                 # 🏭 DOCLING INTEGRATION (568 lines, 4 files)
+│   │   │                                # Switchable architecture: Toggle via config.py
+│   │   ├── __init__.py                  # Package initialization
+│   │   ├── sec_filing_processor.py      # SEC filing content extraction (280 lines)
+│   │   │                                # EXTENSION pattern: 0% → 97.9% table extraction
+│   │   ├── docling_processor.py         # Email attachment processing (150 lines)
+│   │   │                                # REPLACEMENT pattern: 42% → 97.9% table accuracy
+│   │   └── scripts/download_docling_models.py  # Model pre-loader (106 lines)
+│   │   └── Documentation:
+│   │       ├── md_files/DOCLING_INTEGRATION_TESTING.md      # Testing guide (267 lines)
+│   │       ├── md_files/DOCLING_INTEGRATION_ARCHITECTURE.md # Architecture (241 lines)
+│   │       └── md_files/DOCLING_FUTURE_INTEGRATIONS.md      # Future features (190 lines)
+│   │
 │   ├── mcp_servers/                     # MCP server integrations
 │   │   ├── financial-datasets-mcp/      # Financial data MCP server
 │   │   └── yahoo-finance-mcp/           # Yahoo Finance MCP server
 │   │
 │   ├── imap_email_ingestion_pipeline/   # 🏭 PRODUCTION EMAIL PIPELINE (12,810 lines, 31 files)
 │   │   │                                # CORE DATA SOURCE (to be integrated with simplified)
-│   │   ├── email_connector.py           # Email data source connector
-│   │   ├── contextual_signal_extractor.py # BUY/SELL/HOLD signal extraction
-│   │   ├── intelligent_link_processor.py # PDF downloads from emails
-│   │   └── attachment_processor.py      # OCR and document processing
+│   │   ├── Core Modules:
+│   │   │   ├── email_connector.py           # Email data source connector
+│   │   │   ├── entity_extractor.py          # High-precision entity extraction (668 lines)
+│   │   │   ├── graph_builder.py             # Graph relationship construction (680 lines)
+│   │   │   ├── ice_integrator.py            # IMAP pipeline coordinator (587 lines)
+│   │   │   ├── enhanced_doc_creator.py      # Inline metadata markup (355 lines)
+│   │   │   ├── contextual_signal_extractor.py # BUY/SELL/HOLD signal extraction
+│   │   │   ├── intelligent_link_processor.py # PDF downloads from emails
+│   │   │   └── attachment_processor.py      # OCR and document processing
+│   │   └── Validation Notebooks:
+│   │       ├── investment_email_extractor_simple.ipynb  # 📧 PRIMARY DEMO (25 cells)
+│   │       │                                # Entity extraction, BUY/SELL signals, enhanced documents
+│   │       │                                # Referenced by ice_building_workflow.ipynb Cells 21-22
+│   │       ├── pipeline_demo_notebook.ipynb # Full pipeline integration demo
+│   │       ├── imap_mailbox_connector_python.ipynb # IMAP connection testing
+│   │       └── read_msg_files_python.ipynb  # .msg file parsing utilities
 │   ├── project_information/             # Project documentation consolidation
 │   │   ├── about_lightrag/             # 🆕 LightRAG focused documentation
 │   │   │   ├── LightRAG_notes.md       # Technical implementation notes
@@ -288,7 +347,10 @@ ICE-Investment-Context-Engine/
 - **Data Utilities**: `data/sample_data.py`, `data/data_loader.py` - Core data management
 
 ### **Critical Configuration**
-- **Development Guide**: `CLAUDE.md` - Essential Claude Code power user guide
+- **Development Guide**: `CLAUDE.md` - Quick reference for Claude Code (293 lines, streamlined 2025-11-05)
+- **Coding Patterns**: `CLAUDE_PATTERNS.md` - All 7 ICE patterns with examples (~400 lines)
+- **Integration Guide**: `CLAUDE_INTEGRATIONS.md` - Docling & Crawl4AI details (~450 lines)
+- **Troubleshooting**: `CLAUDE_TROUBLESHOOTING.md` - Complete debug reference (~350 lines)
 - **Project Structure**: `PROJECT_STRUCTURE.md` - Complete directory organization
 - **Architecture Plan**: `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` - 🆕 UDMA implementation guide (User-Directed Modular Architecture, aka Option 5)
 - **Validation Framework**: `ICE_VALIDATION_FRAMEWORK.md` - 🆕 PIVF comprehensive testing framework (20 golden queries, 9-dimensional scoring)
@@ -320,6 +382,18 @@ ICE-Investment-Context-Engine/
 - **Quick Entity Test**: `tests/quick_entity_test.py` - 🆕 Phase 2.6.1: Fast validation script (42 lines)
 
 ### **Data & Storage**
+- **Document Storage**: `data/attachments/` - **SINGLE SOURCE OF TRUTH** for all documents
+  - **Architecture**: Unified hierarchical storage for email attachments and URL PDFs
+  - **Pattern**: `data/attachments/{email_uid}/{file_hash}/`
+    - `original/{filename}` - Original file (PDF, Excel, images, etc.)
+    - `extracted.txt` - Extracted text content
+    - `metadata.json` - Source tracking and processing metadata
+  - **Source Types**: Distinguished by `metadata.json` field
+    - `source_type: "email_attachment"` - Written by AttachmentProcessor
+    - `source_type: "url_pdf"` - Written by IntelligentLinkProcessor
+  - **Processing**: AttachmentProcessor (email attachments) + IntelligentLinkProcessor (URL PDFs)
+  - **Extraction**: Docling (97.9% table accuracy) or PyPDF2/pdfplumber (42% accuracy)
+  - **Size**: ~686 files (212 documents × ~3 files each)
 - **LightRAG Storage**: `ice_lightrag/storage/` - Knowledge graph persistence
   - **Architecture**: 2 storage types (Vector + Graph), 4 components
   - **Vector Stores** (3): `chunks_vdb`, `entities_vdb`, `relationships_vdb` (NanoVectorDBStorage)

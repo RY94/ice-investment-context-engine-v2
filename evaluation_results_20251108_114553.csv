@@ -1,0 +1,13 @@
+query_id,query_text,status,execution_time_ms,retry_count,faithfulness,relevancy,entity_f1,failed_metrics,failure_reasons
+Q1,How many stocks are there in my portfolio? List them.,SUCCESS,1575.4611492156982,0,0.65,0.4,,,
+Q2,How many sectors or industries make up my portfolio?,SUCCESS,1783.6568355560303,0,0.6190476190476191,0.5555555555555556,,,
+Q3,What are the top 3 risks across my current portfolio?,SUCCESS,1842.724084854126,0,0.75,0.6,,,
+Q4,How does China regulatory risk impact my tech holdings?,SUCCESS,1297.9531288146973,0,0.75,0.0,,,
+Q5,Which holdings have the strongest growth outlook based on recent news?,SUCCESS,1748.4490871429443,0,0.5818181818181818,0.7272727272727273,,,
+Q6,What is TSMC's customer concentration risk and who are their largest customers?,SUCCESS,1762.681007385254,0,0.75,0.0,,,
+Q7,How are semiconductor supply chain dynamics evolving?,SUCCESS,1858.3018779754639,0,0.6666666666666666,0.0,,,
+Q8,What companies in my portfolio are most exposed to NVDA's success or failure?,SUCCESS,1497.262954711914,0,0.6363636363636364,0.6923076923076923,,,
+Q9,How does TSMC's relationship with NVDA affect AMD's competitive position?,SUCCESS,1571.516990661621,0,0.75,0.0,,,
+Q10,What are the most important developments today for my portfolio holdings?,SUCCESS,1917.551040649414,0,0.5852272727272727,0.45454545454545453,,,
+Q11,Are there any BUY or SELL recommendations for NVDA from major analysts?,SUCCESS,2501.7242431640625,0,0.75,0.0,,,
+Q12,What is the latest news about artificial intelligence chip competition?,SUCCESS,1496.6328144073486,0,0.75,0.0,,,

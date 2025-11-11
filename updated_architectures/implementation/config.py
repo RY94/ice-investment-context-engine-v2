@@ -62,6 +62,85 @@ class ICEConfig:
         self.max_concurrent_queries = int(os.getenv('ICE_MAX_CONCURRENT_QUERIES', '3'))
         self.cache_enabled = os.getenv('ICE_CACHE_ENABLED', 'true').lower() == 'true'
 
+        # Docling Integration Feature Flags (Switchable Architecture)
+        # Environment variables: USE_DOCLING_SEC, USE_DOCLING_EMAIL, etc.
+
+        # CRITICAL: SEC Filing Content Extraction
+        # Current: Metadata only (0% content)
+        # Docling: Full content + tables (97.9% accuracy)
+        # Default: true (enable docling for SEC)
+        self.use_docling_sec = os.getenv('USE_DOCLING_SEC', 'true').lower() == 'true'
+
+        # Email Attachment Processing
+        # Current: PyPDF2/openpyxl (42% table accuracy)
+        # Docling: 97.9% table accuracy
+        # Default: true (enable docling for email)
+        self.use_docling_email = os.getenv('USE_DOCLING_EMAIL', 'true').lower() == 'true'
+
+        # URL PDF Processing (Phase 2 - 2025-11-04)
+        # Current: pdfplumber (42% table accuracy)
+        # Docling: 97.9% table accuracy
+        # Default: true (enable docling for URL PDFs)
+        self.use_docling_urls = os.getenv('USE_DOCLING_URLS', 'true').lower() == 'true'
+
+        # Future Features (document only, default false)
+        self.use_docling_uploads = os.getenv('USE_DOCLING_UPLOADS', 'false').lower() == 'true'
+        self.use_docling_archives = os.getenv('USE_DOCLING_ARCHIVES', 'false').lower() == 'true'
+        self.use_docling_news = os.getenv('USE_DOCLING_NEWS', 'false').lower() == 'true'
+
+        # Docling Configuration
+        self.docling_cache_dir = os.getenv('DOCLING_CACHE_DIR', str(Path.home() / '.ice' / 'docling_cache'))
+        self.docling_log_conversions = os.getenv('DOCLING_LOG_CONVERSIONS', 'false').lower() == 'true'
+
+        # Crawl4AI Integration Feature Flags (Switchable Architecture)
+        # Environment variables: USE_CRAWL4AI_LINKS, CRAWL4AI_TIMEOUT, CRAWL4AI_HEADLESS
+
+        # URL Fetching Strategy
+        # Current: Simple HTTP only (fast, free, but fails on JS-heavy sites)
+        # Crawl4AI: Browser automation (slower, CPU cost, handles JS/auth)
+        # Default: false (use simple HTTP, enable when needed)
+        self.use_crawl4ai_links = os.getenv('USE_CRAWL4AI_LINKS', 'false').lower() == 'true'
+
+        # URL Processing Master Switch
+        # Controls whether to process URLs in emails at all
+        # true: Extract and download URLs from emails
+        # false: Skip all URL processing (faster, attachment-only builds)
+        # Default: true (process URLs normally)
+        self.process_urls = os.getenv('ICE_PROCESS_URLS', 'true').lower() == 'true'
+
+        # Crawl4AI timeout (seconds)
+        # Balance between waiting for slow pages vs failing fast
+        # Default: 60s (reasonable for most pages)
+        self.crawl4ai_timeout = int(os.getenv('CRAWL4AI_TIMEOUT', '60'))
+
+        # Crawl4AI headless mode
+        # true: faster, no browser window (production)
+        # false: debugging, see what's happening
+        self.crawl4ai_headless = os.getenv('CRAWL4AI_HEADLESS', 'true').lower() == 'true'
+
+        # Signal Store (Dual-Layer Architecture) Feature Flags
+        # Environment variables: USE_SIGNAL_STORE, SIGNAL_STORE_PATH, SIGNAL_STORE_TIMEOUT
+
+        # Signal Store enables fast (<1s) structured queries
+        # Current: LightRAG only (~12s for all queries)
+        # Signal Store: SQL lookups for "What/Which/Show" queries (<1s) + LightRAG for "Why/How" queries (~12s)
+        # Default: true (enable dual-layer architecture)
+        self.use_signal_store = os.getenv('USE_SIGNAL_STORE', 'true').lower() == 'true'
+
+        # Signal Store database path
+        # Default: data/signal_store/signal_store.db
+        self.signal_store_path = os.getenv('SIGNAL_STORE_PATH', 'data/signal_store/signal_store.db')
+
+        # Signal Store query timeout (milliseconds)
+        # Balance between waiting for slow queries vs failing fast
+        # Default: 5000ms (5 seconds)
+        self.signal_store_timeout = int(os.getenv('SIGNAL_STORE_TIMEOUT', '5000'))
+
+        # Signal Store debug mode
+        # true: log all queries and performance metrics
+        # false: minimal logging (production)
+        self.signal_store_debug = os.getenv('SIGNAL_STORE_DEBUG', 'false').lower() == 'true'
+
         # Validate critical configuration
         self._validate_critical_config()
 
@@ -90,6 +169,26 @@ class ICEConfig:
     def get_service_count(self) -> int:
         """Get count of configured API services"""
         return len(self.api_keys)
+
+    def get_docling_status(self) -> Dict[str, Any]:
+        """Get docling integration status for diagnostics"""
+        return {
+            'sec_filings': self.use_docling_sec,
+            'email_attachments': self.use_docling_email,
+            'url_pdfs': self.use_docling_urls,
+            'user_uploads': self.use_docling_uploads,
+            'archives': self.use_docling_archives,
+            'news_pdfs': self.use_docling_news
+        }
+
+    def get_signal_store_status(self) -> Dict[str, Any]:
+        """Get Signal Store integration status for diagnostics"""
+        return {
+            'enabled': self.use_signal_store,
+            'db_path': self.signal_store_path,
+            'timeout_ms': self.signal_store_timeout,
+            'debug_mode': self.signal_store_debug
+        }
 
     def ensure_working_dir(self):
         """Ensure working directory exists"""

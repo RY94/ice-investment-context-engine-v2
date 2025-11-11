@@ -11,6 +11,101 @@ from lightrag.utils import EmbeddingFunc
 
 logger = logging.getLogger(__name__)
 
+
+def get_extraction_temperature() -> float:
+    """
+    Get entity extraction temperature from environment variable.
+
+    Temperature controls randomness in LLM outputs during entity extraction:
+    - 0.0: Deterministic (same document → same entities) [RECOMMENDED for reproducibility]
+    - 0.3-0.5: Moderate creativity (may extract implied entities but less consistent)
+    - 1.0: Maximum creativity (rich extraction but non-reproducible graphs)
+
+    For ICE's investment intelligence:
+    - Lower temperature (0.0-0.2) ensures reproducible graphs for backtesting and compliance
+    - Higher temperature (0.3-0.5) extracts more entities but sacrifices consistency
+
+    Environment Variable:
+        ICE_LLM_TEMPERATURE_ENTITY_EXTRACTION: Float between 0.0 and 1.0 (default: 0.3)
+
+    Returns:
+        Temperature value (float)
+    """
+    # Check for deprecated variable and warn
+    if os.getenv("ICE_LLM_TEMPERATURE"):
+        logger.warning(
+            "⚠️  ICE_LLM_TEMPERATURE is DEPRECATED. "
+            "Use ICE_LLM_TEMPERATURE_ENTITY_EXTRACTION and ICE_LLM_TEMPERATURE_QUERY_ANSWERING instead."
+        )
+
+    try:
+        temp = float(os.getenv("ICE_LLM_TEMPERATURE_ENTITY_EXTRACTION", "0.3"))
+        if not 0.0 <= temp <= 1.0:
+            logger.warning(f"Invalid extraction temperature {temp}, using default 0.3")
+            return 0.3
+
+        # Warn if extraction temperature is high (>0.2) - risks non-deterministic graphs
+        if temp > 0.2:
+            logger.warning(
+                f"⚠️  WARNING: Entity extraction temperature={temp} may cause inconsistent graphs.\n"
+                "   Higher temperatures lead to:\n"
+                "   - Non-reproducible entity extraction (same document → different entities)\n"
+                "   - Backtesting failures (can't validate investment thesis over time)\n"
+                "   - Compliance risks (inconsistent audit trails)\n"
+                "   Recommended: ≤0.2 for reproducible knowledge graphs.\n"
+                "   See CLAUDE.md for detailed temperature tradeoffs."
+            )
+
+        return temp
+    except ValueError:
+        logger.warning("Invalid ICE_LLM_TEMPERATURE_ENTITY_EXTRACTION value, using default 0.3")
+        return 0.3
+
+
+def get_query_temperature() -> float:
+    """
+    Get query answering temperature from environment variable.
+
+    Temperature controls randomness in LLM outputs during query answering:
+    - 0.0: Deterministic (same query → same answer) [RECOMMENDED for compliance]
+    - 0.3-0.7: Balanced synthesis (creative connections while mostly consistent)
+    - 1.0: Maximum creativity (insightful but non-reproducible answers)
+
+    For ICE's investment intelligence:
+    - Lower temperature (0.0-0.3) ensures reproducible analysis for regulatory compliance
+    - Higher temperature (0.5-0.7) generates better insights but sacrifices consistency
+
+    Environment Variable:
+        ICE_LLM_TEMPERATURE_QUERY_ANSWERING: Float between 0.0 and 1.0 (default: 0.5)
+
+    Returns:
+        Temperature value (float)
+    """
+    try:
+        temp = float(os.getenv("ICE_LLM_TEMPERATURE_QUERY_ANSWERING", "0.5"))
+        if not 0.0 <= temp <= 1.0:
+            logger.warning(f"Invalid query temperature {temp}, using default 0.5")
+            return 0.5
+        return temp
+    except ValueError:
+        logger.warning("Invalid ICE_LLM_TEMPERATURE_QUERY_ANSWERING value, using default 0.5")
+        return 0.5
+
+
+def get_temperature() -> float:
+    """
+    DEPRECATED: Use get_extraction_temperature() and get_query_temperature() instead.
+
+    This function is kept for backward compatibility but logs a deprecation warning.
+    Returns extraction temperature as fallback.
+    """
+    logger.warning(
+        "⚠️  get_temperature() is DEPRECATED. "
+        "Use get_extraction_temperature() or get_query_temperature() instead."
+    )
+    return get_extraction_temperature()
+
+
 # Try importing LightRAG providers
 try:
     from lightrag.llm.openai import gpt_4o_mini_complete, openai_embed
@@ -25,6 +120,36 @@ try:
 except ImportError:
     OLLAMA_AVAILABLE = False
     logger.warning("Ollama provider not available - lightrag.llm.ollama import failed")
+
+
+def create_model_kwargs_with_temperature(base_kwargs: Dict[str, Any], temperature: float) -> Dict[str, Any]:
+    """
+    Create model kwargs dict with specified temperature.
+
+    Handles both OpenAI and Ollama kwargs structures:
+    - OpenAI: kwargs['temperature'] = temperature
+    - Ollama: kwargs['options']['temperature'] = temperature
+
+    Args:
+        base_kwargs: Base kwargs dict (without temperature or with placeholder)
+        temperature: Temperature value to inject
+
+    Returns:
+        New kwargs dict with temperature set
+    """
+    import copy
+    kwargs = copy.deepcopy(base_kwargs)
+
+    # OpenAI structure: flat kwargs
+    if 'options' not in kwargs:
+        kwargs['temperature'] = temperature
+    # Ollama structure: nested in options
+    else:
+        if 'options' not in kwargs:
+            kwargs['options'] = {}
+        kwargs['options']['temperature'] = temperature
+
+    return kwargs
 
 
 def check_ollama_service(host: str = "http://localhost:11434") -> bool:
@@ -68,7 +193,7 @@ def check_ollama_model_available(model_name: str, host: str = "http://localhost:
         return False
 
 
-def get_llm_provider() -> Tuple[Callable, Callable, Dict[str, Any]]:
+def get_llm_provider() -> Tuple[Callable, Callable, Dict[str, Any], Dict[str, Any]]:
     """
     Factory function to get LLM provider based on environment configuration
 
@@ -79,6 +204,8 @@ def get_llm_provider() -> Tuple[Callable, Callable, Dict[str, Any]]:
     Environment Variables:
         LLM_PROVIDER: "openai" (default) or "ollama"
         LLM_MODEL: Model name (default: "gpt-4o-mini" for openai, "qwen3:30b-32k" for ollama)
+        ICE_LLM_TEMPERATURE_ENTITY_EXTRACTION: Entity extraction temperature 0.0-1.0 (default: 0.3)
+        ICE_LLM_TEMPERATURE_QUERY_ANSWERING: Query answering temperature 0.0-1.0 (default: 0.5)
         OLLAMA_HOST: Ollama service URL (default: "http://localhost:11434")
         OLLAMA_NUM_CTX: Context window size (default: 32768)
         EMBEDDING_PROVIDER: "openai" (default) or "ollama"
@@ -86,10 +213,11 @@ def get_llm_provider() -> Tuple[Callable, Callable, Dict[str, Any]]:
         EMBEDDING_DIM: Embedding dimension (default: 1536 for openai, 768 for ollama)
 
     Returns:
-        Tuple of (llm_func, embed_func, model_config)
+        Tuple of (llm_func, embed_func, model_config, base_kwargs_template)
         - llm_func: LLM completion function
         - embed_func: Embedding function
-        - model_config: Dict with llm_model_name, llm_model_kwargs (empty for OpenAI)
+        - model_config: Dict with llm_model_name, llm_model_kwargs (with extraction temperature)
+        - base_kwargs_template: Template kwargs for dynamic temperature changes
 
     Fallback:
         If Ollama requested but unavailable, falls back to OpenAI with warning
@@ -104,11 +232,32 @@ def get_llm_provider() -> Tuple[Callable, Callable, Dict[str, Any]]:
                 "OpenAI provider not available. Install lightrag with OpenAI support."
             )
 
-        logger.info("✅ Using OpenAI provider (gpt-4o-mini)")
+        extraction_temp = get_extraction_temperature()
+        query_temp = get_query_temperature()
+
+        logger.info(
+            f"✅ Using OpenAI provider (gpt-4o-mini)\n"
+            f"   Entity extraction temperature: {extraction_temp}\n"
+            f"   Query answering temperature: {query_temp}"
+        )
+
+        # Base kwargs template (no temperature, for dynamic changes)
+        base_kwargs_template = {
+            "seed": 42  # Additional determinism
+        }
+
+        # Initial model config with extraction temperature
+        model_config = {
+            "llm_model_kwargs": create_model_kwargs_with_temperature(
+                base_kwargs_template, extraction_temp
+            )
+        }
+
         return (
             gpt_4o_mini_complete,
             openai_embed,
-            {}  # OpenAI uses defaults, no extra config needed
+            model_config,
+            base_kwargs_template
         )
 
     # Ollama provider (local)
@@ -165,19 +314,38 @@ def get_llm_provider() -> Tuple[Callable, Callable, Dict[str, Any]]:
             embed_func = openai_embed
             logger.info("✅ Using hybrid: Ollama LLM + OpenAI embeddings")
 
-        logger.info(f"✅ Using Ollama provider ({model_name}, {num_ctx} context)")
+        extraction_temp = get_extraction_temperature()
+        query_temp = get_query_temperature()
+
+        logger.info(
+            f"✅ Using Ollama provider ({model_name}, {num_ctx} context)\n"
+            f"   Entity extraction temperature: {extraction_temp}\n"
+            f"   Query answering temperature: {query_temp}"
+        )
+
+        # Base kwargs template (no temperature, for dynamic changes)
+        base_kwargs_template = {
+            "host": ollama_host,
+            "options": {
+                "num_ctx": num_ctx,
+                "seed": 42  # Additional determinism
+            },
+            "timeout": 300
+        }
+
+        # Initial model config with extraction temperature
+        model_config = {
+            "llm_model_name": model_name,
+            "llm_model_kwargs": create_model_kwargs_with_temperature(
+                base_kwargs_template, extraction_temp
+            )
+        }
 
         return (
             ollama_model_complete,
             embed_func,
-            {
-                "llm_model_name": model_name,
-                "llm_model_kwargs": {
-                    "host": ollama_host,
-                    "options": {"num_ctx": num_ctx},
-                    "timeout": 300
-                }
-            }
+            model_config,
+            base_kwargs_template
         )
 
     else:
@@ -185,7 +353,7 @@ def get_llm_provider() -> Tuple[Callable, Callable, Dict[str, Any]]:
         return _fallback_to_openai("Invalid provider")
 
 
-def _fallback_to_openai(reason: str) -> Tuple[Callable, Callable, Dict[str, Any]]:
+def _fallback_to_openai(reason: str) -> Tuple[Callable, Callable, Dict[str, Any], Dict[str, Any]]:
     """
     Fallback to OpenAI when Ollama unavailable
 
@@ -193,7 +361,7 @@ def _fallback_to_openai(reason: str) -> Tuple[Callable, Callable, Dict[str, Any]
         reason: Reason for fallback (logged as warning)
 
     Returns:
-        OpenAI provider tuple
+        OpenAI provider 4-tuple (llm_func, embed_func, model_config, base_kwargs_template)
 
     Raises:
         RuntimeError: If OpenAI also unavailable
@@ -217,11 +385,32 @@ def _fallback_to_openai(reason: str) -> Tuple[Callable, Callable, Dict[str, Any]
             "2. Set OPENAI_API_KEY environment variable"
         )
 
-    logger.info("✅ Using OpenAI provider (fallback from Ollama)")
+    extraction_temp = get_extraction_temperature()
+    query_temp = get_query_temperature()
+
+    logger.info(
+        f"✅ Using OpenAI provider (fallback from Ollama)\n"
+        f"   Entity extraction temperature: {extraction_temp}\n"
+        f"   Query answering temperature: {query_temp}"
+    )
+
+    # Base kwargs template (no temperature, for dynamic changes)
+    base_kwargs_template = {
+        "seed": 42  # Additional determinism
+    }
+
+    # Initial model config with extraction temperature
+    model_config = {
+        "llm_model_kwargs": create_model_kwargs_with_temperature(
+            base_kwargs_template, extraction_temp
+        )
+    }
+
     return (
         gpt_4o_mini_complete,
         openai_embed,
-        {}
+        model_config,
+        base_kwargs_template
     )
 
 

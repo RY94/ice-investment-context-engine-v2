@@ -37,81 +37,15 @@ if str(project_root) not in sys.path:
 # Import SecureConfig for encrypted API key management (Week 3 integration)
 from ice_data_ingestion.secure_config import get_secure_config
 
+# Import production DataIngester with email pipeline (Phase 2.6.1)
+from updated_architectures.implementation.data_ingestion import DataIngester as ProductionDataIngester
+
+# Import ICEConfig with docling toggles
+from updated_architectures.implementation.config import ICEConfig
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
-class ICEConfig:
-    """
-    Configuration management with encrypted API key storage (Week 3 integration)
-
-    Uses SecureConfig for:
-    - Encryption at rest for API keys
-    - Audit logging for key access
-    - Rotation tracking
-    - Backward compatible fallback to environment variables
-    """
-
-    def __init__(self):
-        """Load configuration using SecureConfig with encrypted storage"""
-        # Initialize SecureConfig singleton
-        self.secure_config = get_secure_config()
-
-        # Non-sensitive configuration from environment variables
-        self.working_dir = os.getenv('ICE_WORKING_DIR', './src/ice_lightrag/storage')
-        self.batch_size = int(os.getenv('ICE_BATCH_SIZE', '5'))
-        self.timeout = int(os.getenv('ICE_TIMEOUT', '30'))
-
-        # Get OPENAI API key via SecureConfig (with fallback to env)
-        self.openai_api_key = self.secure_config.get_api_key('OPENAI', fallback_to_env=True)
-
-        # API Keys for data ingestion (use SecureConfig with service name mapping)
-        # SecureConfig uses uppercase service names, map to friendly names
-        self.api_keys = {
-            'alpha_vantage': self.secure_config.get_api_key('ALPHAVANTAGE', fallback_to_env=True),
-            'fmp': self.secure_config.get_api_key('FMP', fallback_to_env=True),  # Not in SecureConfig defaults, will use env
-            'newsapi': self.secure_config.get_api_key('NEWSAPI', fallback_to_env=True),
-            'polygon': self.secure_config.get_api_key('POLYGON', fallback_to_env=True),
-            'finnhub': self.secure_config.get_api_key('FINNHUB', fallback_to_env=True)
-        }
-
-        # Validate required configuration
-        if not self.openai_api_key:
-            raise ValueError("OPENAI_API_KEY is required for LightRAG operations. "
-                           "Set via environment variable or use: ice.secure_config.set_api_key('OPENAI', 'sk-...')")
-
-    def is_api_available(self, service: str) -> bool:
-        """Check if specific API service is configured"""
-        return bool(self.api_keys.get(service))
-
-    def get_available_services(self) -> List[str]:
-        """Get list of configured API services"""
-        return [service for service, key in self.api_keys.items() if key]
-
-    def validate_all_keys(self) -> Dict[str, Any]:
-        """
-        Validate all configured API keys using SecureConfig
-
-        Returns:
-            Validation status for each service with usage metrics
-        """
-        return self.secure_config.validate_all_keys()
-
-    def check_rotation_needed(self, rotation_days: int = 90) -> List[str]:
-        """
-        Check which API keys need rotation (Week 3 feature)
-
-        Args:
-            rotation_days: Days before rotation is recommended (default: 90)
-
-        Returns:
-            List of services needing key rotation
-        """
-        return self.secure_config.check_rotation_needed(rotation_days)
-
-    def generate_status_report(self) -> str:
-        """Generate comprehensive API key status report with security metrics"""
-        return self.secure_config.generate_status_report()
 
 
 class ICECore:
@@ -222,6 +156,72 @@ class ICECore:
             logger.error(f"Document processing failed: {e}")
             return {"status": "error", "message": str(e)}
 
+    def _extract_document_title(self, doc_content: str, source_type: str) -> str:
+        """Extract document title based on source type using pattern matching"""
+        import re
+
+        patterns = {
+            "Email": r"Subject:\s*(.+)",
+            "SEC Filing": r"Form Type:\s*(.+)",
+            "News": r"News Article:\s*(.+)",
+            "Financial API": r"Company Profile:\s*(.+)"
+        }
+
+        pattern = patterns.get(source_type)
+        if pattern:
+            match = re.search(pattern, doc_content, re.MULTILINE)
+            if match:
+                return match.group(1).strip()[:70]
+
+        # Fallback: first non-empty line
+        for line in doc_content.split('\n')[:5]:
+            line = line.strip()
+            if line and not line.startswith('[') and not line.startswith('Symbol:'):
+                return line[:70]
+
+        return "Untitled"
+
+    def _print_document_progress(self, doc_index: int, total_docs: int, doc_content: str, symbol: str = ""):
+        """
+        Print visually distinct progress for each document being processed
+
+        Args:
+            doc_index: Current document index (1-based)
+            total_docs: Total number of documents
+            doc_content: Document content string
+            symbol: Ticker symbol being processed
+        """
+        # Extract source type from content
+        source_type = "Unknown"
+        source_icon = "📄"
+
+        if "[SOURCE_EMAIL:" in doc_content:
+            source_type = "Email"
+            source_icon = "📧"
+        elif "SEC EDGAR Filing" in doc_content or "[SOURCE_SEC" in doc_content:
+            source_type = "SEC Filing"
+            source_icon = "📑"
+        elif "News Article:" in doc_content or "[SOURCE_NEWS" in doc_content:
+            source_type = "News"
+            source_icon = "📰"
+        elif "Company Profile:" in doc_content or "Company Overview:" in doc_content or "Company Details:" in doc_content:
+            source_type = "Financial API"
+            source_icon = "💹"
+
+        # Extract title using helper method
+        title = self._extract_document_title(doc_content, source_type)
+
+        # Visual box formatting
+        box_width = 80
+        print(f"\n{'┏' + '━' * (box_width - 2) + '┓'}")
+        print(f"┃ {source_icon} DOCUMENT {doc_index}/{total_docs}{' ' * (box_width - len(f'DOCUMENT {doc_index}/{total_docs}') - 6)}┃")
+        print(f"┃ Source: {source_type:<{box_width - 11}}┃")
+        if symbol:
+            print(f"┃ Symbol: {symbol:<{box_width - 11}}┃")
+        if title:
+            print(f"┃ Title: {title:<{box_width - 11}}┃")
+        print(f"{'┗' + '━' * (box_width - 2) + '┛'}")
+
     def add_documents_batch(self, documents: List[Union[str, Dict[str, str]]]) -> Dict[str, Any]:
         """
         Batch document processing via ICESystemManager
@@ -245,6 +245,7 @@ class ICECore:
             # This provides better error handling than batch processing
             results = []
             errors = []
+            total_docs = len(documents)  # Cache count before loop to prevent inconsistency
 
             for i, doc in enumerate(documents):
                 try:
@@ -252,11 +253,25 @@ class ICECore:
                     if isinstance(doc, str):
                         content = doc
                         doc_type = 'financial'
+                        symbol = ''
+                        file_path = None  # No file_path for plain strings
                     else:
                         content = doc.get('content', '')
                         doc_type = doc.get('type', 'financial')
+                        symbol = doc.get('symbol', '')
+                        file_path = doc.get('file_path', None)  # Extract file_path for traceability
 
-                    result = self._system_manager.add_document(content, doc_type=doc_type)
+                    # Progress indicator: REMOVED to fix duplicate display bug
+                    # Progress is now shown at ingestion level (ingest_historical_data)
+                    # before calling this batch function, to avoid showing each doc 2-3 times
+                    # self._print_document_progress(
+                    #     doc_index=i+1,
+                    #     total_docs=total_docs,
+                    #     doc_content=content,
+                    #     symbol=symbol
+                    # )
+
+                    result = self._system_manager.add_document(content, doc_type=doc_type, file_path=file_path)
 
                     if result.get('status') == 'success':
                         results.append({
@@ -833,8 +848,20 @@ class ICESimplified:
 
         # Initialize components
         self.core = ICECore(self.config)
-        self.ingester = DataIngester(self.config)
+        # Use production DataIngester with email pipeline (Phase 2.6.1)
+        # Pass config for docling feature flags (USE_DOCLING_SEC, USE_DOCLING_EMAIL, etc.)
+        self.ingester = ProductionDataIngester(config=self.config)
         self.query_engine = QueryEngine(self.core)
+
+        # Phase 2: Initialize query router for dual-layer architecture
+        # Router decides when to use Signal Store (<1s) vs LightRAG (~12s)
+        if self.config.use_signal_store and self.ingester.signal_store:
+            from updated_architectures.implementation.query_router import QueryRouter
+            self.query_router = QueryRouter(signal_store=self.ingester.signal_store)
+            logger.info("✅ Query router initialized for dual-layer architecture")
+        else:
+            self.query_router = None
+            logger.info("Signal Store disabled, using LightRAG only")
 
         logger.info("✅ ICE Simplified system initialized successfully")
 
@@ -898,13 +925,32 @@ class ICESimplified:
         confidences = []
 
         for ent in entities:
-            # Aggregate tickers
-            tickers.update(ent.get('tickers', []))
+            # Aggregate tickers (handle both dict format from EntityExtractor and string format)
+            ticker_list = ent.get('tickers', [])
+            for ticker_obj in ticker_list:
+                if isinstance(ticker_obj, dict):
+                    # EntityExtractor format: {'ticker': 'NVDA', 'confidence': 0.95}
+                    if 'ticker' in ticker_obj:
+                        tickers.add(ticker_obj['ticker'])
+                elif isinstance(ticker_obj, str):
+                    # Simple string format
+                    tickers.add(ticker_obj)
 
-            # Count BUY/SELL ratings
+            # Count BUY/SELL ratings (handle both dict and string formats)
             ratings = ent.get('ratings', [])
-            buy_ratings += sum(1 for r in ratings if 'BUY' in str(r).upper())
-            sell_ratings += sum(1 for r in ratings if 'SELL' in str(r).upper())
+            for rating_obj in ratings:
+                if isinstance(rating_obj, dict):
+                    # EntityExtractor format: {'rating': 'buy', 'confidence': 0.85}
+                    rating_str = str(rating_obj.get('rating', '')).upper()
+                elif isinstance(rating_obj, str):
+                    rating_str = rating_obj.upper()
+                else:
+                    rating_str = str(rating_obj).upper()
+
+                if 'BUY' in rating_str:
+                    buy_ratings += 1
+                if 'SELL' in rating_str:
+                    sell_ratings += 1
 
             # Collect confidence scores
             if ent.get('confidence'):
@@ -918,12 +964,15 @@ class ICESimplified:
             'avg_confidence': sum(confidences) / len(confidences) if confidences else 0.0
         }
 
-    def ingest_portfolio_data(self, holdings: List[str]) -> Dict[str, Any]:
+    def ingest_portfolio_data(self, holdings: List[str], email_limit: int = 71, news_limit: int = 5, sec_limit: int = 3) -> Dict[str, Any]:
         """
         Ingest data for portfolio holdings and add to knowledge base with metrics
 
         Args:
             holdings: List of ticker symbols
+            email_limit: Maximum number of emails to fetch (default: 71 - all samples)
+            news_limit: Maximum number of news articles per symbol (default: 5)
+            sec_limit: Maximum number of SEC filings per symbol (default: 3)
 
         Returns:
             Ingestion results summary with detailed metrics
@@ -934,39 +983,97 @@ class ICESimplified:
         results = {
             'successful': [],
             'failed': [],
+            'email_documents': 0,        # Portfolio-wide email count
+            'ticker_documents': 0,       # Ticker-specific docs count
             'total_documents': 0,
             'documents': [],
             'metrics': {
                 'ingestion_time': 0.0,
+                'email_processing_time': 0.0,
                 'documents_per_symbol': {},
                 'data_sources_used': [],
                 'processing_time_per_symbol': {}
             }
         }
 
+        # STEP 1: Fetch portfolio-wide emails ONCE (before symbol loop)
+        # Rationale: Emails are broker research covering multiple tickers, not ticker-specific
+        # "Trust the Graph" strategy - emails fetched unfiltered for relationship discovery
+        email_start_time = datetime.now()
+        try:
+            email_docs = self.ingester.fetch_email_documents(tickers=None, limit=email_limit)
+            if email_docs:
+                # email_docs now returns List[Dict] with format: {'content': str, 'file_path': 'email:filename.eml', 'type': 'financial'}
+                # Extract content and preserve file_path for LightRAG traceability
+                email_doc_list = [
+                    {
+                        'content': doc['content'],  # Extract content from dict
+                        'file_path': doc.get('file_path'),  # Pass through file_path for traceability
+                        'type': 'email',
+                        'symbol': 'PORTFOLIO'
+                    }
+                    for doc in email_docs
+                ]
+
+                email_result = self.core.add_documents_batch(email_doc_list)
+
+                if email_result.get('status') == 'success':
+                    results['email_documents'] = len(email_docs)
+                    results['total_documents'] += len(email_docs)
+                    results['documents'].extend(email_doc_list)
+                    email_time = (datetime.now() - email_start_time).total_seconds()
+                    results['metrics']['email_processing_time'] = email_time
+                    logger.info(f"✅ Successfully ingested {len(email_docs)} portfolio-wide emails in {email_time:.2f}s")
+                else:
+                    logger.warning(f"⚠️ Email batch processing had issues: {email_result.get('message')}")
+        except Exception as e:
+            logger.warning(f"⚠️ Email ingestion failed (non-fatal): {e}")
+
+        # STEP 2: Loop through holdings for ticker-specific data (API + SEC)
         for symbol in holdings:
             symbol_start_time = datetime.now()
-            logger.info(f"Ingesting data for {symbol}")
+            logger.info(f"Ingesting ticker-specific data for {symbol}")
 
             try:
-                # Fetch documents using simple ingestion
-                documents = self.ingester.fetch_comprehensive_data([symbol])
+                # Fetch ticker-specific data using individual methods (not fetch_comprehensive_data)
+                # This prevents duplicate email fetching
+                logger.info(f"💰 {symbol}: Fetching data from APIs...")
+                financial_docs = self.ingester.fetch_company_financials(symbol, limit=news_limit)  # Returns List[Dict]
+                news_docs = self.ingester.fetch_company_news(symbol, news_limit)  # Returns List[Dict]
+                sec_docs = self.ingester.fetch_sec_filings(symbol, limit=sec_limit)  # Returns List[Dict]
 
-                if documents:
-                    # Add documents to knowledge base
-                    doc_list = [{'content': doc, 'type': 'financial', 'symbol': symbol} for doc in documents]
+                # Build document list with SOURCE markers for post-processing statistics
+                # Phase 1: Enhanced SOURCE markers with timestamps (retrieval time)
+                retrieval_timestamp = datetime.now().isoformat()
+
+                doc_list = []
+                for doc_dict in financial_docs:
+                    content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
+                    doc_list.append({'content': content_with_marker})
+
+                for doc_dict in news_docs:
+                    content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
+                    doc_list.append({'content': content_with_marker})
+
+                for doc_dict in sec_docs:
+                    content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
+                    doc_list.append({'content': content_with_marker})
+
+                if doc_list:
+                    # Add ticker-specific documents to knowledge base
                     batch_result = self.core.add_documents_batch(doc_list)
 
                     if batch_result.get('status') == 'success':
                         results['successful'].append(symbol)
-                        results['total_documents'] += len(documents)
+                        results['ticker_documents'] += len(doc_list)
+                        results['total_documents'] += len(doc_list)
                         results['documents'].extend(doc_list)
-                        results['metrics']['documents_per_symbol'][symbol] = len(documents)
+                        results['metrics']['documents_per_symbol'][symbol] = len(doc_list)
 
                         symbol_time = (datetime.now() - symbol_start_time).total_seconds()
                         results['metrics']['processing_time_per_symbol'][symbol] = symbol_time
 
-                        logger.info(f"✅ Successfully ingested {len(documents)} documents for {symbol} in {symbol_time:.2f}s")
+                        logger.info(f"✅ {symbol}: {len(doc_list)} documents ingested in {symbol_time:.2f}s")
                     else:
                         results['failed'].append({
                             'symbol': symbol,
@@ -976,16 +1083,16 @@ class ICESimplified:
                 else:
                     results['failed'].append({
                         'symbol': symbol,
-                        'error': 'No documents fetched'
+                        'error': 'No ticker-specific documents fetched'
                     })
-                    logger.warning(f"⚠️ No documents fetched for {symbol}")
+                    logger.warning(f"⚠️ No ticker-specific documents fetched for {symbol}")
 
             except Exception as e:
                 results['failed'].append({
                     'symbol': symbol,
                     'error': str(e)
                 })
-                logger.error(f"❌ Ingestion failed for {symbol}: {e}")
+                logger.error(f"❌ Ticker-specific ingestion failed for {symbol}: {e}")
 
         # Calculate final metrics
         total_time = (datetime.now() - start_time).total_seconds()
@@ -1046,13 +1153,358 @@ class ICESimplified:
         logger.info(f"Portfolio analysis completed: {successful_risks}/{len(holdings)} risk analyses successful")
         return analysis
 
-    def ingest_historical_data(self, holdings: List[str], years: int = 2) -> Dict[str, Any]:
+    def query_rating(self, ticker: str) -> Dict[str, Any]:
+        """
+        Query latest analyst rating for a ticker using dual-layer architecture.
+
+        Routes to Signal Store (<1s) if available, otherwise falls back to LightRAG (~12s).
+
+        Args:
+            ticker: Stock ticker symbol (e.g., 'NVDA', 'AAPL')
+
+        Returns:
+            Dict with rating data:
+            {
+                'ticker': 'NVDA',
+                'rating': 'BUY',
+                'firm': 'Goldman Sachs',
+                'analyst': 'John Doe',
+                'confidence': 0.87,
+                'timestamp': '2024-03-15T10:30:00Z',
+                'source': 'signal_store' | 'lightrag',
+                'latency_ms': 45
+            }
+
+        Examples:
+            >>> ice.query_rating('NVDA')
+            {'ticker': 'NVDA', 'rating': 'BUY', 'source': 'signal_store', 'latency_ms': 45}
+        """
+        import time
+        start_time = time.time()
+
+        ticker = ticker.upper()
+
+        # Try Signal Store first (if enabled)
+        if self.query_router and self.ingester.signal_store:
+            try:
+                rating_data = self.ingester.signal_store.get_latest_rating(ticker)
+                latency_ms = int((time.time() - start_time) * 1000)
+
+                if rating_data:
+                    rating_data['source'] = 'signal_store'
+                    rating_data['latency_ms'] = latency_ms
+                    logger.info(f"✅ Signal Store rating query: {ticker} → {rating_data['rating']} ({latency_ms}ms)")
+                    return rating_data
+
+                logger.debug(f"No Signal Store data for {ticker}, falling back to LightRAG")
+
+            except Exception as e:
+                logger.warning(f"Signal Store query failed: {e}, falling back to LightRAG")
+
+        # Fallback: Query LightRAG for semantic rating extraction
+        try:
+            query = f"What is the latest analyst rating or recommendation for {ticker}?"
+            lightrag_result = self.core.query(query, mode='hybrid')
+
+            latency_ms = int((time.time() - start_time) * 1000)
+
+            # Parse LightRAG response for rating information
+            # (This is a simplified parser - real implementation would use LLM extraction)
+            rating_info = {
+                'ticker': ticker,
+                'rating': 'UNKNOWN',  # Would extract from lightrag_result
+                'source': 'lightrag',
+                'latency_ms': latency_ms,
+                'raw_response': lightrag_result
+            }
+
+            logger.info(f"LightRAG rating query: {ticker} ({latency_ms}ms)")
+            return rating_info
+
+        except Exception as e:
+            logger.error(f"Rating query failed for {ticker}: {e}")
+            return {
+                'ticker': ticker,
+                'rating': 'ERROR',
+                'error': str(e),
+                'source': 'none',
+                'latency_ms': int((time.time() - start_time) * 1000)
+            }
+
+    def query_metric(
+        self,
+        ticker: str,
+        metric_type: str,
+        period: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Query financial metric for a ticker using dual-layer architecture.
+
+        Routes to Signal Store (<1s) if available, otherwise falls back to LightRAG (~12s).
+
+        Args:
+            ticker: Stock ticker symbol (e.g., 'NVDA', 'AAPL')
+            metric_type: Type of financial metric (e.g., 'Operating Margin', 'Revenue', 'EPS')
+            period: Optional time period filter (e.g., 'Q2 2024', 'FY2024', 'TTM')
+
+        Returns:
+            Dict with metric data:
+            {
+                'ticker': 'NVDA',
+                'metric_type': 'Operating Margin',
+                'metric_value': '62.3%',
+                'period': 'Q2 2024',
+                'confidence': 0.95,
+                'source': 'signal_store' | 'lightrag',
+                'latency_ms': 35
+            }
+
+        Examples:
+            >>> ice.query_metric('NVDA', 'Operating Margin')
+            {'ticker': 'NVDA', 'metric_type': 'Operating Margin', 'metric_value': '62.3%', ...}
+
+            >>> ice.query_metric('NVDA', 'Revenue', period='Q2 2024')
+            {'ticker': 'NVDA', 'metric_type': 'Revenue', 'metric_value': '$26.97B', ...}
+        """
+        import time
+        start_time = time.time()
+
+        ticker = ticker.upper()
+
+        # Try Signal Store first (if enabled)
+        if self.query_router and self.ingester.signal_store:
+            try:
+                metric_data = self.ingester.signal_store.get_metric(
+                    ticker=ticker,
+                    metric_type=metric_type,
+                    period=period
+                )
+                latency_ms = int((time.time() - start_time) * 1000)
+
+                if metric_data:
+                    metric_data['source'] = 'signal_store'
+                    metric_data['latency_ms'] = latency_ms
+                    logger.info(f"✅ Signal Store metric query: {ticker} {metric_type} → {metric_data['metric_value']} ({latency_ms}ms)")
+                    return metric_data
+
+                logger.debug(f"No Signal Store data for {ticker} {metric_type}, falling back to LightRAG")
+
+            except Exception as e:
+                logger.warning(f"Signal Store metric query failed: {e}, falling back to LightRAG")
+
+        # Fallback: Query LightRAG for semantic metric extraction
+        try:
+            period_str = f" for {period}" if period else ""
+            query = f"What is the {metric_type} for {ticker}{period_str}?"
+            lightrag_result = self.core.query(query, mode='hybrid')
+
+            latency_ms = int((time.time() - start_time) * 1000)
+
+            # Parse LightRAG response for metric information
+            # (This is a simplified parser - real implementation would use LLM extraction)
+            metric_info = {
+                'ticker': ticker,
+                'metric_type': metric_type,
+                'metric_value': 'UNKNOWN',  # Would extract from lightrag_result
+                'period': period,
+                'source': 'lightrag',
+                'latency_ms': latency_ms,
+                'raw_response': lightrag_result
+            }
+
+            logger.info(f"LightRAG metric query: {ticker} {metric_type} ({latency_ms}ms)")
+            return metric_info
+
+        except Exception as e:
+            logger.error(f"Metric query failed for {ticker} {metric_type}: {e}")
+            return {
+                'ticker': ticker,
+                'metric_type': metric_type,
+                'metric_value': 'ERROR',
+                'error': str(e),
+                'source': 'none',
+                'latency_ms': int((time.time() - start_time) * 1000)
+            }
+
+    def query_with_router(self, query: str, mode: str = 'hybrid') -> Dict[str, Any]:
+        """
+        Execute query using intelligent routing (Signal Store vs LightRAG).
+
+        Uses QueryRouter to classify query intent and route to optimal layer:
+        - Structured queries (What/Which/Show) → Signal Store (<1s)
+        - Semantic queries (Why/How/Explain) → LightRAG (~12s)
+        - Hybrid queries → Both layers, combined result
+
+        Args:
+            query: User query string
+            mode: LightRAG query mode if routing to LightRAG ('local', 'global', 'hybrid', 'naive')
+
+        Returns:
+            Dict with query result:
+            {
+                'query': original query,
+                'answer': response text,
+                'query_type': 'structured_rating' | 'semantic_why' | etc.,
+                'source': 'signal_store' | 'lightrag' | 'hybrid',
+                'confidence': 0.90,
+                'latency_ms': 850
+            }
+
+        Examples:
+            >>> ice.query_with_router("What's NVDA's latest rating?")
+            {'answer': 'BUY', 'source': 'signal_store', 'latency_ms': 45}
+
+            >>> ice.query_with_router("Why did Goldman upgrade NVDA?")
+            {'answer': '...reasoning...', 'source': 'lightrag', 'latency_ms': 12000}
+        """
+        import time
+        start_time = time.time()
+
+        # Route query to optimal layer
+        if self.query_router:
+            from updated_architectures.implementation.query_router import QueryType
+
+            query_type, confidence = self.query_router.route_query(query)
+            logger.info(f"Query routed: {query_type.value} (confidence: {confidence:.2f})")
+
+            # Handle structured rating queries
+            if query_type == QueryType.STRUCTURED_RATING:
+                ticker = self.query_router.extract_ticker(query)
+                if ticker:
+                    rating_data = self.query_rating(ticker)
+                    formatted_answer = self.query_router.format_signal_store_result(rating_data, query)
+
+                    return {
+                        'query': query,
+                        'answer': formatted_answer,
+                        'query_type': query_type.value,
+                        'source': 'signal_store',
+                        'confidence': confidence,
+                        'latency_ms': int((time.time() - start_time) * 1000),
+                        'raw_data': rating_data
+                    }
+
+            # Handle structured metric queries
+            elif query_type == QueryType.STRUCTURED_METRIC:
+                ticker = self.query_router.extract_ticker(query)
+                metric_type, period = self.query_router.extract_metric_info(query)
+
+                if ticker and metric_type:
+                    metric_data = self.query_metric(ticker, metric_type, period)
+                    formatted_answer = self.query_router.format_signal_store_result(metric_data, query)
+
+                    return {
+                        'query': query,
+                        'answer': formatted_answer,
+                        'query_type': query_type.value,
+                        'source': 'signal_store',
+                        'confidence': confidence,
+                        'latency_ms': int((time.time() - start_time) * 1000),
+                        'raw_data': metric_data
+                    }
+
+            # Handle semantic queries (route to LightRAG)
+            elif query_type in (QueryType.SEMANTIC_WHY, QueryType.SEMANTIC_HOW, QueryType.SEMANTIC_EXPLAIN):
+                lightrag_result = self.core.query(query, mode=mode)
+
+                return {
+                    'query': query,
+                    'answer': lightrag_result,
+                    'query_type': query_type.value,
+                    'source': 'lightrag',
+                    'confidence': confidence,
+                    'latency_ms': int((time.time() - start_time) * 1000)
+                }
+
+            # Handle hybrid queries (both layers)
+            elif query_type == QueryType.HYBRID:
+                # Get structured data from Signal Store (try ratings and metrics)
+                ticker = self.query_router.extract_ticker(query)
+                signal_store_data = None
+
+                if ticker:
+                    # Try rating query first
+                    rating_data = self.query_rating(ticker)
+                    if rating_data and rating_data.get('rating') != 'UNKNOWN':
+                        signal_store_data = rating_data
+
+                    # Also try metric query
+                    metric_type, period = self.query_router.extract_metric_info(query)
+                    if metric_type:
+                        metric_data = self.query_metric(ticker, metric_type, period)
+                        if metric_data and metric_data.get('metric_value') != 'UNKNOWN':
+                            # If we have both, combine them
+                            if signal_store_data:
+                                signal_store_data = {
+                                    'rating': rating_data,
+                                    'metric': metric_data
+                                }
+                            else:
+                                signal_store_data = metric_data
+
+                # Get semantic context from LightRAG
+                lightrag_result = self.core.query(query, mode=mode)
+
+                # Combine results
+                combined_answer = f"**Structured Data:**\n"
+                if signal_store_data:
+                    # Handle combined rating + metric response
+                    if isinstance(signal_store_data, dict) and 'rating' in signal_store_data and 'metric' in signal_store_data:
+                        combined_answer += self.query_router.format_signal_store_result(signal_store_data['rating'], query)
+                        combined_answer += "\n\n"
+                        combined_answer += self.query_router.format_signal_store_result(signal_store_data['metric'], query)
+                    else:
+                        combined_answer += self.query_router.format_signal_store_result(signal_store_data, query)
+                else:
+                    combined_answer += "No structured data found"
+
+                combined_answer += f"\n\n**Semantic Analysis:**\n{lightrag_result}"
+
+                return {
+                    'query': query,
+                    'answer': combined_answer,
+                    'query_type': query_type.value,
+                    'source': 'hybrid',
+                    'confidence': confidence,
+                    'latency_ms': int((time.time() - start_time) * 1000),
+                    'signal_store_data': signal_store_data
+                }
+
+        # Fallback: No router available, use LightRAG only
+        logger.debug("Query router not available, using LightRAG only")
+        lightrag_result = self.core.query(query, mode=mode)
+
+        return {
+            'query': query,
+            'answer': lightrag_result,
+            'query_type': 'semantic_explain',
+            'source': 'lightrag',
+            'confidence': 0.50,
+            'latency_ms': int((time.time() - start_time) * 1000)
+        }
+
+    def ingest_historical_data(self, holdings: List[str], years: int = 2,
+                                email_limit: int = 71,
+                                news_limit: int = 2,
+                                financial_limit: int = 2,
+                                market_limit: int = 1,
+                                sec_limit: int = 2,
+                                research_limit: int = 0,
+                                email_files: Optional[List[str]] = None) -> Dict[str, Any]:
         """
         Ingest historical data for portfolio holdings (building workflow method)
 
         Args:
             holdings: List of ticker symbols
             years: Number of years of historical data to fetch (default: 2)
+            email_limit: Maximum number of emails to fetch (default: 71)
+            news_limit: Maximum number of news articles per symbol (default: 2)
+            financial_limit: Maximum number of financial fundamental documents per symbol (default: 2)
+            market_limit: Maximum number of market data documents per symbol (default: 1)
+            sec_limit: Maximum number of SEC filings per symbol (default: 2)
+            research_limit: Maximum number of research documents per symbol (default: 0 - on-demand)
+            email_files: Optional list of specific .eml filenames to process (e.g., ['email1.eml'])
+                        If provided, only these files are processed. If None, all files are processed.
 
         Returns:
             Historical ingestion results with metrics
@@ -1076,39 +1528,170 @@ class ICESimplified:
         }
 
         logger.info(f"Starting historical data ingestion for {len(holdings)} holdings ({years} years)")
+        print(f"🚀 Starting ingestion for {len(holdings)} holdings ({years} years)...")
 
         # Initialize entity aggregation for Phase 2.6.1
         all_entities = []
 
+        # Track cumulative document count for progress display
+        cumulative_doc_count = 0
+
+        # PRE-FETCH PHASE: Calculate total documents for accurate progress display (Fix for "Document 12/7" bug)
+        logger.info("📊 Pre-fetching documents to calculate totals...")
+        print("\n📊 Pre-fetching documents to calculate totals...")
+        total_all_docs = 0
+        prefetched_data = {'emails': [], 'tickers': {}}
+
+        # Pre-fetch emails
+        try:
+            print("  ⏳ Fetching emails...")
+            email_docs = self.ingester.fetch_email_documents(tickers=None, limit=email_limit, email_files=email_files)
+            if email_docs:
+                prefetched_data['emails'] = email_docs
+                total_all_docs += len(email_docs)
+                print(f"     ✓ Found {len(email_docs)} emails")
+        except Exception as e:
+            logger.warning(f"⚠️ Email pre-fetch failed: {e}")
+            print(f"     ⚠️ Email fetch failed: {e}")
+
+        # Pre-fetch ticker documents (6 categories)
         for symbol in holdings:
             try:
-                # Use existing ingestion but log as historical
-                logger.info(f"Fetching {years} years of historical data for {symbol}")
-                documents = self.ingester.fetch_comprehensive_data([symbol])
+                print(f"  ⏳ Fetching {symbol} data...")
+                news_docs = self.ingester.fetch_company_news(symbol, news_limit)
+                financial_docs = self.ingester.fetch_financial_fundamentals(symbol, financial_limit)
+                market_docs = self.ingester.fetch_market_data(symbol, market_limit)
+                sec_docs = self.ingester.fetch_sec_filings(symbol, limit=sec_limit)
+                research_docs = []  # Research is on-demand, not auto-fetched
+                if research_limit > 0:
+                    try:
+                        research_docs = self.ingester.research_company_deep(symbol, symbol, topics=None, include_competitors=False)[:research_limit]
+                    except:
+                        pass  # Research failures are non-critical
 
-                # Capture entities before next call overwrites them
+                prefetched_data['tickers'][symbol] = {
+                    'news': news_docs,
+                    'financial': financial_docs,
+                    'market': market_docs,
+                    'sec': sec_docs,
+                    'research': research_docs
+                }
+                ticker_total = len(news_docs) + len(financial_docs) + len(market_docs) + len(sec_docs) + len(research_docs)
+                total_all_docs += ticker_total
+                print(f"     ✓ Found {ticker_total} documents (news: {len(news_docs)}, financial: {len(financial_docs)}, market: {len(market_docs)}, SEC: {len(sec_docs)}, research: {len(research_docs)})")
+            except Exception as e:
+                logger.warning(f"⚠️ {symbol} pre-fetch failed: {e}")
+                print(f"     ⚠️ {symbol} fetch failed: {e}")
+                prefetched_data['tickers'][symbol] = {'news': [], 'financial': [], 'market': [], 'sec': [], 'research': []}
+
+        logger.info(f"📊 Total documents to process: {total_all_docs}")
+        print(f"\n📊 Total documents to process: {total_all_docs}")
+        print("━" * 50)
+
+        # STEP 1: Process portfolio-wide emails
+        try:
+            email_docs = prefetched_data['emails']
+            if email_docs:
+                # Capture entities from emails
                 if hasattr(self.ingester, 'last_extracted_entities'):
                     all_entities.extend(self.ingester.last_extracted_entities)
 
-                if documents:
-                    # Add to knowledge base with historical context
-                    doc_list = [
-                        {
-                            'content': doc,
-                            'type': 'financial_historical',
-                            'symbol': symbol,
-                            'ingestion_mode': 'historical'
-                        }
-                        for doc in documents
-                    ]
+                # email_docs now returns List[Dict] with format: {'content': str, 'file_path': 'email:filename.eml', 'type': 'financial'}
+                # Extract content and preserve file_path for LightRAG traceability
+                email_doc_list = [
+                    {
+                        'content': doc['content'],  # Extract content from dict
+                        'file_path': doc.get('file_path'),  # Pass through file_path for traceability
+                        'type': 'email_historical',
+                        'symbol': 'PORTFOLIO',
+                        'ingestion_mode': 'historical'
+                    }
+                    for doc in email_docs
+                ]
+
+                # Print progress for emails (using total_all_docs for accurate count)
+                for idx, doc_dict in enumerate(email_doc_list, start=1):
+                    cumulative_doc_count += 1
+                    self.core._print_document_progress(
+                        doc_index=cumulative_doc_count,
+                        total_docs=total_all_docs,  # Fixed: use total across all sources
+                        doc_content=doc_dict['content'],
+                        symbol='PORTFOLIO'
+                    )
+
+                email_result = self.core.add_documents_batch(email_doc_list)
+                if email_result.get('status') == 'success':
+                    results['total_documents'] += len(email_docs)
+                    logger.info(f"✅ Historical emails ingested: {len(email_docs)} documents")
+        except Exception as e:
+            logger.warning(f"⚠️ Historical email ingestion failed (non-fatal): {e}")
+
+        # STEP 2: Loop through holdings for ticker-specific historical data (6 categories)
+        for symbol in holdings:
+            try:
+                # Use prefetched ticker-specific data
+                logger.info(f"💰 {symbol}: Processing {years} years of historical data...")
+                ticker_data = prefetched_data['tickers'].get(symbol, {})
+                news_docs = ticker_data.get('news', [])
+                financial_docs = ticker_data.get('financial', [])
+                market_docs = ticker_data.get('market', [])
+                sec_docs = ticker_data.get('sec', [])
+                research_docs = ticker_data.get('research', [])
+
+                # Email entities already captured in STEP 1
+                # Ticker-specific sources (news/financials/market/SEC/research) don't extract entities
+                # So no new entities to capture here
+
+                # Build document list with SOURCE markers (all 5 ticker categories)
+                # Phase 1: Enhanced SOURCE markers with timestamps (retrieval time)
+                retrieval_timestamp = datetime.now().isoformat()
+
+                doc_list = []
+
+                # Category 2: News
+                for doc_dict in news_docs:
+                    content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
+                    doc_list.append({'content': content_with_marker})
+
+                # Category 3: Financial fundamentals
+                for doc_dict in financial_docs:
+                    content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
+                    doc_list.append({'content': content_with_marker})
+
+                # Category 4: Market data
+                for doc_dict in market_docs:
+                    content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
+                    doc_list.append({'content': content_with_marker})
+
+                # Category 5: SEC filings
+                for doc_dict in sec_docs:
+                    content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
+                    doc_list.append({'content': content_with_marker})
+
+                # Category 6: Research (if any)
+                for doc_dict in research_docs:
+                    if isinstance(doc_dict, dict) and 'source' in doc_dict:
+                        content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
+                        doc_list.append({'content': content_with_marker})
+
+                if doc_list:
+                    # Print progress for each document (using total_all_docs for accurate count)
+                    for idx, doc_dict in enumerate(doc_list, start=1):
+                        cumulative_doc_count += 1
+                        self.core._print_document_progress(
+                            doc_index=cumulative_doc_count,
+                            total_docs=total_all_docs,  # Fixed: use total across all sources
+                            doc_content=doc_dict['content'],
+                            symbol=symbol
+                        )
 
                     batch_result = self.core.add_documents_batch(doc_list)
 
                     if batch_result.get('status') == 'success':
                         results['holdings_processed'].append(symbol)
-                        results['total_documents'] += len(documents)
-                        results['metrics']['documents_per_holding'][symbol] = len(documents)
-                        logger.info(f"✅ Historical data ingested for {symbol}: {len(documents)} documents")
+                        results['total_documents'] += len(doc_list)
+                        results['metrics']['documents_per_holding'][symbol] = len(doc_list)
+                        logger.info(f"✅ {symbol}: {len(doc_list)} historical documents ingested")
                     else:
                         results['failed_holdings'].append({
                             'symbol': symbol,
@@ -1117,11 +1700,11 @@ class ICESimplified:
                 else:
                     results['failed_holdings'].append({
                         'symbol': symbol,
-                        'error': 'No historical data available'
+                        'error': 'No historical ticker data available'
                     })
 
             except Exception as e:
-                logger.error(f"❌ Error processing historical data for {symbol}: {str(e)}")
+                logger.error(f"❌ Error processing historical ticker data for {symbol}: {str(e)}")
                 results['failed_holdings'].append({
                     'symbol': symbol,
                     'error': str(e)
@@ -1176,32 +1759,66 @@ class ICESimplified:
 
         logger.info(f"Starting incremental data ingestion for {len(holdings)} holdings (last {days} days)")
 
+        # STEP 1: Fetch new portfolio-wide emails (if any)
+        # For incremental updates, this fetches recent emails (could be filtered by date in future enhancement)
+        try:
+            email_docs = self.ingester.fetch_email_documents(tickers=None, limit=20)  # Reduced limit for incremental
+            if email_docs:
+                # email_docs now returns List[Dict] with format: {'content': str, 'file_path': 'email:filename.eml', 'type': 'financial'}
+                # Extract content and preserve file_path for LightRAG traceability
+                email_doc_list = [
+                    {
+                        'content': doc['content'],  # Extract content from dict
+                        'file_path': doc.get('file_path'),  # Pass through file_path for traceability
+                        'type': 'email_incremental',
+                        'symbol': 'PORTFOLIO',
+                        'ingestion_mode': 'incremental',
+                        'update_date': datetime.now().isoformat()
+                    }
+                    for doc in email_docs
+                ]
+
+                email_result = self.core.add_documents_to_existing_graph(email_doc_list)
+                if email_result.get('status') == 'success':
+                    results['total_new_documents'] += len(email_docs)
+                    logger.info(f"✅ Incremental emails added: {len(email_docs)} new documents")
+        except Exception as e:
+            logger.warning(f"⚠️ Incremental email fetch failed (non-fatal): {e}")
+
+        # STEP 2: Loop through holdings for ticker-specific incremental data
         for symbol in holdings:
             try:
-                # Use existing ingestion but log as incremental
-                logger.info(f"Fetching recent data for {symbol} (last {days} days)")
-                documents = self.ingester.fetch_comprehensive_data([symbol])
+                # Fetch ticker-specific data (not emails, to prevent duplication)
+                logger.info(f"💰 {symbol}: Fetching recent data (last {days} days)...")
+                financial_docs = self.ingester.fetch_company_financials(symbol, limit=5)  # Returns List[Dict]
+                news_docs = self.ingester.fetch_company_news(symbol, limit=5)  # Returns List[Dict]
+                sec_docs = self.ingester.fetch_sec_filings(symbol, limit=2)  # Returns List[Dict]
 
-                if documents:
-                    # Add to existing knowledge base with incremental context
-                    doc_list = [
-                        {
-                            'content': doc,
-                            'type': 'financial_incremental',
-                            'symbol': symbol,
-                            'ingestion_mode': 'incremental',
-                            'update_date': datetime.now().isoformat()
-                        }
-                        for doc in documents
-                    ]
+                # Build document list with SOURCE markers
+                # Phase 1: Enhanced SOURCE markers with timestamps (retrieval time)
+                retrieval_timestamp = datetime.now().isoformat()
 
+                doc_list = []
+                for doc_dict in financial_docs:
+                    content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
+                    doc_list.append({'content': content_with_marker})
+
+                for doc_dict in news_docs:
+                    content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
+                    doc_list.append({'content': content_with_marker})
+
+                for doc_dict in sec_docs:
+                    content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
+                    doc_list.append({'content': content_with_marker})
+
+                if doc_list:
                     batch_result = self.core.add_documents_to_existing_graph(doc_list)
 
                     if batch_result.get('status') == 'success':
                         results['holdings_updated'].append(symbol)
-                        results['total_new_documents'] += len(documents)
-                        results['metrics']['new_documents_per_holding'][symbol] = len(documents)
-                        logger.info(f"✅ Incremental data added for {symbol}: {len(documents)} new documents")
+                        results['total_new_documents'] += len(doc_list)
+                        results['metrics']['new_documents_per_holding'][symbol] = len(doc_list)
+                        logger.info(f"✅ {symbol}: {len(doc_list)} new documents added")
                     else:
                         results['failed_holdings'].append({
                             'symbol': symbol,
@@ -1211,10 +1828,10 @@ class ICESimplified:
                     # No new data is OK for incremental updates
                     results['holdings_updated'].append(symbol)
                     results['metrics']['new_documents_per_holding'][symbol] = 0
-                    logger.info(f"ℹ️ No new data for {symbol} (up to date)")
+                    logger.info(f"ℹ️ No new ticker data for {symbol} (up to date)")
 
             except Exception as e:
-                logger.error(f"❌ Error processing incremental data for {symbol}: {str(e)}")
+                logger.error(f"❌ Error processing incremental ticker data for {symbol}: {str(e)}")
                 results['failed_holdings'].append({
                     'symbol': symbol,
                     'error': str(e)
@@ -1233,6 +1850,224 @@ class ICESimplified:
 
         logger.info(f"Incremental data ingestion completed: {len(results['holdings_updated'])}/{len(holdings)} updated")
         return results
+
+    def _format_progress_bar(self, count: int, total: int, width: int = 30) -> str:
+        """
+        Format visual progress bar for statistics display
+
+        Args:
+            count: Number of items in category
+            total: Total number of items
+            width: Character width of progress bar (default: 30)
+
+        Returns:
+            Formatted string with bar, count, and percentage
+
+        Example:
+            >>> ice._format_progress_bar(50, 100)
+            '███████████████░░░░░░░░░░░░░░░  50 ( 50.0%)'
+        """
+        if total == 0:
+            return '░' * width + '   0 (  0.0%)'
+
+        filled = int(width * count / total)
+        bar = '█' * filled + '░' * (width - filled)
+        pct = f"{count/total*100:5.1f}%"
+        return f"{bar} {count:3d} ({pct})"
+
+    def get_comprehensive_stats(self) -> Dict[str, Any]:
+        """
+        Generate comprehensive 3-tier knowledge graph statistics
+
+        Tier 1: Document source breakdown (email, newsapi, fmp, etc.)
+        Tier 2: Graph structure (entities, relationships, connectivity)
+        Tier 3: Investment intelligence (signals, ticker coverage)
+
+        Returns:
+            Dict with tier1, tier2, tier3 statistics
+        """
+        import json
+        import re
+        from pathlib import Path
+        from collections import Counter
+
+        stats = {
+            'tier1': {},
+            'tier2': {},
+            'tier3': {}
+        }
+
+        storage_path = Path(self.config.working_dir)
+
+        # TIER 1: Document Source Breakdown
+        stats['tier1'] = self._get_document_stats(storage_path)
+
+        # TIER 2: Graph Structure Statistics
+        stats['tier2'] = self._get_graph_structure_stats(storage_path)
+
+        # TIER 3: Investment Intelligence Metrics
+        stats['tier3'] = self._get_investment_intelligence_stats(storage_path)
+
+        # Validate source marker coverage and log recommendations
+        diversity = stats['tier1'].get('source_diversity', {})
+        coverage = diversity.get('coverage_percentage', 0.0)
+        status = diversity.get('status', 'unknown')
+        total_docs = stats['tier1'].get('total', 0)
+        docs_with_markers = diversity.get('documents_with_markers', 0)
+
+        if coverage < 80.0:
+            logger.warning(f"⚠️  SOURCE marker coverage: {coverage:.1f}% ({docs_with_markers}/{total_docs} documents)")
+            logger.warning(f"   Only {diversity.get('unique_sources', 0)} unique source(s) detected")
+            logger.warning(f"   Recommendation: Set REBUILD_GRAPH=True in ice_building_workflow.ipynb Cell 22")
+            logger.warning(f"   This will rebuild the graph with correct SOURCE markers for accurate statistics")
+        elif coverage < 100.0:
+            logger.info(f"ℹ️  SOURCE marker coverage: {coverage:.1f}% ({docs_with_markers}/{total_docs} documents) - {status}")
+        else:
+            logger.info(f"✅ SOURCE marker coverage: 100% - All {total_docs} documents properly tagged")
+
+        return stats
+
+    def _get_document_stats(self, storage_path: Path) -> Dict[str, Any]:
+        """Parse SOURCE markers from stored documents for Tier 1 statistics"""
+        import json
+        import re
+        from collections import Counter
+
+        doc_status_file = storage_path / 'kv_store_doc_status.json'
+        if not doc_status_file.exists():
+            return {'total': 0, 'by_source': {}, 'email': 0, 'api_total': 0, 'sec_total': 0}
+
+        docs = json.load(open(doc_status_file))
+        source_counts = Counter()
+
+        # Parse SOURCE markers from content
+        for doc in docs.values():
+            content = doc.get('content_summary', '')
+
+            # Match [SOURCE:NEWSAPI|SYMBOL:NVDA] pattern
+            match = re.search(r'\[SOURCE:(\w+)\|', content)
+            if match:
+                source = match.group(1).lower()
+                source_counts[source] += 1
+            elif 'SOURCE_EMAIL' in content or '[TICKER:' in content:
+                # Email documents use different markup pattern
+                source_counts['email'] += 1
+
+        # Calculate totals
+        api_sources = {'newsapi', 'finnhub', 'marketaux', 'fmp', 'alpha_vantage', 'polygon', 'benzinga'}
+        api_total = sum(source_counts[s] for s in api_sources)
+        sec_total = source_counts.get('sec_edgar', 0)
+        exa_total = source_counts.get('exa_company', 0) + source_counts.get('exa_competitors', 0)
+
+        # Calculate source diversity metrics
+        total_with_markers = sum(source_counts.values())
+        total_without_markers = len(docs) - total_with_markers
+        unique_sources = len([v for v in source_counts.values() if v > 0])
+        coverage_percentage = (total_with_markers / len(docs) * 100) if len(docs) > 0 else 0.0
+
+        # Determine completeness status
+        has_email = source_counts.get('email', 0) > 0
+        has_api = api_total > 0
+        has_sec = sec_total > 0
+        expected_sources_present = sum([has_email, has_api, has_sec])
+
+        if expected_sources_present == 3 and coverage_percentage >= 95:
+            status = 'complete'
+        elif expected_sources_present >= 2 or coverage_percentage >= 50:
+            status = 'partial'
+        else:
+            status = 'incomplete'
+
+        return {
+            'total': len(docs),
+            'by_source': dict(source_counts),
+            'email': source_counts.get('email', 0),
+            'api_total': api_total,
+            'sec_total': sec_total,
+            'exa_total': exa_total,
+            **{k: source_counts.get(k, 0) for k in ['newsapi', 'finnhub', 'marketaux', 'benzinga', 'fmp', 'alpha_vantage', 'polygon', 'sec_edgar', 'exa_company', 'exa_competitors']},
+            'source_diversity': {
+                'unique_sources': unique_sources,
+                'expected_sources': 3,  # Email, API, SEC
+                'expected_sources_present': expected_sources_present,
+                'coverage_percentage': coverage_percentage,
+                'documents_with_markers': total_with_markers,
+                'documents_without_markers': total_without_markers,
+                'status': status
+            }
+        }
+
+    def _get_graph_structure_stats(self, storage_path: Path) -> Dict[str, Any]:
+        """Read VDB files for Tier 2 graph structure statistics"""
+        import json
+
+        stats = {
+            'total_entities': 0,
+            'total_relationships': 0,
+            'avg_connections': 0.0
+        }
+
+        # Parse entities
+        entities_file = storage_path / 'vdb_entities.json'
+        if entities_file.exists():
+            data = json.load(open(entities_file))
+            stats['total_entities'] = len(data.get('data', []))
+
+        # Parse relationships
+        rels_file = storage_path / 'vdb_relationships.json'
+        if rels_file.exists():
+            data = json.load(open(rels_file))
+            stats['total_relationships'] = len(data.get('data', []))
+
+        # Calculate connectivity
+        if stats['total_entities'] > 0:
+            stats['avg_connections'] = stats['total_relationships'] / stats['total_entities']
+
+        return stats
+
+    def _get_investment_intelligence_stats(self, storage_path: Path) -> Dict[str, Any]:
+        """Parse entities for Tier 3 investment intelligence metrics"""
+        import json
+
+        TICKERS = {'NVDA', 'TSMC', 'AMD', 'ASML', 'INTC', 'QCOM', 'AVGO', 'TXN', 'MU', 'LRCX'}
+
+        stats = {
+            'tickers_covered': [],
+            'buy_signals': 0,
+            'sell_signals': 0,
+            'price_targets': 0,
+            'risk_mentions': 0
+        }
+
+        # Parse entities for investment signals
+        entities_file = storage_path / 'vdb_entities.json'
+        if not entities_file.exists():
+            return stats
+
+        data = json.load(open(entities_file))
+        tickers_found = set()
+
+        for entity in data.get('data', []):
+            text = f"{entity.get('entity_name', '')} {entity.get('content', '')}".upper()
+
+            # Detect tickers
+            for ticker in TICKERS:
+                if ticker in text:
+                    tickers_found.add(ticker)
+
+            # Detect signals
+            if 'BUY' in text or 'RATING:BUY' in text:
+                stats['buy_signals'] += 1
+            if 'SELL' in text or 'RATING:SELL' in text:
+                stats['sell_signals'] += 1
+            if 'PRICE TARGET' in text or 'PRICE_TARGET' in text:
+                stats['price_targets'] += 1
+            if 'RISK' in text:
+                stats['risk_mentions'] += 1
+
+        stats['tickers_covered'] = sorted(list(tickers_found))
+
+        return stats
 
 
 # Session management for Streamlit UI and workflow notebooks

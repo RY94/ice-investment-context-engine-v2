@@ -591,9 +591,13 @@ class UltraRefinedEmailProcessor:
         
         # Initialize new asymmetric value components
         self.signal_extractor = ContextualSignalExtractor()
+        # Note: IntelligentLinkProcessor now supports Crawl4AI hybrid routing
+        # To enable: pass ICEConfig object with use_crawl4ai_links=True
+        # Current: config=None uses defaults (Crawl4AI disabled, simple HTTP only)
         self.link_processor = IntelligentLinkProcessor(
-            download_dir=self.config.get('download_dir', './data/downloaded_reports'),
-            cache_dir=self.config.get('link_cache_dir', './data/link_cache')
+            storage_path=self.config.get('storage_path', './data/attachments'),
+            cache_dir=self.config.get('link_cache_dir', './data/link_cache'),
+            config=None  # Use defaults; update with ICEConfig for Crawl4AI support
         )
         
         # Performance metrics

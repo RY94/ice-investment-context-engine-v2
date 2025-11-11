@@ -318,15 +318,16 @@ class ICESystemManager:
                 "message": f"Query processing failed: {str(e)}"
             }
     
-    def add_document(self, text: str, doc_type: str = "financial", update_graph: bool = True) -> Dict[str, Any]:
+    def add_document(self, text: str, doc_type: str = "financial", update_graph: bool = True, file_path: Optional[str] = None) -> Dict[str, Any]:
         """
         Add document to ICE knowledge base with optional graph update
-        
+
         Args:
             text: Document content
             doc_type: Type of financial document
             update_graph: Whether to update graph relationships after ingestion
-            
+            file_path: Optional source file path for traceability (e.g., 'email:filename.eml')
+
         Returns:
             Dict with ingestion results and graph updates
         """
@@ -335,10 +336,10 @@ class ICESystemManager:
                 "status": "error",
                 "message": "ICE system not ready for document ingestion"
             }
-        
+
         try:
-            # Add document to LightRAG
-            result = self.lightrag.add_document(text, doc_type)
+            # Add document to LightRAG with file_path for traceability
+            result = self.lightrag.add_document(text, doc_type, file_path=file_path)
 
             # Week 2.5 Note: Graph updates disabled for now (Week 3+ feature)
             # TODO Week 3: Re-enable with correct method name or implement stub

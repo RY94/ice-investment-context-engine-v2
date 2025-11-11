@@ -1,0 +1,4 @@
+query_id,query_text,status,execution_time_ms,retry_count,faithfulness,relevancy,entity_f1,failed_metrics,failure_reasons
+Q1,How many stocks are there in my portfolio? List them.,SUCCESS,4012.5732421875,0,0.65,0.4,,,
+Q2,How many sectors or industries make up my portfolio?,SUCCESS,1184.83304977417,0,0.6190476190476191,0.5555555555555556,,,
+Q3,What are the top 3 risks across my current portfolio?,SUCCESS,2108.3061695098877,0,0.75,0.6,,,

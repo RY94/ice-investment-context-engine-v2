@@ -1,0 +1,45 @@
+query_id,query_text,answer,status,execution_time_ms,retry_count,faithfulness,relevancy,entity_f1,failed_metrics,failure_reasons
+Q1,What is Tencent's operating margin in Q2 2025?,"In Q2 2025, Tencent Music Entertainment reported an operating margin of 30.5%. This figure is derived from the adjusted profit margin, which indicates the efficiency of the company in managing its operating expenses relative to its revenue during that period. 
+
+### References
+
+- [1] email:CH_HK_ Tencent Music Entertainment (1698 HK)_ Stronger growth with expanding revenue streams  (NOT RATED).eml",SUCCESS,13762.150049209595,0,0.625,0.625,0.46153846153846156,,
+Q2,What are Tencent's international games?,I do not have enough information to answer that.,SUCCESS,7562.4518394470215,0,0.6666666666666666,0.0,0.12500000000000003,,
+Q3,What is Tencent Music Entertainment's 2Q 2024 paying users?,"In the second quarter of 2024 (2Q24), Tencent Music Entertainment reported a total of **117 million paying users**. This figure is part of the financial data presented in the income statement for that period. 
+
+### References
+
+- [1] email:CH_HK_ Tencent Music Entertainment (1698 HK)_ Stronger growth with expanding revenue streams  (NOT RATED).eml",SUCCESS,7899.76692199707,0,0.6136363636363636,0.5555555555555556,0.25,,
+Q4,What is TME's tiered monetization strategy?,"Tencent Music Entertainment (TME) employs a tiered monetization strategy designed to effectively engage its user base and drive revenue growth. This strategy includes the following key components:
+
+1. **Incentive-Based Ads**: TME utilizes incentive-based advertisements to monetize its large base of non-paying users. This approach encourages user engagement by offering rewards or incentives for interacting with ads.
+
+2. **AD-Based Membership**: As part of its three-tier model, TME is introducing AD-based membership options. This allows users to access content while being exposed to advertisements, thereby generating revenue from users who may not be willing to pay for premium subscriptions.
+
+3. **SVIP (Premium Subscription)**: TME offers a premium subscription plan known as SVIP, which has seen significant adoption. This tier targets users who are willing to pay for enhanced features and content, contributing to overall revenue growth.
+
+4. **Engagement through Content and Events**: The strategy also focuses on upselling music lovers through engaging content and events, such as offline concerts and merchandise sales, which further enhance user experience and loyalty.
+
+5. **Bubble Interactive Fans Platform**: This platform aims to boost engagement by including Chinese artists and facilitating social entertainment activities, which can lead to increased revenue from social interactions and live-streaming events.
+
+Overall, TME's tiered monetization strategy is structured to target different segments of its user base, maximizing revenue potential while addressing the challenges of user willingness to pay in the Chinese market. 
+
+### References
+
+- [1] email:CH_HK_ Tencent Music Entertainment (1698 HK)_ Stronger growth with expanding revenue streams  (NOT RATED).eml",SUCCESS,22905.461072921753,0,0.48823529411764705,0.6666666666666666,0.5517241379310345,,
+Q5,What is TME's music streaming service revenue?,"Tencent Music Entertainment (TME) reported a music subscription revenue of **RMB4.38 billion** for the second quarter of 2025, reflecting a **17% year-over-year increase**. This growth is attributed to higher penetration of its premium subscription plan, known as SVIP, which has seen significant adoption among users. 
+
+Additionally, TME's overall financial performance in 2Q25 indicated strong earnings growth, driven by various revenue streams, including music subscriptions and advertising. 
+
+### References
+
+- [1] email:CH_HK_ Tencent Music Entertainment (1698 HK)_ Stronger growth with expanding revenue streams  (NOT RATED).eml",SUCCESS,17413.355112075806,0,0.5416666666666666,0.42857142857142855,0.2564102564102564,,
+Q6,Which business segment had the highest year-over-year growth rate in Tencent's Q2 2025 earnings?,"In Tencent Music Entertainment's Q2 2025 earnings, the business segment that experienced the highest year-over-year growth rate was the ""Other Music"" revenue, which surged by 47% year-over-year. This growth was primarily driven by the increasing adoption of incentivized ads and efficiency in operations. 
+
+In comparison, the music subscription revenue grew by 17% year-over-year, while social entertainment revenue saw a decline of 9% year-over-year. 
+
+### References
+
+- [1] email:CH_HK_ Tencent Music Entertainment (1698 HK)_ Stronger growth with expanding revenue streams  (NOT RATED).eml",SUCCESS,12406.583070755005,0,0.5967741935483871,0.7857142857142857,0.41025641025641024,,
+Q7,Did Tencent's domestic games revenue increase or decrease from Q1 2025 to Q2 2025?,I do not have enough information to answer that.,SUCCESS,7032.968044281006,0,0.6666666666666666,0.07142857142857142,0.14285714285714285,,
+Q8,What was Tencent's operating margin in Q2 2024?,I do not have enough information to answer that.,SUCCESS,9651.274919509888,0,0.6666666666666666,0.0,0.0,,

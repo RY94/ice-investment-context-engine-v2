@@ -1,0 +1,15 @@
+| In billion RMB                            | 2Q2025   | 2Q2024   | YoY     | 1Q2025   | QOQ     |
+|-------------------------------------------|----------|----------|---------|----------|---------|
+| Total Revenue                             | 184.5    | 161.1    | +15%    | 180.0    | +2%     |
+| Value-added Services                      | 91.4     | 78.8     | +16%    | 92.1     | -0.8%   |
+| Social Networks                           | 32.2     | 30.3     | +6%     | 32.6     | -1%     |
+| Domestic Games'                           | 40.4     | 34.6     | +17%    | 42.9     | -6%     |
+| International Games                       | 18.8     | 13.9     | +35%    | 16.6     | +13%    |
+| Marketing Services?                       | 35.8     | 29.9     | +20%    | 31.9     | +12%    |
+| Fin Tech and Business Services            | 55.5     | 50.4     | +10%    | 54.9     | + 1%    |
+| Others                                    | 1.8      | 2.0      | -7%     | 1.1      | +63%    |
+| Gross Profit                              | 105.0    | 85.9     | +22%    | 100.5    | +4%     |
+| Non-IFRS                                  |          |          |         |          |         |
+| Operating Profit                          | 69.2     | 58.4     | +18%    | 69.3     | -0.1%   |
+| Operating Margin                          | 37.5%    | 36.3%    | +1.2ppt | 38.5%    | -1.0ppt |
+| Net Profit Attributable to Equity Holders | 63.1     | 57.3     | +10%    | 61.3     | +3%     |

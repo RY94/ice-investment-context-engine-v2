@@ -129,6 +129,11 @@ def create_enhanced_document(
         entities = {}
 
     try:
+        # DEBUG: Function entry point
+        logger.info(f"🔥 create_enhanced_document CALLED! entities keys: {list(entities.keys())}")
+        logger.info(f"🔥 financial_metrics count: {len(entities.get('financial_metrics', []))}")
+        logger.info(f"🔥 margin_metrics count: {len(entities.get('margin_metrics', []))}")
+
         doc_sections = []
 
         # === HEADER: Source metadata ===
@@ -175,9 +180,10 @@ def create_enhanced_document(
                     f"[RATING:{rating_type}|ticker:{rating_ticker}|confidence:{rating_conf:.2f}]"
                 )
 
-        # Inject price targets from financial metrics
-        financial_metrics = entities.get('financial_metrics', {})
-        price_targets = financial_metrics.get('price_targets', [])
+        # Inject price targets (direct from entities, not nested in financial_metrics)
+        # BUG FIX: entities['financial_metrics'] is a list of metrics, not a dict with 'price_targets' key
+        # Price targets are stored at entities['price_targets'] directly
+        price_targets = entities.get('price_targets', [])
         for pt in price_targets:
             if pt.get('confidence', 0) > MIN_CONFIDENCE_THRESHOLD:
                 pt_value = escape_markup_value(pt.get('value', pt.get('price', 'UNKNOWN')))
@@ -189,7 +195,8 @@ def create_enhanced_document(
                 )
 
         # Inject other financial metrics (revenue, EPS, EBITDA, etc.)
-        financials = financial_metrics.get('financials', [])
+        # BUG FIX: 'financials' and 'percentages' are stored at entities level, not nested in financial_metrics
+        financials = entities.get('financials', [])
         for metric in financials[:5]:  # Limit to top 5 financial metrics
             if metric.get('confidence', 0) > MIN_CONFIDENCE_THRESHOLD:
                 metric_value = escape_markup_value(metric.get('value', 'UNKNOWN'))
@@ -200,7 +207,7 @@ def create_enhanced_document(
                 )
 
         # Inject percentage metrics (margins, growth rates, etc.)
-        percentages = financial_metrics.get('percentages', [])
+        percentages = entities.get('percentages', [])
         for pct in percentages[:5]:  # Limit to top 5 percentages
             if pct.get('confidence', 0) > MIN_CONFIDENCE_THRESHOLD:
                 pct_value = escape_markup_value(pct.get('value', 'UNKNOWN'))
@@ -242,6 +249,47 @@ def create_enhanced_document(
                 f"[SENTIMENT:{sent_value}|score:{sent_score:.2f}|confidence:{sent_conf:.2f}]"
             )
 
+        # === TABLE ENTITY MARKUP: Inject table-extracted entities (Phase 2.6.2) ===
+        table_financial_metrics = entities.get('financial_metrics', [])
+        table_margin_metrics = entities.get('margin_metrics', [])
+
+        # DEBUG: Log table entity counts
+        logger.info(f"TABLE ENTITY DEBUG: financial_metrics={len(table_financial_metrics)}, margin_metrics={len(table_margin_metrics)}")
+
+        # Filter to only table-sourced financial metrics
+        table_metrics_only = [m for m in table_financial_metrics if m.get('source') == 'table']
+
+        if table_metrics_only or table_margin_metrics:
+            table_markup = []
+
+            # Table financial metrics
+            # FIX #3: Increased limit from 10→100 to accommodate multi-column extraction
+            # (e.g., Tencent table: 11 rows × 5 columns = 55 entities)
+            for metric in table_metrics_only[:100]:  # Limit to avoid bloat
+                if metric.get('confidence', 0) > MIN_CONFIDENCE_THRESHOLD:
+                    table_markup.append(
+                        f"[TABLE_METRIC:{escape_markup_value(metric.get('metric', 'UNKNOWN'))}|"
+                        f"value:{escape_markup_value(metric.get('value', 'N/A'))}|"
+                        f"period:{escape_markup_value(metric.get('period', 'N/A'))}|"
+                        f"ticker:{escape_markup_value(metric.get('ticker', 'N/A'))}|"
+                        f"confidence:{metric.get('confidence', 0.0):.2f}]"
+                    )
+
+            # Table margin metrics
+            # FIX #3: Increased limit from 5→50 to accommodate multi-column extraction
+            for margin in table_margin_metrics[:50]:  # Limit to avoid excessive bloat
+                if margin.get('confidence', 0) > MIN_CONFIDENCE_THRESHOLD:
+                    table_markup.append(
+                        f"[MARGIN:{escape_markup_value(margin.get('metric', 'UNKNOWN'))}|"
+                        f"value:{escape_markup_value(margin.get('value', 'N/A'))}|"
+                        f"period:{escape_markup_value(margin.get('period', 'N/A'))}|"
+                        f"ticker:{escape_markup_value(margin.get('ticker', 'N/A'))}|"
+                        f"confidence:{margin.get('confidence', 0.0):.2f}]"
+                    )
+
+            if table_markup:
+                markup_line.extend(table_markup)
+
         # Add entity markup line if any entities were found
         if markup_line:
             doc_sections.append(" ".join(markup_line))
@@ -271,15 +319,31 @@ def create_enhanced_document(
 
                 doc_sections.append(f"[ATTACHMENT:{filename}|type:{content_type}]")
 
-                # Include extracted text if available (truncated for size)
-                extracted_text = attachment.get('extracted_text', '')
-                if extracted_text:
-                    # Limit attachment text to 500 characters to prevent document bloat
-                    truncated_text = extracted_text[:500]
-                    doc_sections.append(truncated_text)
-                    if len(extracted_text) > 500:
-                        doc_sections.append("... [attachment text truncated] ...")
-                    doc_sections.append("")
+                # Phase 2.6.2: Include FULL table content (no truncation for structured data)
+                extracted_data = attachment.get('extracted_data', {})
+                tables = extracted_data.get('tables', [])
+
+                if tables:
+                    # Include full table markdown (structured data from Docling)
+                    for table_idx, table in enumerate(tables):
+                        if table.get('error') or not table.get('markdown'):
+                            continue
+
+                        doc_sections.append(
+                            f"\nTable {table_idx + 1} ({table['num_rows']} rows × {table['num_cols']} cols):"
+                        )
+                        doc_sections.append(table['markdown'])  # Full table, no truncation
+                        doc_sections.append("")
+                else:
+                    # Fallback: use extracted_text with truncation (non-table attachments)
+                    extracted_text = attachment.get('extracted_text', '')
+                    if extracted_text:
+                        # Limit attachment text to 500 characters to prevent document bloat
+                        truncated_text = extracted_text[:500]
+                        doc_sections.append(truncated_text)
+                        if len(extracted_text) > 500:
+                            doc_sections.append("... [attachment text truncated] ...")
+                        doc_sections.append("")
 
         # === FOOTER: Investment context metadata ===
         doc_sections.append("=== INVESTMENT CONTEXT ===")

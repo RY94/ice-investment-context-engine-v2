@@ -1,24 +1,28 @@
 # CLAUDE.md - ICE Development Guide
 
-> **🔗 LINKED DOCUMENTATION**: This is one of 6 essential core files that must stay synchronized. When updating this file, always cross-check and update related files: `README.md`, `PROJECT_STRUCTURE.md`, `ICE_DEVELOPMENT_TODO.md`, `PROJECT_CHANGELOG.md`, and `ICE_PRD.md`.
+> **🔗 LINKED DOCUMENTATION**: This is one of 8 essential core files that must stay synchronized. When updating this file, always cross-check and update related files: `ARCHITECTURE.md`, `README.md`, `PROJECT_STRUCTURE.md`, `ICE_DEVELOPMENT_TODO.md`, `PROJECT_CHANGELOG.md`, `ICE_PRD.md`, and `PROGRESS.md`.
 
 **Location**: `/CLAUDE.md`
-**Purpose**: Comprehensive development guidance for Claude Code instances working on ICE
-**Last Updated**: 2025-10-18
+**Purpose**: Quick reference for Claude Code instances working on ICE
+**Last Updated**: 2025-11-05
 **Target Audience**: Claude Code AI and human developers
+
+> **📖 For comprehensive implementation patterns**: See `CLAUDE_PATTERNS.md`
+> **📖 For Docling/Crawl4AI integration details**: See `CLAUDE_INTEGRATIONS.md`
+> **📖 For complete troubleshooting guide**: See `CLAUDE_TROUBLESHOOTING.md`
 
 ---
 
 ## 1. 🚀 QUICK REFERENCE
 
-### Current Project Status
+### 1.1 Current Project Status
 
-**Phase**: UDMA Integration Complete (Week 6/6) ✅ | 57% (73/128 tasks)
+**Phase**: UDMA Integration Complete (Week 6/6) ✅ | 65% (91/140 tasks)
 
 > **📖 For sprint priorities and detailed status**: See `ICE_DEVELOPMENT_TODO.md:1-60`
 > **📖 For week completion tracking**: See `PROJECT_CHANGELOG.md`
 
-### Essential Commands
+### 1.2 Essential Commands
 
 **Quick Start**
 ```bash
@@ -34,28 +38,79 @@ jupyter notebook ice_query_workflow.ipynb  # Investment intelligence analysis
 export ICE_DEBUG=1 && python src/simple_demo.py  # Debug mode
 ```
 
+**Temperature Configuration**
+```bash
+# Entity Extraction (default: 0.3, recommended: ≤0.2 for reproducibility)
+export ICE_LLM_TEMPERATURE_ENTITY_EXTRACTION=0.3
+
+# Query Answering (default: 0.5, range: 0.0-1.0)
+export ICE_LLM_TEMPERATURE_QUERY_ANSWERING=0.5
+
+# Temperature effects:
+# - 0.0: Deterministic (same input → same output, compliance-friendly)
+# - 0.3-0.5: Balanced (moderate creativity, mostly consistent)
+# - 0.7-1.0: Creative (insights-focused, less reproducible)
+```
+
 **Testing & Validation**
 ```bash
 python src/ice_lightrag/test_basic.py && python test_api_key.py
-python tests/test_imap_email_pipeline_comprehensive.py  # IMAP tests (21 tests, all passing)
+python tests/test_imap_email_pipeline_comprehensive.py  # IMAP tests (21 tests)
 jupyter notebook ice_query_workflow.ipynb  # Portfolio analysis (11 test datasets)
 ```
 
-### Critical Files Quick Reference
+### 1.3 Critical Files Quick Reference
 
 | File | Purpose | See Also |
 |------|---------|----------|
 | `ice_simplified.py` | Main orchestrator (1,366 lines) | Section 3.2 |
-| `ice_building_workflow.ipynb` | Knowledge graph construction | Section 3.3 |
-| `ice_query_workflow.ipynb` | Investment analysis interface | Section 3.3 |
+| `ice_building_workflow.ipynb` | Knowledge graph construction | Section 3.2 |
+| `ice_query_workflow.ipynb` | Investment analysis interface | Section 3.2 |
 | `ICE_PRD.md` | Complete product requirements | - |
-| `ICE_DEVELOPMENT_TODO.md` | Task tracking (128 tasks) | - |
+| `ICE_DEVELOPMENT_TODO.md` | Task tracking (140 tasks) | - |
 | `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` | UDMA guide (Option 5) | Section 2 |
-| `ICE_VALIDATION_FRAMEWORK.md` | PIVF (20 golden queries) | Section 3.5 |
-| `PROJECT_STRUCTURE.md` | Directory organization | Section 5 |
+| `ICE_VALIDATION_FRAMEWORK.md` | PIVF (20 golden queries) | Section 3.3 |
+| `PROJECT_STRUCTURE.md` | Directory organization | - |
 
-> **📖 For complete file catalog with descriptions**: See `PROJECT_STRUCTURE.md:268-295`
-> **📖 For portfolio test datasets (11 portfolios)**: See `PROJECT_STRUCTURE.md:103-122`
+> **📖 For complete file catalog**: See `PROJECT_STRUCTURE.md`
+
+### 1.4 Session Start Checklist
+
+**Choose your workflow based on task type**:
+
+| Task Type | Read These Files First |
+|-----------|------------------------|
+| 🐛 **Bug fixing** | `PROGRESS.md` → `CLAUDE_TROUBLESHOOTING.md` → Relevant code |
+| ✨ **New feature** | `ICE_PRD.md` → `CLAUDE_PATTERNS.md` → `ARCHITECTURE.md` |
+| 🔌 **Integration work** | `CLAUDE_INTEGRATIONS.md` → Production module docs |
+| 🏗️ **Architecture changes** | `ARCHITECTURE.md` → `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` |
+| 🧪 **Testing/validation** | `ICE_VALIDATION_FRAMEWORK.md` → Test files |
+| 📂 **File navigation** | `PROJECT_STRUCTURE.md` |
+| 📊 **Understanding current state** | `PROGRESS.md` → `ICE_DEVELOPMENT_TODO.md` |
+
+**Every session**: Check `PROGRESS.md` for current work, blockers, and next actions.
+
+### 1.5 TodoWrite Mandatory Practice ⚠️
+
+**CRITICAL**: Every TodoWrite list MUST include these two todos as the FINAL items:
+
+```
+[ ] 📋 Review & update 8 core files + 2 notebooks if changes warrant synchronization
+    - Core files: ARCHITECTURE.md, PROGRESS.md, PROJECT_STRUCTURE.md, CLAUDE.md, README.md, PROJECT_CHANGELOG.md, ICE_DEVELOPMENT_TODO.md, ICE_PRD.md
+    - ARCHITECTURE.md: Update only on architecture changes (stable north star)
+    - PROGRESS.md: ALWAYS update with session state (active work, blockers, next 3-5 actions)
+    - Other 6 files: Update only on milestones
+    - Notebooks: ice_building_workflow.ipynb, ice_query_workflow.ipynb
+    - Skip only if: bug fixes, minor code changes, temporary/test files
+
+[ ] 🧠 Update Serena server memory if work warrants documentation
+    - Use mcp__serena__write_memory for: architecture decisions, implementation patterns, debugging solutions
+    - Memory names: Use descriptive names (e.g., 'week6_testing_patterns', 'email_integration_debugging')
+    - Document: Key decisions, file locations, workflows, solutions to complex problems
+    - Skip only if: Minor bug fixes, temporary code, work-in-progress, trivial changes
+```
+
+**Why**: Prevents documentation drift and preserves institutional knowledge across Claude Code sessions.
 
 ---
 
@@ -63,11 +118,7 @@ jupyter notebook ice_query_workflow.ipynb  # Portfolio analysis (11 test dataset
 
 ### What is ICE?
 
-**Investment Context Engine (ICE)** is a modular AI system serving as the cognitive backbone for boutique hedge fund workflows, solving four critical pain points:
-1. Delayed Signal Capture
-2. Low Insight Reusability
-3. Inconsistent Decision Context
-4. Manual Triage Bottlenecks
+**Investment Context Engine (ICE)** - Modular AI system serving as cognitive backbone for boutique hedge funds (<$100M AUM), solving delayed signal capture, low insight reusability, inconsistent decision context, and manual triage bottlenecks.
 
 > **📖 For complete product vision and user personas**: See `ICE_PRD.md:1-100`
 > **📖 For detailed user personas**: See `project_information/user_research/ICE_USER_PERSONAS_DETAILED.md`
@@ -77,31 +128,14 @@ jupyter notebook ice_query_workflow.ipynb  # Portfolio analysis (11 test dataset
 **UDMA (User-Directed Modular Architecture)** - Simple Orchestration + Production Modules
 
 > **📖 For complete data flow diagram**: See `README.md:38-69`
-> **📖 For storage architecture details**: See `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` Section 9
 > **📖 For complete UDMA implementation guide**: See `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md`
 > **📖 For architecture decision history (5 options analyzed)**: See `archive/strategic_analysis/README.md`
 
-### Integration Status
-
-> **📖 For UDMA implementation phases and 6-week integration timeline**: See `ICE_DEVELOPMENT_TODO.md:19-57`
-
 ### Design Philosophy
 
-> **Strategic Positioning**: ICE delivers professional-grade investment intelligence for boutique hedge funds (<$100M AUM) at <$200/month through cost-conscious, relationship-focused architecture.
+**Strategic Positioning**: Professional-grade investment intelligence for boutique hedge funds at <$200/month through cost-conscious, relationship-focused architecture.
 
-**Core Principles** (in priority order):
-
-1. **Quality Within Resource Constraints**: Target 80-90% capability at <20% enterprise cost. Accept professional-grade over perfection. (F1≥0.85, <$200/month budget)
-
-2. **Hidden Relationships Over Surface Facts**: Graph-first strategy for multi-hop reasoning (1-3 hops). Trust semantic search for relevance, not manual filtering.
-
-3. **Fact-Grounded with Source Attribution**: 100% source traceability, confidence scores on all entities/relationships, complete audit trail.
-
-4. **User-Directed Evolution**: Build for ACTUAL problems, not imagined ones. Test → Decide → Integrate. Evidence-driven, not speculative. (<10,000 line budget)
-
-5. **Simple Orchestration + Battle-Tested Modules**: Delegate to production modules (34K+ lines), keep orchestrator simple (<2,000 lines). No reinventing wheels.
-
-6. **Cost-Consciousness as Design Constraint**: 80% queries → local LLM, 20% → cloud. Semantic caching (70% hit rate). Free-tier APIs prioritized.
+**Core Principles**: (1) Quality within resource constraints (F1≥0.85, <$200/month), (2) Hidden relationships over surface facts (graph-first, 1-3 hops), (3) Fact-grounded with source attribution (100% traceability), (4) User-directed evolution (evidence-driven), (5) Simple orchestration + battle-tested modules (<2,000 lines orchestrator), (6) Cost-consciousness as design constraint (80% local LLM, semantic caching).
 
 > **📖 For detailed philosophy**: See `project_information/development_plans/Development Brainstorm Plans (md files)/Lean_ICE_Architecture.md`
 
@@ -119,102 +153,27 @@ jupyter notebook ice_query_workflow.ipynb  # Portfolio analysis (11 test dataset
 
 ### 3.2 Common Development Tasks
 
-**Adding New Data Sources**
-```python
-# DO: Use production robust client
-from ice_data_ingestion.robust_client import RobustHTTPClient
-client = RobustHTTPClient()
-response = client.get(url)  # Circuit breaker + retry included
-```
+**Adding New Data Sources** - See `CLAUDE_PATTERNS.md` Pattern 1-2 for source attribution and confidence scoring
 
-**Workflow**:
-1. Check `ice_data_ingestion/` for existing connectors
-2. Import and use in `data_ingestion.py` if exists
-3. Create enhanced documents with inline metadata (see Email pipeline pattern)
-4. Test with PIVF golden queries
+**Modifying Orchestration** - Delegate to production modules (see `CLAUDE_PATTERNS.md` for code organization principles)
 
-**Modifying Orchestration**
-```python
-# DO: Delegate to production modules
-from src.ice_core.ice_query_processor import ICEQueryProcessor
-
-class ICESimplified:
-    def __init__(self):
-        self.query_processor = ICEQueryProcessor(self.core)
-```
-
-### 3.3 Notebook Development
-
-**When to update notebooks**:
+**Notebook Development**:
 - Core data ingestion changes → Update `ice_building_workflow.ipynb`
 - Query processing modifications → Update `ice_query_workflow.ipynb`
+- **Process**: Modify production code first → Update notebook cells → Run end-to-end validation
 
-**Process**: Modify production code first → Update notebook cells → Run end-to-end validation
-
-### 3.4 TodoWrite Mandatory Practice ⚠️
-
-**CRITICAL**: Every TodoWrite list MUST include these two todos as the FINAL items:
-
-```
-[ ] 📋 Review & update 6 core files + 2 notebooks if changes warrant synchronization
-    - Core files: PROJECT_STRUCTURE.md, CLAUDE.md, README.md, PROJECT_CHANGELOG.md, ICE_DEVELOPMENT_TODO.md, ICE_PRD.md
-    - Notebooks: ice_building_workflow.ipynb, ice_query_workflow.ipynb
-    - Skip only if: bug fixes, minor code changes, temporary/test files
-
-[ ] 🧠 Update Serena server memory if work warrants documentation
-    - Use mcp__serena__write_memory for: architecture decisions, implementation patterns, debugging solutions
-    - Memory names: Use descriptive names (e.g., 'week6_testing_patterns', 'email_integration_debugging')
-    - Document: Key decisions, file locations, workflows, solutions to complex problems
-    - Skip only if: Minor bug fixes, temporary code, work-in-progress, trivial changes
-```
-
-**Why**: Prevents documentation drift and preserves institutional knowledge across Claude Code sessions.
-
-### 3.5 Testing and Validation
+### 3.3 Testing and Validation
 
 **Three-tier approach**:
-
-1. **Unit Tests**: Component-level validation
-   ```bash
-   python tests/test_email_graph_integration.py
-   python src/ice_lightrag/test_basic.py
-   ```
-
-2. **Integration Tests**: End-to-end workflow validation
-   ```bash
-   jupyter notebook ice_building_workflow.ipynb
-   jupyter notebook ice_query_workflow.ipynb
-   ```
-
-3. **PIVF Validation**: Golden query benchmarking
-   - Reference: `ICE_VALIDATION_FRAMEWORK.md`
-   - 20 golden queries covering 1-3 hop reasoning
-   - 9-dimensional scoring
-
-### 3.6 Debugging Workflows
-
-1. Check system health: `python check/health_checks.py`
-2. Review logs: `logs/session_start.json`, `logs/pre_tool_use.json`
-3. Validate data sources: `sandbox/python_notebook/ice_data_sources_demo_simple.ipynb`
-4. **LightRAG storage**: `ice_lightrag/storage/` (vector DBs and graph data)
-5. **Direct testing**: `python src/ice_lightrag/quick_test.py`
+1. **Unit Tests**: `python tests/test_email_graph_integration.py`
+2. **Integration Tests**: Run both notebooks end-to-end
+3. **PIVF Validation**: 20 golden queries covering 1-3 hop reasoning (see `ICE_VALIDATION_FRAMEWORK.md`)
 
 ---
 
 ## 4. 📐 DEVELOPMENT STANDARDS
 
-### 4.1 TodoWrite Requirements (MANDATORY) ⚠️
-
-**CRITICAL**: Every TodoWrite list MUST include these two todos as the FINAL items:
-
-```
-[ ] 📋 Review & update 6 core files + 2 notebooks if changes warrant synchronization
-[ ] 🧠 Update Serena server memory if work warrants documentation
-```
-
-See Section 3.4 for complete details.
-
-### 4.2 File Header Requirements
+### 4.1 File Header Requirements
 
 **Every file must start with these 4 comment lines**:
 ```python
@@ -224,7 +183,7 @@ See Section 3.4 for complete details.
 # Relevant Files: file1.py, file2.py, file3.py
 ```
 
-### 4.3 Comment Principles
+### 4.2 Comment Principles
 
 ```python
 # DON'T: Obvious syntax comments
@@ -238,43 +197,20 @@ confidence_threshold = 0.7
 
 **NEVER delete explanatory comments** unless demonstrably wrong or obsolete.
 
-### 4.4 ICE-Specific Patterns
+### 4.3 ICE-Specific Patterns
 
-**1. Source Attribution** - Every fact must trace to source
-```python
-edge_metadata = {
-    "source_document_id": "email_12345",
-    "confidence": 0.92,
-    "timestamp": "2024-03-15T10:30:00Z"
-}
-```
+**All 7 patterns with comprehensive examples**: See `CLAUDE_PATTERNS.md`
+1. Source Attribution - Every fact must trace to source
+2. Confidence Scoring - All entities/relationships include confidence
+3. Multi-hop Reasoning - Support 1-3 hop graph traversal
+4. MCP Compatibility - Format outputs as structured JSON
+5. SOURCE Markers - Document source attribution for statistics tracking
+6. Crawl4AI Hybrid URL Fetching - Smart routing for web scraping (6-tier classification)
+7. Two-Layer Entity Extraction - Validated entities with quality scores
 
-**2. Confidence Scoring** - All entities/relationships include confidence
-```python
-"""
-[TICKER:NVDA|confidence:0.95] [RATING:BUY|confidence:0.87]
-Goldman Sachs raised price target to [PRICE_TARGET:500|confidence:0.92]
-"""
-```
+> **📖 For code examples and testing patterns**: See `CLAUDE_PATTERNS.md`
 
-**3. Multi-hop Reasoning** - Support 1-3 hop graph traversal
-```python
-query_1_hop = "Which suppliers does NVDA depend on?"
-query_2_hop = "How does China risk impact NVDA through TSMC?"
-query_3_hop = "What portfolios are exposed to AI regulation via chip suppliers?"
-```
-
-**4. MCP Compatibility** - Format outputs as structured JSON
-```python
-result = {
-    "query": "...",
-    "answer": "...",
-    "sources": [...],
-    "confidence": 0.85
-}
-```
-
-### 4.5 Code Organization Principles
+### 4.4 Code Organization Principles
 
 1. **Modularity**: Build lightweight, maintainable components
 2. **Simplicity**: Favor straightforward solutions over complex architectures
@@ -282,7 +218,7 @@ result = {
 4. **Traceability**: Every fact must have source attribution
 5. **Security**: Never expose API keys or credentials in code/commits
 
-### 4.6 Protected Files - NEVER Delete or Move
+### 4.5 Protected Files - NEVER Delete or Move
 
 - `CLAUDE.md` (this file)
 - `README.md`
@@ -293,162 +229,54 @@ result = {
 - `ice_building_workflow.ipynb`
 - `ice_query_workflow.ipynb`
 
+### 4.6 Protected Custom Bookmarks Comment - NEVER Delete or Move these navigation markers
+
+  - # AQ1, # SW2, # DE3, # FR4, # GT5, # hy6
+  - Used for cmd+f navigation - treat as sacred landmarks
+
+
 **Before modifying**: Create timestamped backup in `archive/backups/`
 
 ---
 
-## 5. 🗂️ NAVIGATION & QUICK DECISIONS
+## 5. 🗂️ NAVIGATION QUICK LINKS
 
-### Documentation Quick Reference
+**Core Docs**: `ICE_PRD.md`, `ICE_DEVELOPMENT_TODO.md`, `PROJECT_STRUCTURE.md`, `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md`, `ICE_VALIDATION_FRAMEWORK.md`, `PROJECT_CHANGELOG.md`
 
-| Document | When to Use | Key Content |
-|----------|-------------|-------------|
-| **ICE_PRD.md** | Starting new features, validating requirements | Product vision, user personas, success metrics |
-| **ICE_DEVELOPMENT_TODO.md** | Planning sprints, tracking progress | 128 tasks across 5 phases with status |
-| **PROJECT_STRUCTURE.md** | Finding files, understanding layout | Complete directory tree, file descriptions |
-| **ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md** | Architecture decisions, UDMA planning | UDMA guide, implementation phases, build scripts |
-| **ICE_VALIDATION_FRAMEWORK.md** | Testing changes, benchmarking | PIVF with 20 golden queries, 9D scoring |
-| **PROJECT_CHANGELOG.md** | Understanding recent changes | Day-by-day change tracking |
-| **CLAUDE.md** | Session start, learning workflows | Quick reference, standards, workflows |
-
-> **📖 For complete file catalog**: See `PROJECT_STRUCTURE.md:268-295`
-
-### Key Decision Trees
-
-**Query Mode Selection**
-
-> **📖 For complete query mode guide**: See `md_files/QUERY_PATTERNS.md:10-100`
-
-| Mode | Use Case | Example |
-|------|----------|---------|
-| **local** | Entity lookup | "What is NVDA's market cap?" |
-| **global** | High-level summaries | "Summarize AI chip market trends" |
-| **hybrid** | Investment analysis (recommended) | "How does China risk impact NVDA?" |
-| **mix** | Multi-aspect queries | "Portfolio exposure to AI regulation" |
-| **naive** | Semantic search | "Find mentions of TSMC" |
-
-**Data Source Prioritization**
-
-| Priority For | Order |
-|--------------|-------|
-| Real-time signals | API/MCP → Email → SEC |
-| Deep research | Email → SEC → API/MCP |
-| Regulatory compliance | SEC → Email → API/MCP |
-
-**IMAP Email Pipeline**
-
-> **📖 For detailed IMAP integration reference**: See Serena memory `imap_integration_reference`
-
-**Brief Overview**: 71 emails → EntityExtractor (668 lines) → GraphBuilder (680 lines) → Enhanced documents → LightRAG
-
-**Working with Email Data**:
-```python
-ice.ingest_portfolio_data(['NVDA', 'AAPL'])  # Standard workflow
-```
-
-**Notebook vs Script Development**
-
-| Use Notebooks | Use Scripts |
-|---------------|-------------|
-| Interactive testing | Production orchestration |
-| End-to-end validation | Automated pipelines |
-| Debugging | API integrations |
-
-**Create vs Modify Files**
-
-| Create New | Modify Existing |
-|------------|-----------------|
-| New data connector | Extending functionality |
-| New validation framework | Bug fixes/optimizations |
-| New architectural component | Adding features to existing |
-
-**Before creating**: Check `PROJECT_STRUCTURE.md` for similar files
-
-**Production Modules vs Simple Code**
-
-| Use Production Modules | Use Simple Code |
-|------------------------|-----------------|
-| HTTP requests (`robust_client`) | Coordination/orchestration |
-| API integrations | Workflow sequencing |
-| Data validation | High-level business logic |
-| Query processing (`ICEQueryProcessor`) | Main entry points |
+**Specialized Details**: Query modes (`md_files/QUERY_PATTERNS.md`), Data source prioritization (`ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md`), Development strategies (`PROJECT_STRUCTURE.md`), LightRAG workflows (`project_information/about_lightrag/`)
 
 ---
 
 ## 6. 🔧 TROUBLESHOOTING
 
-> **📖 For comprehensive troubleshooting guide**: See Serena memory `troubleshooting_comprehensive_guide_2025_10_18`
+See `CLAUDE_TROUBLESHOOTING.md` for complete guide (10 sections, 50+ solutions, quick reference table).
 
-### Top 5 Common Issues
-
-**1. API Key Not Found**
-```bash
-export OPENAI_API_KEY="sk-your-api-key-here"
-python test_api_key.py  # Verify
-```
-
-**2. LightRAG Import Error**
-```bash
-cd src/ice_lightrag && python setup.py && cd ../..
-python src/ice_lightrag/test_basic.py  # Verify
-```
-
-**3. Module Import Failures**
-```bash
-export PYTHONPATH="${PYTHONPATH}:."
-python -c "from ice_data_ingestion import robust_client; print('OK')"
-```
-
-**4. Jupyter Kernel Issues**
-```bash
-pip install ipykernel
-python -m ipykernel install --user --name=ice_env
-```
-
-**5. LightRAG Storage Corruption**
-```bash
-rm -rf ice_lightrag/storage/*
-jupyter notebook ice_building_workflow.ipynb  # Recreate graph
-```
-
-### Debug Commands Reference
-
-```bash
-python check/health_checks.py  # System health
-python src/ice_lightrag/quick_test.py  # LightRAG test
-export ICE_DEBUG=1 && python updated_architectures/implementation/ice_simplified.py  # Debug mode
-cat logs/session_start.json | python -m json.tool  # Check logs
-```
+**Top 3 Quick Fixes**:
+1. API Key: `export OPENAI_API_KEY="sk-..." && python test_api_key.py`
+2. LightRAG: `cd src/ice_lightrag && python setup.py && cd ../..`
+3. Imports: `export PYTHONPATH="${PYTHONPATH}:."`
 
 ---
 
-## 7. 📚 RESOURCES & DEEP DIVES
+## 7. 📄 SPECIALIZED DOCUMENTATION
 
-### Technical Guides
-- **[LightRAG Setup & Configuration](md_files/LIGHTRAG_SETUP.md)** - Complete setup, financial optimizations
-- **[Local LLM Guide](md_files/LOCAL_LLM_GUIDE.md)** - Ollama setup, hybrid configurations
-- **[Ollama Test Results](md_files/OLLAMA_TEST_RESULTS.md)** - Integration validation
-- **[Query Patterns](md_files/QUERY_PATTERNS.md)** - Query strategies, performance
+**Load these on-demand** (each has "When to Load" in header):
 
-### Architecture Documentation
-- **[UDMA Implementation Plan](ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md)** - Complete guide
-- **[Architecture Decision History](archive/strategic_analysis/README.md)** - 5 options analyzed
-- **[Validation Framework](ICE_VALIDATION_FRAMEWORK.md)** - PIVF methodology
+**CLAUDE_PATTERNS.md** (~400 lines)
+- **Use for**: Implementing features, writing code, pattern compliance
+- **Contains**: All 7 ICE patterns with code examples, testing guidance
 
-### LightRAG Workflow Guides
-- **[Building Workflow](project_information/about_lightrag/lightrag_building_workflow.md)** - Document ingestion
-- **[Query Workflow](project_information/about_lightrag/lightrag_query_workflow.md)** - Retrieval strategies
+**CLAUDE_INTEGRATIONS.md** (~450 lines)
+- **Use for**: Docling/Crawl4AI work, document processing, integration configs
+- **Contains**: Switchable architecture guides, 6-tier URL classification, troubleshooting
 
-### Serena Memories (Deep Dives)
-- `imap_integration_reference` - Full IMAP pipeline integration details
-- `troubleshooting_comprehensive_guide_2025_10_18` - Complete troubleshooting reference
-- `comprehensive_email_extraction_2025_10_16` - Email extraction patterns
-- `email_ingestion_trust_the_graph_strategy_2025_10_17` - Cross-company relationship discovery
-- `phase_2_2_dual_layer_architecture_decision_2025_10_15` - Dual-layer architecture rationale
+**CLAUDE_TROUBLESHOOTING.md** (~350 lines)
+- **Use for**: Debugging errors, performance issues, data quality problems
+- **Contains**: Quick debugging workflow, 50+ issue-solution pairs, validation commands
 
 ---
 
-**Last Updated**: 2025-10-18
-**Backup**: `archive/backups/CLAUDE_20251018_pre_refinement.md`
-**Refinement**: Reduced from 991 lines to 550 lines (45% reduction) while preserving 100% of information via migrations
+**Last Updated**: 2025-11-05
+**Backup**: `archive/backups/CLAUDE_20251105_pre_streamlining.md`
+**This Version**: Optimized for effectiveness - added session checklist, improved TodoWrite visibility, removed redundancy
 **Maintenance**: Update this file when major workflows, architecture, or standards change

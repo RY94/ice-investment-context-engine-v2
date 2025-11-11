@@ -1,6 +1,6 @@
 # Investment Context Engine (ICE)
 
-> **🔗 LINKED DOCUMENTATION**: This is one of 6 essential core files that must stay synchronized. When updating this file, always cross-check and update the related files: `CLAUDE.md`, `PROJECT_STRUCTURE.md`, `ICE_DEVELOPMENT_TODO.md`, `PROJECT_CHANGELOG.md`, and `ICE_PRD.md` to maintain consistency across project documentation.
+> **🔗 LINKED DOCUMENTATION**: This is one of 8 essential core files that must stay synchronized. When updating this file, always cross-check and update the related files: `ARCHITECTURE.md`, `CLAUDE.md`, `PROJECT_STRUCTURE.md`, `ICE_DEVELOPMENT_TODO.md`, `PROJECT_CHANGELOG.md`, `ICE_PRD.md`, and `PROGRESS.md` to maintain consistency across project documentation.
 
 ![Python](https://img.shields.io/badge/python-v3.8+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -49,12 +49,13 @@ ICE addresses critical pain points faced by lean boutique hedge funds through an
 │  1. API/MCP (ice_data_ingestion/)      │
 │     ├── NewsAPI, Finnhub, Alpha Vantage│
 │     ├── MCP infrastructure             │
-│     └── SEC EDGAR connector            │
+│     └── SEC EDGAR connector (+ docling)│
 │                                         │
 │  2. Email (imap_email_ingestion/)      │
 │     ├── Broker research emails         │
 │     ├── Analyst reports (PDFs)         │
-│     └── BUY/SELL signal extraction     │
+│     ├── BUY/SELL signal extraction     │
+│     └── Docling processor (97.9% tables)│
 │                                         │
 │  3. Robust Framework                    │
 │     ├── Circuit breaker + retry logic  │
@@ -82,10 +83,40 @@ ICE addresses critical pain points faced by lean boutique hedge funds through an
 **Decision History**: See `archive/strategic_analysis/README.md` (all 5 options analyzed)
 **Location**: `updated_architectures/implementation/`
 
+**Docling Integration** (Switchable): Professional-grade document parsing for SEC filings (0% → 97.9% table extraction) and email attachments (42% → 97.9% accuracy). Toggle via `config.py` environment variables. See `md_files/DOCLING_INTEGRATION_TESTING.md` for usage.
+
+**Crawl4AI Integration** (Switchable): Hybrid URL fetching with smart routing for email links. Simple HTTP (fast, free) for direct downloads. Browser automation for complex sites (premium portals, JS-heavy IR pages). Toggle via `USE_CRAWL4AI_LINKS` environment variable. See `md_files/CRAWL4AI_INTEGRATION_PLAN.md` for strategy.
+
 **Documentation**:
 - 📖 **LightRAG Building Workflow**: `project_information/about_lightrag/lightrag_building_workflow.md` - Complete document ingestion pipeline
 - 📖 **LightRAG Query Workflow**: `project_information/about_lightrag/lightrag_query_workflow.md` - Query processing and retrieval strategies
 - 📓 **Notebook Design**: `ICE_MAIN_NOTEBOOK_DESIGN_V2.md` - Refined main notebook with workflow integration
+
+### Storage Architecture
+
+**Single Source of Truth**: All documents stored in `data/attachments/` with unified hierarchical structure
+
+```
+data/attachments/
+├── {email_uid}/                    # Email identifier for isolation
+│   ├── {file_hash}/                # SHA-256 hash for deduplication
+│   │   ├── original/               # Original files
+│   │   │   └── {filename}          # PDF, Excel, images, etc.
+│   │   ├── extracted.txt           # Extracted text content
+│   │   └── metadata.json           # Source tracking & processing info
+```
+
+**Two Processing Flows**:
+1. **AttachmentProcessor** - Email attachments (images, PDFs, Excel, Word, PowerPoint)
+2. **IntelligentLinkProcessor** - URL PDFs from research links in emails
+
+**Source Distinction**: `metadata.json` contains `source_type` field:
+- `"email_attachment"` - File attached to email
+- `"url_pdf"` - PDF downloaded from URL in email body
+
+**Text Extraction**: Switchable between Docling (97.9% table accuracy) and PyPDF2/pdfplumber (42% accuracy)
+
+**Current Size**: ~686 files (212 documents × ~3 files each)
 
 ### Core Technical Components
 
@@ -118,6 +149,53 @@ python config.py
 # Run basic demo
 python ice_simplified.py
 ```
+
+### **Enabling Crawl4AI for Advanced URL Fetching** ⚙️
+
+**Purpose**: Browser automation for JavaScript-heavy sites and login-protected research portals
+
+ICE uses a hybrid URL fetching strategy:
+- **Simple HTTP** (default): Fast, free - works for direct downloads (PDFs, Excel) and token-authenticated URLs (DBS research)
+- **Crawl4AI** (optional): Browser automation - handles complex sites (Goldman Sachs, Morgan Stanley portals, JS-heavy IR pages)
+
+**Enable Crawl4AI**:
+```bash
+# Set environment variable before starting ICE
+export USE_CRAWL4AI_LINKS=true
+
+# Optional: Configure timeout and browser mode
+export CRAWL4AI_TIMEOUT=60        # Default: 60 seconds
+export CRAWL4AI_HEADLESS=true      # Default: true (no browser window)
+
+# Run ICE with Crawl4AI enabled
+cd updated_architectures/implementation
+python ice_simplified.py
+
+# Or in Jupyter notebooks (already enabled in Cell 1 as of 2025-11-04)
+# Cell 1 includes: os.environ['USE_CRAWL4AI_LINKS'] = 'true'
+jupyter notebook ice_building_workflow.ipynb
+```
+
+**Disable Crawl4AI** (revert to simple HTTP only):
+```bash
+export USE_CRAWL4AI_LINKS=false
+python ice_simplified.py
+```
+
+**Verify Crawl4AI Status**:
+- Check notebook Cell 27 output for "Using Crawl4AI for Tier X: [URL]" messages
+- Check Cell 28 for Crawl4AI configuration status
+- Look for browser automation activity in logs
+
+**When to Enable**:
+- Processing broker research portals (Goldman, Morgan Stanley, JP Morgan)
+- Extracting from JavaScript-heavy investor relations pages (NVIDIA, AMD)
+- Handling multi-step link chains (Email → Portal landing → Report download)
+- Bypassing simple paywalls (Bloomberg, Reuters)
+
+**Impact**: Enabling Crawl4AI improves URL download success rate from ~30-40% → ~60-80% for complex sites, capturing 70-90% more premium broker research content.
+
+**See Also**: `md_files/CRAWL4AI_INTEGRATION_PLAN.md` for complete strategy and technical details.
 
 **Example Python usage:**
 ```python
@@ -166,6 +244,7 @@ rel_stats = categorize_relationships(relationships_data)
 - ✅ **Structured Data**: Class attributes (`last_extracted_entities`, `last_graph_data`) prepare for Phase 2.6.2 Signal Store
 - ✅ **F1 Score Improvement**: Expected 0.733 → ≥0.85 (17% gain, production-grade extraction with confidence scoring)
 - ✅ **UDMA Compliance**: Simple integration (~60 lines), imports production modules, zero code duplication, graceful fallback
+- 📧 **Demo**: See `imap_email_ingestion_pipeline/investment_email_extractor_simple.ipynb` for 25-cell comprehensive demonstration
 
 ### **Legacy Complex Architecture**
 

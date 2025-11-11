@@ -1,8 +1,8 @@
 # lightrag/requirements.txt
 # Minimal dependencies for ICE LightRAG integration
 
-# Core LightRAG
-lightrag
+# Core LightRAG (v1.4.9+ required for QueryResult with references)
+lightrag-hku>=1.4.9
 
 # For integration with existing Streamlit app
 streamlit

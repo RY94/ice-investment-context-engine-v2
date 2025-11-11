@@ -1,0 +1,22 @@
+|                                                    | Three months ended June 30,       | Three months ended June 30,       | Three months ended June 30,       |                                   |
+|----------------------------------------------------|-----------------------------------|-----------------------------------|-----------------------------------|-----------------------------------|
+|                                                    | 2024                              | 2025                              | 2025                              |                                   |
+|                                                    | RMB                               | RMB                               | USS                               | YoY % Change                      |
+|                                                    | (in millions, except percentages) | (in millions, except percentages) | (in millions, except percentages) | (in millions, except percentages) |
+| Alibaba China E-commerce Group:                    |                                   |                                   |                                   |                                   |
+| E-commerce                                         |                                   |                                   |                                   |                                   |
+| - Customer management                              | 81,088                            | 89,252                            | 12,459                            | 10%                               |
+| - Direct sales, logistics and others?              | 27,434                            | 29,325                            | 4,093                             | 7%                                |
+|                                                    | 108,522                           | 118,577                           | 16,552                            | 9%                                |
+| Quick commercel?)                                  | 13,196                            | 14,784                            | 2,064                             | 12%                               |
+| China commerce wholesale                           | 5,952                             | 6.711                             | 937                               | 13%                               |
+| Total Alibaba China E-commerce Group               | 127,670                           | 140,072                           | 19,553                            | 10%                               |
+| Alibaba International Digital Commerce Group:      |                                   |                                   |                                   |                                   |
+| International commerce retail                      | 23,691                            | 28,395                            | 3,964                             | 20%                               |
+| International commerce wholesale                   | 5,602                             | 6,346                             | 886                               | 13%                               |
+| Total Alibaba International Digital Commerce Group | 29,293                            | 34,741                            | 4,850                             | 19%                               |
+| Cloud Intelligence Group                           | 26,549                            | 33,398                            | 4,662                             | 26%                               |
+| All others!*                                       | 81,354                            | 58,599                            | 8,180                             | (28)%                             |
+| Unallocated                                        | 419                               | $19                               | 73                                |                                   |
+| Inter-segment elimination                          | (22,049)                          | (19,677)                          | (2,747)                           |                                   |
+| Consolidated revenue                               | 243,236                           | 247,652                           | 34,571                            | 2%                                |

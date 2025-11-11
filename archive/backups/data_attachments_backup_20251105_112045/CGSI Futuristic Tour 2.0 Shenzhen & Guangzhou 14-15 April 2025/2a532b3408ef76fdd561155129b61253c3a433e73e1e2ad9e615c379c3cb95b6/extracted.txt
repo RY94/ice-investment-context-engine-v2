@@ -1,0 +1,476 @@
+## CGS Futuristic Tour 2.0 Shenzhen &amp; Guangzhou 14-15 April 2025 Monday 14 Apr (Shenzhen)
+
+9am - 10.30am: BYD (1211 HK) 1hr company meeting + 30mins exhibition center - Enming Chang IR SP: HK$368.8 / share
+
+Mkt cap / EV: US$146bn / US$136bn
+
+24A Revenue: US$108bn
+
+24A PATMI: US$5.59bn (FY24/25 P/E: 25.1x / 19.3x)
+
+Reports 1Q25e earnings on 29 Apr 25 (qtrly net profit between 8.5 - 10bn yuan vs 8.1bn cons estimate)
+
+FY24 - 4.257mn deliveries
+
+2025 Target: 5.5m deliveries (of which 800k are overseas sales)
+
+Vs 2024 Actual: 4.257m deliveries (of which 417k are overseas sales)
+
+1Q24a / 4Q24a / 1Q25e profit per car: 6.6k / 9.4k / 9.2k (midpoint of est quarterly net profit) RMB
+
+1/2Q25e guidance is still 9k RMB profit per car
+
+## Overseas sales:
+
+1Q25a overseas sales 206k cars but kept same target for full year 25e overseas sales of 800k. When asked on why the implied rate is still the same at 200k per quarter on average, IR responded by saying that it takes a longer time from China to overseas customers + 2-3Q proportion of overseas sales vs China domestic sales will be lower (as China domestic sales picks up).
+
+## On why overseas sales had better margins
+
+In China, they are pricing it on the cost adding way (what their cost is per vehicle, they add a small margin on top of it) as it is a highly competitive market. However, taking this approach in overseas markets, they realize that their car prices 'would be too low' and the local market / government (might) not allow it as its akin to dumping. Hence they price their vehicles with reference to what's the current market pricing in that particular market and the resulting margin is always higher than in China.
+
+Auto financing and insurance (accompanying services besides selling just the car) are only in China at the moment. They are still a new entrant into the various overseas markets and will get more used to the markets gradually.
+
+## Overseas annual production capacity:
+
+Uzbekistan 50k units, Thailand 150k units
+
+By EOY, Brazil (150k units) &amp; Hungary (~200k units), Mexico (150k units) Turkey (150k units) Indonesia (150k units).
+
+India factory probability of opening is low.
+
+Summing it up, would be around 1mn annual production capacity in overseas markets (localization). Wang Chuanfu did mention to analysts he expected to see the majority of BYD's profits coming from overseas markets 'at a certain stage' but didn't specify about the timing to achieve that.
+
+Not everything would be localized (while meeting % localization requirements). The high-tech stuff will remain 100% in China (such as the 5 th  Gen DM technology).
+
+Battery is currently 100% from China and there's a ~3% cost down every year.
+
+God's Eye C (mass market)'s cost to BYD is &lt;5k RMB / car (3-4k RMB per car on average). Uses Orin-N chips, not Orin-X.
+
+Battery swapping (network) takes a very long time to build out.
+
+'the problem isn't high tariffs (like high but stable tariff rates in Brazil where they operate) but uncertain tariff environment'
+
+Yangwang U9:
+
+Ug
+
+<!-- image -->
+
+<!-- image -->
+
+## 11am - 12pm: BYD Electronics (285 HK) 1hr company meeting - Dan Zhen IR
+
+SP: HK$32.95 / share
+
+Mkt cap / EV: US$9.57bn / US$10.3bn
+
+24A Revenue: US$24.6bn
+
+24A PATMI: US$0.592bn (FY24/25 P/E: 16.4 / 12.4x) cons may revise
+
+Reports 1Q25e earnings on 25 Apr 25
+
+Assembly business (60% of FY24 revenue) FY25e GPM low single digit.
+
+Components &amp; Parts business (20% of FY24 revenue) FY25e GPM 15-20%
+
+In 2026e, with the introduction of the Apple foldable iphone, product value would increase (in terms of the metal casing)
+
+New Energy Vehicle business (12% of FY24 revenue) FY25e GPM 10-15%
+
+FY25e to have 50% growth in revenue. Auto biz is big long-term.
+
+FY24A 21.2bn revenue, IR said 80% of that is from BYD so 17bn revenue from BYD. In 2025e, it will be the same ratio, 80% from BYD.
+
+BYD deliveries of 4.257mn vehicles implies per vehicle content of 3998RMB per BYD vehicle on average in FY24A. In FY25e assuming 5.5m vehicles (+29.2% no. of units) and 50% revenue growth for BYDE at the NEV segment level, this implies content per vehicle to go from 3998 RMB to 4642 RMB (+16.1% dollar value). This is on average - there will be certain models / premium cars with a lot of content from BYDE etc.
+
+Smart cockpit, thermal mgmt., ADAS, suspension system for the Han / Tang L (new product start of production EOY2024)
+
+New Intelligent Product business (9% of FY24 revenue): This division consists of products that are not grouped under the consumer electronics and automotive electronics divisions, such as battery energy storage system (BESS), drones, point-of-sales (POS) machines, robotic vacuums and gaming hardware.
+
+BESS (energy storage): supported by BYD which mainly sells the products via distributors in Europe. In 22-23, business in Europe grew rapidly due to soaring electricity prices and an energy crisis, leading to the need to generate and store energy from alternative sources. Given that situation has come under control in recent months, BESS growth could moderate.
+
+AI server (5% of intelligent products business in FY24): role is similar to Inspur as an OEM server supplier with additional ODM services. BYDE is looking to develop and produce more critical components as a means to add value to its AI server business such as liquid cooling. Started delivering and there is strong demand. AI server did 0.7bn in 2024 and the target is 3-5bn revenue in 2025e. Certification from NVIDIA soon (but this has been for a few months now).
+
+Robotics no forecast this year. Currently working on R&amp;D for whole set / components for robots.
+
+Bigger &amp; heavier AMRs (autonomous mobile robots) to replace forklifts &amp; carts. BYD has 800k labour (operators). BYDE has 150k employees of which &gt;100k are operators. Implying that there's a lot of efficiency gains.
+
+## Tariff impact:
+
+BYDE has not been asked to absorb tariff.
+
+'Very limited impact on business' (but this was before the H20 ban etc)
+
+Apple to BYDE 100bn revenue of which 20bn component (no direct to US) and 80bn assembly (30-40% goes direct to US) but this 30-40% BYDE can look to do it in India Malaysia Hungary etc.
+
+AMRs for BYD factories (bigger, heavier ones will be developed):
+
+<!-- image -->
+
+2024A
+
+2025e Guidance
+
+Guidance yoy
+
+Cons
+
+Var to cons
+
+## 2.30pm - 3.30pm: AAC Tech (2018 HK) 1hr company meeting + 30mins - Daniel IR
+
+-7.9%
+
+SP: HK$36.45 / share | Mkt cap / EV: US$5.54bn / US$5.99bn
+
+24A Revenue: US$3.8bn | 24A PATMI: US$0.25bn (FY24/25 P/E: 22.4 / 16.9x) cons may revise
+
+Guidance: revenue double digit yoy growth (10-15% probably) GPM to improve this year vs FY24.
+
+19%
+
+11,288
+
+2.4%
+
+Other Products
+
+Total
+
+| 27,328   | 31,104   | 31,456   | -1.1%   |
+|----------|----------|----------|---------|
+
+Individual segment yoy growth guidance applied to 2024A numbers is -1.1% from consensus estimates (in line).
+
+Higher 2024 GPM due to strong optics business turnaround and expects momentum to continue with more high-end project ramps.
+
+Content value increase in smartphones (acoustics and haptics product spec upgrades), more contribution from its new vapor chamber products and automotive acoustics business, as well as new applications such as AI and robotics. Microphones are on a long-term upgrade cycle (2-3 years visibly) and some smartphone models are using 2-3 microphones each. Apple have 4 microphones per iphone. Middle range ones have 2 units. Foldable trifold cases has much higher ASPs and they are expanding their market share. Vapor chamber adoption by both international and Chinese major smartphone customers
+
+Robotics: involved more on the motor side. Other stuff like the brushless / brush motor, reducers, dexterous hands (key component is the coiless motor). They are expanding their efforts and recruiting staff.
+
+Current capacity is 85-90% in China and 10-15% other countries and they ship their products off to the assembly companies. US direct revenue exposure is limited.
+
+Foldable frame (very complexed, made up of tiny parts) warranting higher ASPs:
+
+<!-- image -->
+
+115
+
+115
+
+77
+
+49.0%
+
+## 5pm - 6.30pm: UBTech (9880 HK) 1hr company meeting + 30mins exhibition hall visit (humanoid robots) - Wilson Chen IR
+
+SP: HK$70.5 / share
+
+Mkt cap / EV: US$4.01bn / US$4.08bn
+
+24A Revenue: US$181.3mn (FY25e/26e EV/Sales: 13.68x / 9.47x)
+
+24A PATMI: US$(156)mn
+
+Plans to scale up production capacity by 100 times in 2025 so as to make 1000 Walker S humanoid robots this year (500 industrial, going to car companies of which 100-200 are to BYD mostly in the 2H25, and 500 for other uses excluding emotional support robots). Next year's goal is to produce 5 - 10k units.
+
+In consultation with BYD, 'box carrying' is the biggest need at the moment (low hanging fruit). BYD has 20k employees doing this and they estimate that they need 1 humanoid robot for every 2 human workers (1:2 replacement ratio). 1 worker costs 180k rmb / year.
+
+China human labour costs is also going up and less young people want to be in the factories to do the job. Average age in the factory is 40-50YO. Analogy provided was that in 2024, BYD needed to find 20k labour for their factory but couldn't find on their own and had to ask the government for help and they got it.
+
+Maintenance costs of the robot is ~10% in 5 years. Changing of the frequently used parts like the connection cables in elbow.
+
+Right now the Walker S1 can't change batteries on its own but the S2 will be able to. S2 will also have 1 more joint (importantly) more than the S1 which is around the hip, allowing it to turn around without moving its legs (crucial for navigating &amp; working in tight environments, box carrying activities etc).
+
+## BOM:
+
+At current small scale, BOM is 400k rmb, ASP is 600k rmb.
+
+At large scale (&gt;20k units, 2027e), BOM is 200k, ASP is 300k rmb.
+
+For the smaller / less complexed / not full humanoid robots such as the cashier robot where it doesn't require bottom half / movement, BOM could be 50k and ASP is 100k.
+
+For fault / leak identification robots, accuracy rate needs to be &gt;99% in order for the car companies to start ordering, UBTech has to keep training and testing. Right now its probably 50-60% accuracy rate but it could ramp up quite fast.
+
+R&amp;D expenses much higher than 24A, ratio will be lower than 30/40% of revenue. Breaking even isn't the focus at the moment - integrating humanoid robots into real world application is the greater goal. Breakeven point in 2027 - 3.5/4bn RMB revenue level will be the breakeven point (&gt;10k units in 27e).
+
+Walker S1
+
+<!-- image -->
+
+## Tuesday 15 Apr (Guangzhou)
+
+## 9.30am - 11am: Pony AI (PONY US) 1hr company meeting + 30mins robotaxi - George Shao Head of Capital Mkt IR
+
+SP: US$4.18 / share
+
+Mkt cap / EV: US$1.464bn / US$0.750bn (714m usd net cash)
+
+24A Revenue: US$75mn (FY25e/26e EV/Sales: 8.5x / 4.7x)
+
+24A PATMI: US$(275)mn
+
+ORAS RRCASEZE
+
+42 400-678-0008
+
+<!-- image -->
+
+They are the only player with meaningful fully driverless commercial operation in all 4 Tier-1 cities in China with total operating area over 2000+ km 2 .
+
+Our competitors insurance cost is similar to vehicles on the road, have 3x the insurance cost of ours as the insurers can see our safety record. The insurance cost can be even lower moving forward.
+
+Supervisors (on screen monitoring) are at 1:15 ratio now (1 supervisor to 15 on road robotaxis) and will be 1:20 by EOY. For instance, if there's a banner blocking the road and there is no way to navigate around it naturally, the AI will slow down &amp; park before asking for remote assistance in which the supervisor will click options on the screen and guide the AI to continue on the journey.
+
+In Beijing, Baidu didn't get the license for rush hour driving (implying their AI model isn't as good).
+
+For real human drivers, they know where peak demand is (for instance certain hours at the airport etc), Pony AI just needs to update our scheduler to direct the robotaxis there.
+
+Mainly using NVIDIA Orin-X chips at the moment.
+
+On LIDAR, they are using 4 Hesai at the top, and 3 Robosense on the sides / blindspots. The lidar + camera combo maps out the surroundings:
+
+ME(D)
+
+IA(O]
+
+<!-- image -->
+
+## Unit economics of a Pony robotaxi:
+
+Annual revenue: 145k+ rmb / vehicle (assuming 50% utilisation rate on 300 miles)
+
+- -TNC cut (10%): paid to Gaode &amp; Alipay
+- -Depreciation 62k rmb (assuming 5 years, no residual value)
+- -Operating costs 49k rmb (parking, insurance, charging, service &amp; maintenance, remote assistant)
+- = 20k rmb / vehicle EBIT (13.9% EBIT margin)
+
+Pony AI thinks that future margin could go from 13.9% to 45-50% margin. The bridge to that visualized future will come from revenue expansion (as scale and operational area picks up, utilisation picks up too as the taxi business requires scale) + lower unit operating costs due to larger scale.
+
+Currently an average didi driver would make around 180k rmb / driver, so that's up for grab.
+
+One topic not talked about is on how the average fare of a robotaxi will evolve as robotaxis become more mainstream. I would think that it'll likely be priced at a discount to the human driver but robotaxi companies will argue that its safer, more reliable etc. Unsure on the future economics at the stable state especially as new entrants come into the market. There's also potential for 3 rd  party financing (individuals can own a robotaxi operating in a fleet) for a robotaxi as it requires no human / management from the investor / owner. This would drive robotaxis to become a bigger commodity than what human-taxis are today and driving market average trip fares to be at cost of equity IRR - perhaps something like a human-less laundromat albeit more high-tech.
+
+## 2pm - 3.30pm: Ehang (EH US) 1hr company meeting + 30mins eVTOL demo (flying car) - Conor Yang (CFO), Anne Ji / Candice Qiu (IR)
+
+My view: eVTOL is a sector to take note of. Right now in the near term, primarily for tourism as passengers can ride in GZ and Hefei by end of June (3-10mins flights). China could see robo flying taxis in ~2028. EV makers like GAC, Geely, Xpeng are also going to have flying cars. Developing the low altitude economy is also high on the Chinese government's agenda - many provinces are going to have hundreds of landing platforms + vertiports in the next 2-3 years. They also have a lot of subsidies given to operators and manufacturers of eVTOLs. Laying down the first wave of infrastructure first.
+
+For Ehang, very far fetch but some back of the envelope calc for perhaps sometime in 2035: say we do 5000 units a year at 150k usd per unit, that's usd750m revenue, at 50% gross and 20% net margin, could be 150m PATMI implying 6.7x P/E (even with 2x dilution, could be ~13x P/E).  Not taking into account if / when they operate their own fleet themselves or in JVs with local government etc.
+
+SP: US$14.78 / share
+
+Mkt cap: US$0.938bn
+
+Revenue: US$63mn (EV/Sales: 14.68x 24A)
+
+FY24 / 25e / 26e BB cons
+
+Revenue: RMB456 / 886 / 1381mn (25/26e YoY growth: 94% / 56%)
+
+Gross margins: 61.37% / 60.54% / 60.04%
+
+4Q24 revenue RMB164.3mn | 4Q24 Deliveries 78 units of EH216
+
+FY24 revenue RMB456.2mn | FY24 Deliveries 216 units (implied ASP slightly under US$300k)
+
+FY25 guidance: revenue RMB900mn (97% yoy growth)
+
+Quarterly GAAP profitability in 2H25, full year GAAP profitability anticipated in 2026
+
+Opex to grow 40+% this year, R&amp;D will grow higher than 40+% (implying the rest will be lower).
+
+EH216-S is this passenger-carrying pilotless aircraft for urban air mobility. There are also fire fighting and logistics variants. Max normal cruising speed of 90kmh, max design speed 130kmh, range of 30km and endurance of 25min. Late last year, equipped with their new high-energy solid-state battery technology, it completed a continuous 48min flight (it will be 60minutes soon).
+
+As to why 2 seats in the EH216, the space / weight is expensive for eVTOLs. For Ubers/taxis, 2 seats usually anyway. 4 seater would be way costlier.
+
+Right now mainly aircraft sales to customers who buy their eVTOLs and sell tickets to end consumers, but in the future EHang would have recurring streams of revenue (operation services, JVs with local governments to sell tickets)
+
+Expanding production capacity, with plans to increase Yunfu production base capacity to 1000 units annually by 2025. Current manufacturing capacity is 300 units.
+
+<!-- image -->
+
+Total addressable market for urban air mobility estimates:
+
+Morgan Stanley puts global TAM at 1 trillion usd by 2040 and 9 trillion by 2050e and China to contribute 30% of TAM.
+
+Chinese govt says that 2030 may have 100k eVTOLs in China.
+
+## Urban Air Mobility use cases: Passenger Transportation
+
+1. Aerial tourism (largest near term one): sizable potential aerial tourism market in China. There's 14,900 A-level and above scenic spots in China and assuming 15% of these sites have 10 eVTOLs on site would equate to 22,350 eVTOLs just for tourism. This is supported by the NDRC and other tourism related administrations which has laid out plans to upgrade 'advanced' sightseeing equipment including low-altitude aircraft. Logically it would be great for the overarching nation's tourism targets too.
+2. Airport Air Shuttle (the next in line after tourism): 2 ways from airport to city, fixed L-pads
+3. Intra-city Air Taxi: like a aerial didi of sorts. There's 7.2mn ride hailing cars in China (not including the 1.4mn taxis), at 40% activity rate, there's 2.88mn ride hailing cars equivalent. A 1% penetration rate would equate to 28k eVTOL air-taxis. Focus on intra-city and not inter-city as the high speed rail network in China is great.
+4. Emergency Use: firefighting, medical etc.
+
+Aerial Tourism Unit Economics
+
+Trips per day
+
+10
+
+## EH216-S Aerial Tourism Unit Economics:
+
+Ticket per seat imb
+
+Days worked per year
+
+Revenue per year
+
+-Depreciation
+
+-Battery and others
+
+-Operation crew team
+
+-Insurance
+
+-Infrastructure
+
+Total OPEX
+
+Annual EBIT per eVTOL
+
+EBIT margin
+
+Cost per EH216-S
+
+Payback period (years)
+
+| 256                     | 256            |
+|-------------------------|----------------|
+|                         | 2,554,880      |
+| Ex-VAT revenue per year | 2,401,587      |
+|                         | 9%             |
+|                         | 27%            |
+|                         | 6%             |
+|                         | 8%             |
+|                         | 52%            |
+|                         | 1,248,825      |
+|                         | 1,152,762      |
+|                         | 48.0%          |
+|                         | 2,500,000 2.17 |
+
+Assuming 10 trips per day for a total 20 seats per day with a ticket price of 500rmb (right now the ticket prices are 800-1000rmb for the existing EH216s at tourism sites) x 256 working days a year gives you revenue of 2.4mn rmb / year. Payback period of 2.17 years. This is excluding govt subsidies (certain provinces &amp; city govt provides rewards for launching new routes &amp; subsidies for operating eVTOLs). I do think 500rmb is still pretty steep for a tourism ticket, but compared to existing helicopter sightseeing lowaltitude scenic flights of around 130-140rmb per minute, it does make sense to settle around 500rmb per ticket or maybe even 3/400rmb for the experience lasting say 8/10 minutes.
+
+## Order backlog:
+
+Among the 8 major customers so far, EHang has delivered 190 aircraft to them, and there is intent orders from this 8 major customers for another 1020 aircraft (subject to final agreements and conditions + could take few years).
+
+## BOM:
+
+Gross margin 60%. COGS 40%. Of the 40%, 80% is BOM, the rest is labour and product guarantee etc. Of the BOM, 1/3 is battery and motor, battery is high single digit so say 8% so motors could be ~25%. Carbon fibre fuselage is the largest component for BOM. On tariff impacts, 93/94% of the BOM is made in China and only a small portion of the rest from US. No sales to the US.
+
+## Tech advantage:
+
+8 arm rotors, if 3 fails even on the same side, the EH216 will still be able to operate safely due to the self balancing algo + design avoids single point of failure. Most peers need professional pilots and fixed routes for autonomous flying. When you remove pilots, you remove human error.
+
+They have 700+ patents. The speed of the motor is calculated in a very short span of time, to self-balance even in strong wind conditions whereas a traditional helicopter might tilt. Have 16 rotors that can alternate speed to self balance.
+
+## Working capital cycle is healthy:
+
+There are order / framework contracts in place. Receive deposit from the customer, put in production cycle (2-3 months to complete) and receive 90% of the cash upon delivery, 10% is paid by the customer 1 year
+
+499
+
+TARA
+
+later as a form of quality guarantee. Their payment terms to the suppliers are 4-6months. eVTOLs are longterm assets, 15 years depreciation schedule.
+
+With likes of GAC, Geely, Xpeng taking part in this space and more competitors in the mix in the future, won't be surprised to see BYD to take part as well as the industry develops. Nevertheless, they do have what I think is at least 2-3 years headstart on peers due to their certification from the govt not just on airworthiness but on their design (including algo) and production cert. This is a bigger headstart than say the robotaxi space in my opinion. Compared to land robotaxis which is on the ground and 'probably' less life threatening, it'll be more important to the end consumer for a company's safety / operational track record before they embrace it. They got the Type Certificate (most difficult to get) from the Chinese government 2 years ago while peers still haven't today. Will be an important industry to keep tabs on.
+
+Lo tren
+
+## 4.30pm - 6pm: WeRide (WRD US) 40mins company meeting + 20mins Robobus test ride - Vivian Ye (Director of Capital Markets), Mengchen (Senior Mgr)
+
+## Address 官洲生命科学创新中心
+
+JPM Alex Yao initiated coverage on 24 Jan 25 at SP $14.50 for a $21 TP  on 14x 28e earnings for Robotaxi + robovan business and 6x 26e P/S for Robobus + robosweeper + ADAS solution business
+
+<!-- image -->
+
+SP: US$8.44 / share
+
+Mkt cap: US$2.3bn
+
+Revenue: US$50mn (EV/Sales: 66x) (FY25e/26e: 140 / 421mn )
+
+Revenue 24 / 25e / 26e: RMB$361.1mn / 1,023mn / 3,063mn
+
+GPM 23/24: 45.66% / 30.66%
+
+PATMI: US$(349.6)mn (FY25e/26e: (132) / (77)mn )
+
+Company was listed on Nasdaq on 28 Oct 24 at $15.5/share.
+
+Right now and in near future, revenue contribution is in this order in terms of importance: robobus, robosweeper, robovan, robotaxi. But in the future, robotaxis will be the biggest fleet &amp; contributor to our revenue (&gt;50% of revenue). Ramp up will be 'fast, pretty huge'. 40-60% net margin for robotaxis in the future. We want to collaborate with the largest ride hailing companies locally.
+
+Speed limits: bus/van 40-60kmh, robotaxi 100-120kmh, robosweeper 15kmh.
+
+Global Leader in Autonomous Driving
+
+L® WeRide
+
+<!-- image -->
+
+## Business model:
+
+Robotaxi peers want to be Uber, but we work with Uber. We add a markup and sell each vehicle to Uber at a margin. Costs now is 60k usd per vehicle but with scale (&gt;1000 vehicles) we can keep costs below 50k usd. Price we sell to Uber is way higher but can't disclose. Weride don't manufacture, procures from suppliers.
+
+Weride sell the car but will have recurring revenue from service fee (every year mapping, deployment, adjust algo, upgrading of software, building fleet management capabilities for them) + revenue sharing with the ride hailing partners.
+
+Uber Abu Dhabi, weride's cars have same pricing as Uber black. Weride don't own the fleet, the owner (Uber) procures the vehicle and weride charges take rate from the fleet owners.
+
+Unit Economics in various countries:
+
+Revenue
+
+Revenue per year
+
+# Rides per day
+
+Cost
+
+Lifecyle of EV(1)
+
+Vehicle cost
+
+Profit
+
+Profit
+
+Profit margin
+
+| Unit China VAE UK US                                                    | Unit China VAE UK US   | Unit China VAE UK US   | Unit China VAE UK US   | Unit China VAE UK US   | Unit China VAE UK US   |
+|-------------------------------------------------------------------------|------------------------|------------------------|------------------------|------------------------|------------------------|
+| USD #                                                                   | 41,714                 |                        | 256,641                | 200,750                |                        |
+| Average kilometer per order                                             | km/order               | 20                     | 25                     | 25                     |                        |
+| Kilometer per day                                                       |                        | 10.0                   | 10.0                   | 10.0                   | 25 10.0                |
+| Kilometer per year                                                      | km/day                 | 200 73,000             | 250                    | 250                    | 250                    |
+| Price per kilometer                                                     | km/year                |                        | 91,250                 |                        |                        |
+|                                                                         | USD/km                 | 0.57                   | 0.8                    | 91,250 2.8             | 91,250                 |
+|                                                                         | km                     | 400,000                | 400,000                |                        |                        |
+|                                                                         | USD                    |                        |                        | 400,000                | 400,000                |
+| Depreciation per year(2)                                                | USD                    | 50,000                 | 50,000                 | 75,000                 | 100,000                |
+| Depreciation per km                                                     | USD                    | 13,036                 | 16,295                 | 24,442                 | 32,589                 |
+|                                                                         |                        | 0.13                   | 0.13                   | 0.19                   | 0.25                   |
+| Energy cost per year(2)                                                 | USD                    | 2,860                  | 10,258                 | 38,586                 | 8,343                  |
+| Energy cost per km                                                      | USD                    | 0.03                   | 0.08                   | 0.30                   | 0.06                   |
+| Labor cost per year                                                     | USD                    | 2,857                  | 2,295                  | 7,500                  | 10,000                 |
+| Remote safety officer - vehicle ratio (3) #                             |                        | 1:10                   | 1:10                   | 1:10                   | 1:10                   |
+| Insurance cost                                                          | USD                    | 714                    | 437                    | 2,400                  | 9,240                  |
+| Other operating costs (4)                                               | USD                    | 2,500                  | 6,710                  | 12,300                 | 11.240                 |
+| Profit before financing cost per year Financing cost (to vehicle owner) | USD USD                | 19,747 5,000           | 38,800 5,000           | 171,413 7,500          | 129,338 10,000         |
+|                                                                         | % of vehicle cost      | 10.0%                  | 10.0%                  | 10.0%                  | 10.0%                  |
+| USD                                                                     |                        | 14,747                 | 33,800                 | 163,913                | 119,338                |
+| %                                                                       |                        | 35.4%                  | 45.2%                  | 63.9%                  | 59.4%                  |
+
+In countries with labour cost is higher, we can tend to make more money. Middle east has strong top down push, EU has fierce labour shortage issues. For countries with no experience in autonomous driving, they prefer robobus to try out first.
+
+## Cash burn &amp; competition:
+
+Cash burn is 100m+ usd a year with majority of it being labour. Waymo burns 1-2bn usd / year.
+
+Tesla's 1 st  model was revealed in late 2024, definitely one of the competitors in the future but they won't catch up with weride in 6-12 months. They only got their first license in California recently. For Tesla, key incentive is still selling cars.
+
+'3-4 years ago, OEM/ ride hailing companies aren't proactive in reaching out to us. Last 1-2 years, a lot of people want to join this segment, contacting us. Robotaxi will grow faster than what people anticipate.'

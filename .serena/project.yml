@@ -12,7 +12,42 @@ ignore_all_files_in_gitignore: true
 # same syntax as gitignore, so you can use * and **
 # Was previously called `ignored_dirs`, please update your config if you are using that.
 # Added (renamed) on 2025-04-07
-ignored_paths: []
+# Updated 2025-11-05: Context optimization to reduce token usage
+ignored_paths:
+  # ARCHIVE - Historical files (438MB), no active development use
+  - "archive/**"
+
+  # TMP - Exclude old files from context, but allow R/W for new temp files
+  - "tmp/**/*.py"      # Old test files
+  - "tmp/**/*.md"      # Old diagnostic files
+  - "tmp/**/*.png"     # Old images
+  - "tmp/**/*.jpg"     # Old images
+  - "tmp/**/logs/**"   # Old log copies
+  - "tmp/**/data/**"   # Old data copies
+  - "tmp/**/config/**" # Old config copies
+  - "tmp/**/cleared_attachments_temp/**"  # Stale directory
+  - "tmp/**/docling_diagnostic/**"        # Old diagnostic
+  - "tmp/**/docling_repo/**"              # Old repo copy
+
+  # LOGS - Exclude from context but keep readable for debugging
+  - "logs/**"
+
+  # SESSIONS - Old Claude session data (1.9MB)
+  - ".claude/data/sessions/**"
+
+  # MCP SERVERS - Embedded git repos
+  - "mcp_servers/**"
+
+  # BUILD ARTIFACTS - Auto-generated, can be rebuilt
+  - "**/__pycache__/**"
+  - "**/.ipynb_checkpoints/**"
+  - "**/*.pyc"
+  - "**/.venv/**"
+  - "**/node_modules/**"
+  - "**/*.egg-info/**"
+
+  # DATA - Large attachments (may contain sensitive info)
+  - "data/attachments/**"
 
 # whether the project is in read-only mode
 # If set to true, all editing tools will be disabled and attempts to use them will result in an error
