@@ -43,6 +43,9 @@ from updated_architectures.implementation.data_ingestion import DataIngester as 
 # Import ICEConfig with docling toggles
 from updated_architectures.implementation.config import ICEConfig
 
+# Import ingestion manifest for deduplication
+from src.ice_core.ingestion_manifest import IngestionManifest
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -862,6 +865,11 @@ class ICESimplified:
         else:
             self.query_router = None
             logger.info("Signal Store disabled, using LightRAG only")
+
+        # Initialize ingestion manifest for incremental updates
+        manifest_dir = Path(self.config.working_dir) / 'storage'
+        self.manifest = IngestionManifest(manifest_dir)
+        logger.info(f"✅ Ingestion manifest initialized ({len(self.manifest.manifest['documents'])} documents tracked)")
 
         logger.info("✅ ICE Simplified system initialized successfully")
 
@@ -1850,6 +1858,254 @@ class ICESimplified:
 
         logger.info(f"Incremental data ingestion completed: {len(results['holdings_updated'])}/{len(holdings)} updated")
         return results
+
+    def ingest_with_manifest(self, holdings: List[str],
+                            email_limit: int = 71,
+                            news_limit: int = 2,
+                            financial_limit: int = 2,
+                            market_limit: int = 1,
+                            sec_limit: int = 2,
+                            research_limit: int = 0,
+                            email_files: Optional[List[str]] = None) -> Dict[str, Any]:
+        """
+        Intelligent incremental ingestion using manifest to prevent duplicates.
+
+        This method uses the IngestionManifest to:
+        1. Track which documents have been ingested
+        2. Detect portfolio changes (new tickers added/removed)
+        3. Only fetch and process genuinely new documents
+        4. Update portfolio relevance scores for existing entities
+
+        Args:
+            holdings: Current portfolio holdings
+            email_limit: Max emails to process
+            news_limit: News articles per ticker
+            financial_limit: Financial docs per ticker
+            market_limit: Market data per ticker
+            sec_limit: SEC filings per ticker
+            research_limit: Research docs per ticker
+            email_files: Specific email files to process
+
+        Returns:
+            Ingestion results with deduplication metrics
+        """
+        from datetime import datetime, timedelta
+
+        start_time = datetime.now()
+
+        # Calculate portfolio delta
+        portfolio_delta = self.manifest.get_portfolio_delta(holdings)
+
+        results = {
+            'status': 'success',
+            'portfolio_delta': portfolio_delta,
+            'new_documents': 0,
+            'skipped_duplicates': 0,
+            'updated_documents': 0,
+            'new_tickers_data': {},
+            'metrics': {
+                'processing_time': 0.0,
+                'manifest_entries': len(self.manifest.manifest['documents']),
+                'deduplication_rate': 0.0
+            }
+        }
+
+        logger.info(f"🔄 Incremental ingestion with manifest")
+        logger.info(f"   Portfolio delta: +{portfolio_delta['added']} -{portfolio_delta['removed']}")
+
+        # Track cumulative counts for progress display
+        all_new_docs = []
+        skipped_count = 0
+
+        # STEP 1: Process emails (check for new ones)
+        try:
+            logger.info("📧 Checking for new emails...")
+
+            # Fetch available emails
+            available_emails = self.ingester.fetch_email_documents(
+                tickers=None,  # Universal ingestion
+                limit=email_limit,
+                email_files=email_files
+            )
+
+            # Filter to only genuinely new emails using manifest
+            new_emails = []
+            for email_doc in available_emails:
+                # Generate document ID
+                file_path = email_doc.get('file_path', '')
+                doc_id = self.manifest.get_document_id('email', file_path.replace('email:', ''))
+
+                # Check if already ingested
+                if not self.manifest.is_document_ingested(doc_id):
+                    # Also check content hash for duplicates with different names
+                    if not self.manifest.is_content_duplicate(email_doc['content']):
+                        new_emails.append(email_doc)
+
+                        # Add to manifest
+                        self.manifest.add_document(
+                            doc_id=doc_id,
+                            content=email_doc['content'],
+                            metadata={
+                                'source_type': 'email',
+                                'file_path': file_path,
+                                'portfolio_relevance': self._calculate_relevance(email_doc['content'], holdings)
+                            }
+                        )
+                    else:
+                        logger.debug(f"Skipping duplicate content: {doc_id}")
+                        skipped_count += 1
+                else:
+                    logger.debug(f"Skipping already ingested: {doc_id}")
+                    skipped_count += 1
+
+            # Ingest only new emails
+            if new_emails:
+                logger.info(f"✅ Found {len(new_emails)} new emails (skipped {skipped_count} duplicates)")
+
+                # Prepare documents for LightRAG
+                email_doc_list = [
+                    {
+                        'content': doc['content'],
+                        'file_path': doc.get('file_path'),
+                        'type': 'email',
+                        'symbol': 'PORTFOLIO',
+                        'ingestion_mode': 'incremental_manifest'
+                    }
+                    for doc in new_emails
+                ]
+
+                # Add to existing graph
+                email_result = self.core.add_documents_to_existing_graph(email_doc_list)
+
+                if email_result.get('status') == 'success':
+                    all_new_docs.extend(email_doc_list)
+                    results['new_documents'] += len(new_emails)
+            else:
+                logger.info(f"ℹ️ No new emails to process ({skipped_count} already in graph)")
+
+        except Exception as e:
+            logger.error(f"Email processing failed: {e}")
+            results['status'] = 'partial'
+
+        # STEP 2: Process new tickers only (from portfolio delta)
+        if portfolio_delta['added']:
+            logger.info(f"📊 Fetching data for {len(portfolio_delta['added'])} new tickers: {portfolio_delta['added']}")
+
+            for ticker in portfolio_delta['added']:
+                ticker_docs = []
+
+                try:
+                    # Fetch all data types for new ticker
+                    if news_limit > 0:
+                        news_docs = self.ingester.fetch_company_news(ticker, news_limit)
+                        for doc in news_docs:
+                            doc_id = self.manifest.get_document_id('api_news', f"{ticker}_{len(ticker_docs)}")
+                            if not self.manifest.is_document_ingested(doc_id):
+                                ticker_docs.append(doc)
+                                self.manifest.add_document(doc_id, doc.get('content', str(doc)), {
+                                    'source_type': 'api_news',
+                                    'ticker': ticker
+                                })
+
+                    if financial_limit > 0:
+                        financial_docs = self.ingester.fetch_financial_fundamentals(ticker, financial_limit)
+                        for doc in financial_docs:
+                            doc_id = self.manifest.get_document_id('api_financial', f"{ticker}_{len(ticker_docs)}")
+                            if not self.manifest.is_document_ingested(doc_id):
+                                ticker_docs.append(doc)
+                                self.manifest.add_document(doc_id, doc.get('content', str(doc)), {
+                                    'source_type': 'api_financial',
+                                    'ticker': ticker
+                                })
+
+                    if sec_limit > 0:
+                        sec_docs = self.ingester.fetch_sec_filings(ticker, limit=sec_limit)
+                        for doc in sec_docs:
+                            doc_id = self.manifest.get_document_id('sec', f"{ticker}_{len(ticker_docs)}")
+                            if not self.manifest.is_document_ingested(doc_id):
+                                ticker_docs.append(doc)
+                                self.manifest.add_document(doc_id, doc.get('content', str(doc)), {
+                                    'source_type': 'sec',
+                                    'ticker': ticker
+                                })
+
+                    # Add ticker docs to graph
+                    if ticker_docs:
+                        ticker_result = self.core.add_documents_to_existing_graph(ticker_docs)
+                        if ticker_result.get('status') == 'success':
+                            results['new_tickers_data'][ticker] = len(ticker_docs)
+                            results['new_documents'] += len(ticker_docs)
+                            all_new_docs.extend(ticker_docs)
+                            logger.info(f"✅ {ticker}: Added {len(ticker_docs)} documents")
+
+                    # Update API coverage in manifest
+                    self.manifest.update_api_coverage(ticker, {
+                        'news': min(news_limit, len([d for d in ticker_docs if isinstance(d, str) and 'news' in d.lower()])),
+                        'financial': min(financial_limit, len([d for d in ticker_docs if isinstance(d, str) and 'financial' in d.lower()])),
+                        'sec': min(sec_limit, len([d for d in ticker_docs if isinstance(d, str) and 'sec' in d.lower()]))
+                    })
+
+                except Exception as e:
+                    logger.error(f"Failed to fetch data for {ticker}: {e}")
+                    results['status'] = 'partial'
+
+        # STEP 3: Update portfolio in manifest
+        self.manifest.update_portfolio(holdings)
+
+        # STEP 4: Save manifest
+        self.manifest.save()
+
+        # Calculate final metrics
+        processing_time = (datetime.now() - start_time).total_seconds()
+        results['metrics']['processing_time'] = processing_time
+        results['skipped_duplicates'] = skipped_count
+
+        # Calculate deduplication rate
+        total_checked = results['new_documents'] + skipped_count
+        if total_checked > 0:
+            results['metrics']['deduplication_rate'] = (skipped_count / total_checked) * 100
+
+        # Log summary
+        logger.info(f"\n{'='*60}")
+        logger.info(f"📊 INCREMENTAL INGESTION COMPLETE")
+        logger.info(f"{'='*60}")
+        logger.info(f"✅ New documents: {results['new_documents']}")
+        logger.info(f"⏭️ Skipped duplicates: {results['skipped_duplicates']}")
+        logger.info(f"📈 Deduplication rate: {results['metrics']['deduplication_rate']:.1f}%")
+        logger.info(f"⏱️ Processing time: {processing_time:.1f}s")
+        logger.info(f"📁 Manifest entries: {results['metrics']['manifest_entries']}")
+
+        if portfolio_delta['added']:
+            logger.info(f"🆕 New tickers processed: {portfolio_delta['added']}")
+        if portfolio_delta['removed']:
+            logger.info(f"🗑️ Removed from portfolio: {portfolio_delta['removed']}")
+
+        return results
+
+    def _calculate_relevance(self, content: str, holdings: List[str]) -> float:
+        """
+        Calculate document relevance to portfolio.
+
+        Score 0.0-1.0 based on:
+        - Direct ticker mentions (primary)
+        - Competitor/supply chain mentions (secondary)
+        - Sector relevance (tertiary)
+        """
+        content_upper = content.upper()
+
+        # Check primary holdings
+        primary_count = sum(1 for ticker in holdings if ticker.upper() in content_upper)
+        if primary_count > 0:
+            return min(1.0, 0.8 + (primary_count * 0.1))  # 0.8-1.0 for primary
+
+        # Check ecosystem (simplified - in production, would use graph traversal)
+        ecosystem_keywords = ['semiconductor', 'supply chain', 'competitor', 'customer']
+        ecosystem_count = sum(1 for keyword in ecosystem_keywords if keyword.upper() in content_upper)
+        if ecosystem_count > 0:
+            return min(0.7, 0.4 + (ecosystem_count * 0.1))  # 0.4-0.7 for ecosystem
+
+        # Default low relevance
+        return 0.2
 
     def _format_progress_bar(self, count: int, total: int, width: int = 30) -> str:
         """

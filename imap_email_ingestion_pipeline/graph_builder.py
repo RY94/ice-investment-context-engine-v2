@@ -8,10 +8,26 @@ from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime
 import hashlib
 import json
+import sys
+from pathlib import Path
+
+# Add src/ice_core to path for importing temporal_enhancer
+sys.path.insert(0, str(Path(__file__).parent.parent / 'src' / 'ice_core'))
+
+try:
+    from temporal_enhancer import TemporalEnhancer
+except ImportError:
+    # Fallback if temporal_enhancer not available
+    TemporalEnhancer = None
 
 class GraphBuilder:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+
+        # Initialize temporal enhancer if available
+        self.temporal_enhancer = TemporalEnhancer() if TemporalEnhancer else None
+        if not self.temporal_enhancer:
+            self.logger.warning("TemporalEnhancer not available - temporal metadata will not be added")
         
         # Edge types for ICE knowledge graph
         self.edge_types = {
@@ -151,6 +167,14 @@ class GraphBuilder:
             # Add thread relationships
             thread_edges = self._create_thread_relationships(email_data, email_node['id'])
             graph_data['edges'].extend(thread_edges)
+
+            # Create temporal edges if temporal enhancer is available
+            if self.temporal_enhancer:
+                temporal_edges = self.temporal_enhancer.create_temporal_edges(
+                    graph_data['nodes'], graph_data['edges']
+                )
+                graph_data['edges'].extend(temporal_edges)
+                self.logger.info(f"Added {len(temporal_edges)} temporal edges")
 
             self.logger.info(f"Built graph with {len(graph_data['nodes'])} nodes and {len(graph_data['edges'])} edges")
 
@@ -322,10 +346,10 @@ class GraphBuilder:
         try:
             if ticker_data.get('confidence', 0) < self.min_confidence:
                 return None
-            
+
             ticker = ticker_data['ticker']
             ticker_id = f"ticker_{ticker}"
-            
+
             ticker_node = {
                 'id': ticker_id,
                 'type': 'ticker',
@@ -335,7 +359,15 @@ class GraphBuilder:
                 },
                 'created_at': datetime.now().isoformat()
             }
-            
+
+            # Apply temporal enhancement if available
+            if self.temporal_enhancer:
+                source_date = self._extract_date_from_email(email_data)
+                context = ticker_data.get('context', '')
+                ticker_node = self.temporal_enhancer.enhance_entity(
+                    ticker_node, source_date, context
+                )
+
             mentions_edge = self._create_edge(
                 source_id=email_node_id,
                 target_id=ticker_id,
@@ -347,7 +379,14 @@ class GraphBuilder:
                     'timestamp': email_data.get('date', '')
                 }
             )
-            
+
+            # Apply temporal enhancement to edge if available
+            if self.temporal_enhancer:
+                source_date = self._extract_date_from_email(email_data)
+                mentions_edge = self.temporal_enhancer.enhance_edge(
+                    mentions_edge, source_date, ticker_data.get('context', '')
+                )
+
             return {'node': ticker_node, 'edge': mentions_edge}
             
         except Exception as e:
@@ -360,10 +399,10 @@ class GraphBuilder:
         try:
             if company_data.get('confidence', 0) < self.min_confidence:
                 return None
-            
+
             company = company_data['company']
             company_id = f"company_{hashlib.md5(company.lower().encode()).hexdigest()[:8]}"
-            
+
             company_node = {
                 'id': company_id,
                 'type': 'company',
@@ -374,7 +413,15 @@ class GraphBuilder:
                 },
                 'created_at': datetime.now().isoformat()
             }
-            
+
+            # Apply temporal enhancement if available
+            if self.temporal_enhancer:
+                source_date = self._extract_date_from_email(email_data)
+                context = company_data.get('context', '')
+                company_node = self.temporal_enhancer.enhance_entity(
+                    company_node, source_date, context
+                )
+
             discusses_edge = self._create_edge(
                 source_id=email_node_id,
                 target_id=company_id,
@@ -386,7 +433,14 @@ class GraphBuilder:
                     'timestamp': email_data.get('date', '')
                 }
             )
-            
+
+            # Apply temporal enhancement to edge if available
+            if self.temporal_enhancer:
+                source_date = self._extract_date_from_email(email_data)
+                discusses_edge = self.temporal_enhancer.enhance_edge(
+                    discusses_edge, source_date, company_data.get('context', '')
+                )
+
             return {'node': company_node, 'edge': discusses_edge}
             
         except Exception as e:
@@ -399,10 +453,10 @@ class GraphBuilder:
         try:
             if person_data.get('confidence', 0) < self.min_confidence:
                 return None
-            
+
             name = person_data['name']
             person_id = f"person_{hashlib.md5(name.lower().encode()).hexdigest()[:8]}"
-            
+
             person_node = {
                 'id': person_id,
                 'type': 'person',
@@ -412,7 +466,15 @@ class GraphBuilder:
                 },
                 'created_at': datetime.now().isoformat()
             }
-            
+
+            # Apply temporal enhancement if available
+            if self.temporal_enhancer:
+                source_date = self._extract_date_from_email(email_data)
+                context = person_data.get('context', '')
+                person_node = self.temporal_enhancer.enhance_entity(
+                    person_node, source_date, context
+                )
+
             mentions_edge = self._create_edge(
                 source_id=email_node_id,
                 target_id=person_id,
@@ -423,7 +485,14 @@ class GraphBuilder:
                     'timestamp': email_data.get('date', '')
                 }
             )
-            
+
+            # Apply temporal enhancement to edge if available
+            if self.temporal_enhancer:
+                source_date = self._extract_date_from_email(email_data)
+                mentions_edge = self.temporal_enhancer.enhance_edge(
+                    mentions_edge, source_date, person_data.get('context', '')
+                )
+
             return {'node': person_node, 'edge': mentions_edge}
             
         except Exception as e:
@@ -725,7 +794,7 @@ class GraphBuilder:
         
         return edge
     
-    def _add_sentiment_to_edges(self, edges: List[Dict[str, Any]], 
+    def _add_sentiment_to_edges(self, edges: List[Dict[str, Any]],
                                sentiment: Dict[str, Any]):
         """Add sentiment information to relevant edges"""
         try:
@@ -735,15 +804,39 @@ class GraphBuilder:
                 'bullish_score': sentiment.get('bullish_score', 0),
                 'bearish_score': sentiment.get('bearish_score', 0)
             }
-            
+
             # Add sentiment to ticker and company edges
             for edge in edges:
                 if edge['type'] in ['mentions', 'discusses', 'rates', 'price_targets']:
                     edge['properties'].update(sentiment_data)
-        
+
         except Exception as e:
             self.logger.warning(f"Failed to add sentiment to edges: {e}")
-    
+
+    def _extract_date_from_email(self, email_data: Dict[str, Any]) -> Optional[datetime]:
+        """Extract and parse date from email data for temporal metadata."""
+        try:
+            # Try to get date from email data
+            date_str = email_data.get('date', '')
+            if not date_str:
+                return None
+
+            # Parse various date formats
+            from dateutil.parser import parse as parse_date
+            from datetime import timezone
+
+            parsed_date = parse_date(date_str)
+
+            # Ensure timezone awareness
+            if parsed_date.tzinfo is None:
+                parsed_date = parsed_date.replace(tzinfo=timezone.utc)
+
+            return parsed_date
+
+        except Exception as e:
+            self.logger.warning(f"Failed to parse email date '{date_str}': {e}")
+            return None
+
     def validate_graph_structure(self, graph_data: Dict[str, Any]) -> Dict[str, Any]:
         """Validate graph structure and return validation results"""
         validation_results = {

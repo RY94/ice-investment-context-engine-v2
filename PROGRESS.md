@@ -2,7 +2,7 @@
 
 > **Purpose**: Session-level working memory - what I'm doing NOW
 > **Update**: Every development session (mandatory)
-> **Last Updated**: 2025-11-10 (Temperature Testing Module Complete & Validated)
+> **Last Updated**: 2025-11-11 (Phase 1 Architecture Redesign Complete)
 
 > **🔗 LINKED DOCUMENTATION**: This is one of 8 essential core files. PROGRESS.md is updated EVERY session with current state. For project overview, tasks, and history, see: `ARCHITECTURE.md`, `CLAUDE.md`, `README.md`, `PROJECT_STRUCTURE.md`, `PROJECT_CHANGELOG.md`, `ICE_DEVELOPMENT_TODO.md`, `ICE_PRD.md`.
 
@@ -10,7 +10,55 @@
 
 ## 🎯 ACTIVE WORK (This Session)
 
-**Current Sprint**: Temperature Testing Validation & Entity Matrices ✅ COMPLETE
+**Current Sprint**: Phase 1 Architecture Redesign - Temporal Enhancement & Deduplication ✅ COMPLETE
+
+### Session 2025-11-11: Phase 1 Architecture Redesign Implementation
+
+**Context**: Comprehensive architecture review focusing on graph structure, incremental updates, and temporal analysis capabilities. Goal: Enable 80% more business value through intelligent data organization.
+
+**Work completed**:
+
+1. **Document Deduplication Manifest System** (~409 lines)
+   - [x] Created `src/ice_core/ingestion_manifest.py` with SHA256 content hashing
+   - [x] Implemented portfolio delta tracking (added/removed/kept tickers)
+   - [x] Added API data coverage tracking per ticker
+   - [x] Integrated manifest into ice_simplified.py with `ingest_with_manifest()` method
+   - [x] Automatic backup and recovery for manifest corruption
+
+2. **Temporal Enhancement System** (~446 lines)
+   - [x] Created `src/ice_core/temporal_enhancer.py` with comprehensive temporal metadata
+   - [x] Implemented freshness scoring with exponential decay (half-life: 30 days)
+   - [x] Added quarter/year extraction from text (Q2 2024, etc.)
+   - [x] Created temporal edge types (METRIC_EVOLVED, TEMPORALLY_CORRELATED)
+   - [x] Integrated into graph_builder.py for automatic enhancement
+
+3. **Portfolio Relevance Scoring**
+   - [x] Implemented 3-tier scoring (1.0 primary, 0.7 ecosystem, 0.3 peripheral)
+   - [x] Added relevance metadata to all entities during ingestion
+   - [x] Prepared foundation for query-time smart filtering
+
+4. **Integration Testing**
+   - [x] Created comprehensive test suite `tests/test_temporal_enhancement.py`
+   - [x] All 4 test categories passing (basic, integration, edges, freshness)
+   - [x] Verified temporal metadata correctly added to entities and edges
+
+**Files created/modified**:
+- Created: `src/ice_core/ingestion_manifest.py` (409 lines)
+- Created: `src/ice_core/temporal_enhancer.py` (446 lines)
+- Created: `tests/test_temporal_enhancement.py` (292 lines)
+- Created: `md_files/PHASE1_INTEGRATION_GUIDE.md` (documentation)
+- Modified: `ice_simplified.py` (added ingest_with_manifest method)
+- Modified: `graph_builder.py` (integrated TemporalEnhancer)
+
+**Architecture decisions**:
+- **Universal graph approach**: Single graph with all entities (no pre-filtering)
+- **Manifest-based deduplication**: Content hashing prevents duplicate processing
+- **Event-sourced portfolio tracking**: Complete history of portfolio changes
+- **Temporal-first design**: All entities/edges include time metadata
+
+**Status**: ✅ Phase 1 Complete - Ready for Phase 2 (causal relationships & query pipeline)
+
+---
 
 ### Session 2025-11-10: Validation & Enhancement
 
@@ -75,22 +123,25 @@
 
 **Immediate priorities** (Next 1-2 sessions):
 
-1. **Continue evaluation framework development** (if evaluation work in progress)
-   - Expand test query set beyond 12 queries
-   - Refine relevancy metric (current: simple word overlap, high variance)
-   - Add entity extraction accuracy tests with reference answers
+1. **Phase 2: Entity Model Enhancement**
+   - Update entity model with metrics as first-class nodes
+   - Implement causal relationship types (causes, correlates_with, impacts)
+   - Add lag period detection for causal relationships
+   - Extend trend detection capabilities
 
-2. **Production data ingestion** (if ready to process real data)
-   - Run temperature testing on diverse email corpus
-   - Determine optimal temperature for production (recommendation: 0.2-0.3)
-   - Process full email dataset with validated pipeline
+2. **Phase 3: Multi-Stage Query Pipeline**
+   - Build temporal-aware query routing
+   - Implement freshness-based result ranking
+   - Add support for time-bounded queries ("last 30 days", "Q2 2024")
+   - Enable trend queries ("how has X changed over time")
 
-3. **Query workflow enhancements** (if query optimization needed)
-   - Test query performance with temperature-extracted graphs
-   - Benchmark query answering at different temperatures
-   - Document optimal temperature combinations (extraction vs querying)
+3. **Integration Testing**
+   - Test manifest deduplication with real email corpus
+   - Validate temporal edges in production graph
+   - Benchmark query performance with temporal filters
+   - Update notebooks with manifest-based ingestion
 
-**No immediate blockers** - All validation complete, module ready for production use
+**No blockers** - Phase 1 complete, all tests passing, ready for Phase 2
 
 ---
 
