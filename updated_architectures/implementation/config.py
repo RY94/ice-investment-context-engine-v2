@@ -14,6 +14,227 @@ from typing import Dict, Optional, Any, List
 from datetime import datetime
 
 
+# ========== CONFIDENCE CENTRALIZATION (Phase 2.8 - 2025-11-25) ==========
+# All confidence values centralized here for consistency and tuning
+# Organized by category for easy discovery and modification
+
+CONFIDENCE_DEFAULTS: Dict[str, float] = {
+    # === Source-specific defaults (used when source doesn't provide confidence) ===
+    'source_default': 0.5,           # Unknown or unspecified sources
+    'source_api': 0.85,              # API-provided data (FMP, Alpha Vantage, etc.)
+    'source_email': 0.90,            # Email-sourced documents (research reports)
+    'source_sec_filing': 0.95,       # SEC EDGAR filings (regulatory, verified)
+    'source_news': 0.70,             # News articles (variable quality)
+    'source_pattern': 0.70,          # Pattern-extracted data (regex matches)
+
+    # === Node type defaults (for graph nodes without confidence) ===
+    'node_email': 1.0,               # EMAIL nodes (existence is certain)
+    'node_sender': 1.0,              # SENDER nodes (existence is certain)
+    'node_ticker': 0.98,             # Validated ticker symbols
+    'node_entity': 0.80,             # General extracted entities
+    'node_relationship': 0.80,       # Graph edges/relationships
+
+    # === Extraction defaults (for entity/relationship extraction) ===
+    'extraction_high': 0.95,         # High confidence extraction (exact match)
+    'extraction_medium': 0.85,       # Medium confidence (strong pattern)
+    'extraction_low': 0.75,          # Low confidence (weak pattern)
+    'extraction_minimal': 0.60,      # Minimal confidence (uncertain)
+    'extraction_failed': 0.0,        # Failed extraction
+
+    # === Query thresholds (filtering in query processing) ===
+    'threshold_high': 0.80,          # High quality filter
+    'threshold_medium': 0.70,        # Medium quality filter
+    'threshold_default': 0.60,       # Default quality filter
+    'threshold_low': 0.50,           # Low quality filter (more results)
+
+    # === Confidence boosts/adjustments ===
+    'boost_financial_term': 0.05,    # Per financial term found
+    'boost_source_verified': 0.10,   # Source verification passed
+    'boost_cross_referenced': 0.15,  # Cross-reference validation
+    'penalty_ambiguous': 0.10,       # Penalty for ambiguous data
+
+    # === Financial metrics defaults ===
+    'metric_default': 0.80,          # Default for financial metrics
+    'metric_rating': 0.85,           # Analyst ratings
+    'metric_price_target': 0.92,     # Price targets
+    'metric_fundamental': 0.87,      # Fundamental data (P/E, revenue, etc.)
+
+    # === Scoring weights (for composite scores) ===
+    'weight_confidence': 0.30,       # Confidence weight in ranking
+    'weight_freshness': 0.30,        # Freshness weight in ranking
+    'weight_relevance': 0.40,        # Relevance weight in ranking
+
+    # === Relationship extraction defaults (Phase 2.8 Core Path) ===
+    'relationship_base': 0.5,        # Base confidence for relationships
+    'relationship_competitive': 0.8, # Competitive relationship confidence
+    'relationship_supplier': 0.75,   # Supplier/vendor relationship
+    'relationship_employment': 0.85, # Employment/executive relationship
+    'relationship_portfolio': 0.8,   # Portfolio holding relationship
+    'relationship_event_close': 0.7, # Event within 30 days
+    'relationship_event_distant': 0.5, # Event beyond 30 days
+    'relationship_category': 0.5,    # Category/sector relationship
+
+    # === Query processing defaults (Phase 2.8 Core Path) ===
+    'lightrag_base': 0.7,            # Base confidence for LightRAG results
+    'query_min_threshold': 0.6,      # Minimum threshold for query results
+    'confidence_cap': 0.95,          # Maximum confidence ceiling
+    'confidence_floor': 0.1,         # Minimum confidence floor
+    'no_sources': 0.0,               # No source attribution available
+    'single_source': 0.7,            # Single source confidence
+    'chunk_default': 0.7,            # Default chunk confidence
+    'path_default': 0.7,             # Default path confidence
+
+    # === Graph building defaults (Phase 2.8 Core Path) ===
+    'edge_default': 0.5,             # Default edge/relationship confidence
+    'ui_min_threshold': 0.6,         # UI display minimum threshold
+
+    # === Relationship pattern confidences (Phase 2.8 Core Path) ===
+    'pattern_depends_on': 0.8,       # Dependency relationship
+    'pattern_supplies': 0.75,        # Supply chain relationship
+    'pattern_exposed_to': 0.85,      # Risk exposure relationship
+    'pattern_drives': 0.8,           # Driver relationship
+    'pattern_impacts': 0.7,          # Impact relationship
+    'pattern_competes_with': 0.75,   # Competitive relationship
+    'pattern_owns': 0.9,             # Ownership relationship
+    'pattern_operates_in': 0.7,      # Operational geography
+    'pattern_manufactures_in': 0.8,  # Manufacturing geography
+}
+
+
+# Source-specific confidence multipliers (for relationship/entity weighting by source)
+# Higher = more reliable source, used to weight extracted data
+SOURCE_CONFIDENCE_MULTIPLIERS: Dict[str, float] = {
+    'sec_edgar': 1.0,       # Regulatory filing (highest authority)
+    'sec_facts': 0.95,      # XBRL data from SEC
+    'yahoo': 0.85,          # Financial data provider
+    'benzinga': 0.80,       # Premium financial news
+    'newsapi': 0.75,        # Standard news aggregator
+    'finnhub': 0.75,        # Market news provider
+    'marketaux': 0.70,      # Alternative news source
+    'email': 0.70,          # Analyst email/reports
+    'exa': 0.65,            # Web search results
+    'unknown': 0.50,        # Unknown/unspecified source
+}
+
+
+# Confidence weights for composite scoring (Phase 2.8 Core Path)
+# Used in ice_query_processor and ice_graph_builder for weighted confidence calculation
+CONFIDENCE_WEIGHTS: Dict[str, float] = {
+    'source_reliability': 0.3,      # Weight for source quality in composite score
+    'relationship_clarity': 0.4,    # Weight for relationship clarity
+    'evidence_strength': 0.3,       # Weight for evidence strength
+    'base_weight': 0.6,             # Weight for base confidence (vs path)
+    'path_weight': 0.4,             # Weight for path-based confidence
+}
+
+
+def get_confidence_weight(key: str, default: float = 0.5) -> float:
+    """
+    Get weight value for composite confidence calculations.
+
+    Args:
+        key: Weight key (e.g., 'base_weight', 'path_weight')
+        default: Fallback if key not found
+
+    Returns:
+        Weight value (0.0-1.0)
+    """
+    return CONFIDENCE_WEIGHTS.get(key, default)
+
+
+def get_source_confidence(source: str) -> float:
+    """
+    Get confidence multiplier for a data source
+
+    Args:
+        source: Source identifier (e.g., 'sec_edgar', 'newsapi', 'email')
+
+    Returns:
+        Confidence multiplier (0.0-1.0)
+
+    Example:
+        >>> get_source_confidence('sec_edgar')
+        1.0
+        >>> get_source_confidence('unknown_source')
+        0.5
+    """
+    return SOURCE_CONFIDENCE_MULTIPLIERS.get(source, SOURCE_CONFIDENCE_MULTIPLIERS['unknown'])
+
+
+def get_confidence(key: str, default: Optional[float] = None) -> float:
+    """
+    Get confidence value from centralized defaults
+
+    Args:
+        key: Confidence key (e.g., 'source_api', 'threshold_default')
+        default: Fallback if key not found (defaults to 'source_default')
+
+    Returns:
+        Confidence value (0.0-1.0)
+
+    Example:
+        >>> get_confidence('source_api')
+        0.85
+        >>> get_confidence('unknown_key', 0.5)
+        0.5
+    """
+    if default is None:
+        default = CONFIDENCE_DEFAULTS.get('source_default', 0.5)
+    return CONFIDENCE_DEFAULTS.get(key, default)
+
+
+def validate_confidence_config() -> Dict[str, Any]:
+    """
+    Validate confidence configuration at startup
+
+    Returns:
+        Dict with validation results and any warnings
+
+    Raises:
+        ValueError: If critical confidence values are invalid
+    """
+    validation = {
+        'valid': True,
+        'warnings': [],
+        'errors': []
+    }
+
+    for key, value in CONFIDENCE_DEFAULTS.items():
+        # Check type
+        if not isinstance(value, (int, float)):
+            validation['errors'].append(f"'{key}': Expected float, got {type(value).__name__}")
+            validation['valid'] = False
+            continue
+
+        # Check range (0.0-1.0 for most, can be negative for penalties)
+        if key.startswith('penalty_'):
+            if not 0.0 <= value <= 0.5:
+                validation['warnings'].append(f"'{key}': {value} seems high for a penalty")
+        elif key.startswith('boost_'):
+            if not 0.0 <= value <= 0.3:
+                validation['warnings'].append(f"'{key}': {value} seems high for a boost")
+        elif key.startswith('weight_'):
+            if not 0.0 <= value <= 1.0:
+                validation['errors'].append(f"'{key}': Weight {value} must be 0.0-1.0")
+                validation['valid'] = False
+        else:
+            if not 0.0 <= value <= 1.0:
+                validation['errors'].append(f"'{key}': Confidence {value} must be 0.0-1.0")
+                validation['valid'] = False
+
+    # Check weights sum to 1.0 (or close)
+    weights = {k: v for k, v in CONFIDENCE_DEFAULTS.items() if k.startswith('weight_')}
+    if weights:
+        weight_sum = sum(weights.values())
+        if not 0.99 <= weight_sum <= 1.01:
+            validation['warnings'].append(f"Scoring weights sum to {weight_sum:.2f}, expected ~1.0")
+
+    if not validation['valid']:
+        raise ValueError(f"Invalid confidence config: {validation['errors']}")
+
+    return validation
+
+
 class ICEConfig:
     """
     Simple configuration management for ICE simplified architecture
@@ -141,6 +362,115 @@ class ICEConfig:
         # false: minimal logging (production)
         self.signal_store_debug = os.getenv('SIGNAL_STORE_DEBUG', 'false').lower() == 'true'
 
+        # ========== TEMPORAL CONFIGURATION (2025-11-18) ==========
+        # Data ingestion lookback windows (how far back to fetch historical data)
+
+        # News API lookback period (days)
+        # How many days of historical news to fetch per ticker
+        # Default: 7 days (NewsAPI free tier limit)
+        # Range: 1-30 days (NewsAPI free tier supports up to 30 days)
+        self.news_lookback_days = int(os.getenv('ICE_NEWS_LOOKBACK_DAYS', '7'))
+
+        # Financial data lookback period (days)
+        # How far back to fetch market data, financial metrics
+        # Default: 90 days (~1 quarter)
+        # Range: 30-365 days
+        self.financial_lookback_days = int(os.getenv('ICE_FINANCIAL_LOOKBACK_DAYS', '90'))
+
+        # Freshness scoring configuration
+        # Half-life for exponential decay (days)
+        # Determines how quickly information is considered stale
+        # Default: 30 days (score drops to 0.5 after 30 days)
+        # Lower = more aggressive decay (value recent info more)
+        # Higher = slower decay (value historical info more)
+        self.freshness_half_life_days = int(os.getenv('ICE_FRESHNESS_HALF_LIFE_DAYS', '30'))
+
+        # Stale threshold (days)
+        # Data older than this is categorized as "very_stale"
+        # Default: 365 days (1 year)
+        # Use for filtering out very old data in queries
+        self.stale_threshold_days = int(os.getenv('ICE_STALE_THRESHOLD_DAYS', '365'))
+
+        # Recency ranking weight (for get_latest_signals_ranked)
+        # Balance between freshness and confidence in ranking
+        # Default: 0.5 (50% freshness, 50% confidence)
+        # 0.0 = pure confidence ranking (ignore recency)
+        # 0.5 = balanced (recommended for investment decisions)
+        # 1.0 = pure recency ranking (ignore confidence)
+        self.recency_ranking_weight = float(os.getenv('ICE_RECENCY_RANKING_WEIGHT', '0.5'))
+
+        # ========== SEC COMPANY FACTS CONFIGURATION (2025-11-22) ==========
+        # Free financial metrics from SEC XBRL Company Facts API
+
+        # Enable/disable SEC Company Facts fetching
+        # Default: true (use free SEC data for financial metrics)
+        self.sec_facts_enabled = os.getenv('ICE_SEC_FACTS_ENABLED', 'true').lower() == 'true'
+
+        # Number of recent quarters to fetch (default: 8 = 2 years)
+        # Limits memory usage (full history can be 10+ years, 5-10MB per company)
+        # Range: 4-12 quarters (1-3 years)
+        self.sec_facts_lookback_quarters = int(os.getenv('ICE_SEC_FACTS_LOOKBACK_QUARTERS', '8'))
+
+        # ========== RELATIONSHIP EXTRACTION CONFIGURATION (2025-11-24) ==========
+        # Cross-company relationship extraction for multi-hop intelligence
+
+        # Enable/disable relationship extraction
+        # Default: true (extract competitors, suppliers, customers, executives, partnerships)
+        self.relationship_extraction_enabled = os.getenv(
+            'ICE_RELATIONSHIP_EXTRACTION', 'true'
+        ).lower() == 'true'
+
+        # Minimum confidence threshold for relationships (0.0-1.0)
+        # Lower = more relationships but potentially more false positives
+        # Higher = fewer but higher quality relationships
+        # Default: 0.5 (balanced - recommended for investment decisions)
+        self.relationship_confidence_threshold = float(os.getenv(
+            'ICE_RELATIONSHIP_CONFIDENCE_THRESHOLD', '0.5'
+        ))
+
+        # Maximum relationships to extract per document
+        # Prevents memory explosion on relationship-dense documents
+        # Default: 50 (typical documents have 5-15 relationships)
+        self.max_relationships_per_doc = int(os.getenv(
+            'ICE_MAX_RELATIONSHIPS_PER_DOC', '50'
+        ))
+
+        # Relationship cache size (number of documents)
+        # Content-based caching prevents redundant extraction
+        # Default: 1000 (sufficient for typical portfolios)
+        self.relationship_cache_size = int(os.getenv(
+            'ICE_RELATIONSHIP_CACHE_SIZE', '1000'
+        ))
+
+        # ===== Event Extraction Configuration (Phase 2.7B - Option 1) =====
+        # Enable/disable event extraction from documents
+        # Events include: earnings, M&A, management changes, scandals, etc.
+        # Default: False (opt-in for gradual rollout)
+        self.event_extraction_enabled = os.getenv(
+            'ICE_EVENT_EXTRACTION_ENABLED', 'false'
+        ).lower() == 'true'
+
+        # Confidence threshold for event extraction (0.0-1.0)
+        # Higher threshold = fewer but more reliable events
+        # Default: 0.8 (high confidence only)
+        self.event_confidence_threshold = float(os.getenv(
+            'ICE_EVENT_CONFIDENCE_THRESHOLD', '0.8'
+        ))
+
+        # Maximum events to extract per document
+        # Prevents noise from event-dense documents
+        # Default: 10 (typical documents have 1-3 events)
+        self.max_events_per_doc = int(os.getenv(
+            'ICE_MAX_EVENTS_PER_DOC', '10'
+        ))
+
+        # Event cache size (number of documents)
+        # Content-based caching prevents redundant extraction
+        # Default: 500 (smaller than relationships, events less common)
+        self.event_cache_size = int(os.getenv(
+            'ICE_EVENT_CACHE_SIZE', '500'
+        ))
+
         # Validate critical configuration
         self._validate_critical_config()
 
@@ -157,6 +487,9 @@ class ICEConfig:
                 "OPENAI_API_KEY appears to be invalid. "
                 "OpenAI API keys should start with 'sk-'."
             )
+
+        # Validate confidence configuration (Phase 2.8)
+        validate_confidence_config()
 
     def is_api_available(self, service: str) -> bool:
         """Check if specific API service is configured"""
@@ -188,6 +521,16 @@ class ICEConfig:
             'db_path': self.signal_store_path,
             'timeout_ms': self.signal_store_timeout,
             'debug_mode': self.signal_store_debug
+        }
+
+    def get_temporal_config_status(self) -> Dict[str, Any]:
+        """Get temporal configuration status for diagnostics"""
+        return {
+            'news_lookback_days': self.news_lookback_days,
+            'financial_lookback_days': self.financial_lookback_days,
+            'freshness_half_life_days': self.freshness_half_life_days,
+            'stale_threshold_days': self.stale_threshold_days,
+            'recency_ranking_weight': self.recency_ranking_weight
         }
 
     def ensure_working_dir(self):

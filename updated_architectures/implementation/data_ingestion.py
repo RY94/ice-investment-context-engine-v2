@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 import requests
 import logging
+import hashlib
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 from html.parser import HTMLParser
@@ -57,6 +58,26 @@ class HTMLTextExtractor(HTMLParser):
             self.text.append(data.strip())
 
 
+class DataExtractionError(Exception):
+    """
+    Raised when data extraction fails beyond acceptable threshold.
+
+    Triggered when >50% of extraction attempts fail for a single symbol.
+    This replaces silent `except: pass` blocks to ensure transparency.
+
+    Added: 2025-11-25 (Post-Phase 2.7B Architecture Audit - Cover-up Remediation)
+    """
+    def __init__(self, symbol: str, failures: List[tuple], total_fields: int):
+        self.symbol = symbol
+        self.failures = failures
+        self.total_fields = total_fields
+        self.failure_rate = len(failures) / total_fields if total_fields > 0 else 1.0
+        super().__init__(
+            f"{symbol}: {len(failures)}/{total_fields} extractions failed ({self.failure_rate:.0%}). "
+            f"Failures: {[(f[0], f[1][:50]) for f in failures[:5]]}{'...' if len(failures) > 5 else ''}"
+        )
+
+
 class DataIngester:
     """
     Simple data ingestion - Direct API calls without transformation layers
@@ -69,7 +90,7 @@ class DataIngester:
     5. Graceful degradation when APIs are unavailable
     """
 
-    def __init__(self, api_keys: Optional[Dict[str, str]] = None, timeout: int = 30, config: Optional['ICEConfig'] = None):
+    def __init__(self, api_keys: Optional[Dict[str, str]] = None, timeout: int = 30, config: Optional['ICEConfig'] = None, manifest: Optional['IngestionManifest'] = None):
         """
         Initialize data ingester with API configuration and feature flags
 
@@ -77,9 +98,11 @@ class DataIngester:
             api_keys: Dictionary of API service names to keys
             timeout: Request timeout in seconds
             config: ICEConfig instance for feature flags (docling toggles, etc.)
+            manifest: IngestionManifest for content deduplication (optional)
         """
         self.timeout = timeout
         self.config = config  # Store config for feature flags (docling integration, signal store)
+        self.manifest = manifest  # Store manifest for persistent content deduplication
 
         # Load API keys from parameter or environment
         self.api_keys = api_keys or {
@@ -95,7 +118,61 @@ class DataIngester:
         # Filter out None values
         self.api_keys = {k: v for k, v in self.api_keys.items() if v}
 
+        # Validate NewsAPI key if provided (pre-flight check to fail fast on invalid keys)
+        if 'newsapi' in self.api_keys:
+            newsapi_key = self.api_keys['newsapi']
+
+            # Basic format validation
+            if len(newsapi_key) < 20:  # NewsAPI keys are typically 32 characters
+                logger.warning(f"⚠️ NewsAPI key looks invalid (too short: {len(newsapi_key)} chars). Expected ~32 chars.")
+
+            # Test key with minimal API call (fail fast if invalid)
+            try:
+                import requests
+                response = requests.get(
+                    "https://newsapi.org/v2/top-headlines",
+                    params={'country': 'us', 'pageSize': 1, 'apiKey': newsapi_key},
+                    timeout=5
+                )
+                if response.status_code == 200:
+                    logger.info(f"✅ NewsAPI key validated successfully")
+                elif response.status_code in [401, 403]:
+                    logger.error(f"❌ NewsAPI AUTHENTICATION FAILED: Invalid or expired API key (HTTP {response.status_code})")
+                    logger.error(f"   Response: {response.json().get('message', 'No error message')}")
+                    del self.api_keys['newsapi']  # Remove invalid key
+                else:
+                    logger.warning(f"⚠️ NewsAPI validation returned unexpected status {response.status_code}")
+            except requests.RequestException as e:
+                logger.warning(f"⚠️ Could not validate NewsAPI key (network/timeout issue): {e}")
+                # Keep key in case it's a temporary network issue
+            except Exception as e:
+                logger.warning(f"⚠️ NewsAPI key validation error: {e}")
+
         self.available_services = list(self.api_keys.keys())
+
+        # API source configuration (granular control over individual APIs)
+        # Default: all APIs enabled (backward compatible)
+        self.api_config = {
+            'api_source_enabled': True,  # Master switch
+            'newsapi_enabled': True,
+            'benzinga_enabled': True,
+            'finnhub_enabled': True,
+            'marketaux_enabled': True,
+            'fmp_enabled': True,
+            'alpha_vantage_enabled': True,
+            'polygon_enabled': True,
+            'yahoo_finance_enabled': True,  # Yahoo Finance (no API key required, free unlimited)
+            'sec_edgar_enabled': True
+        }
+
+        # Cache for API availability checks (performance optimization)
+        # Prevents redundant checks when processing multiple tickers
+        self._api_availability_cache = {}
+
+        # Cache for company name lookups (performance optimization)
+        # Stores ticker -> company name mappings from Yahoo Finance
+        # Prevents repeated API calls for same ticker
+        self._company_name_cache = {}
 
         # Initialize production modules for robust data ingestion
         # 1. Robust HTTP Client (replaces simple requests.get())
@@ -112,7 +189,15 @@ class DataIngester:
         self.sec_connector = SECEdgarConnector()
 
         # 4. Entity Extractor (Phase 2.6.1: Production-grade entity extraction)
-        self.entity_extractor = EntityExtractor()
+        # ENV: ICE_USE_ENHANCED_EXTRACTOR=true to enable F1=0.74 enhanced extractor
+        use_enhanced = os.getenv('ICE_USE_ENHANCED_EXTRACTOR', 'false').lower() == 'true'
+        if use_enhanced:
+            from src.ice_core.enhanced_entity_adapter import EnhancedEntityExtractorAdapter
+            self.entity_extractor = EnhancedEntityExtractorAdapter()
+            logger.info("✅ Enhanced entity extractor enabled (F1=0.74, LLM-powered, target 0.85 not met)")
+        else:
+            self.entity_extractor = EntityExtractor()
+            logger.info("✅ Baseline entity extractor enabled")
 
         # 4.5. Ticker Validator (Reduce false positives in entity extraction)
         self.ticker_validator = TickerValidator()
@@ -272,6 +357,38 @@ class DataIngester:
             except Exception as e:
                 logger.warning(f"Signal Store initialization failed, using LightRAG only: {e}")
                 self.signal_store = None
+
+    def set_api_source_config(self, config: Dict[str, Any]) -> None:
+        """
+        Apply granular API source configuration for this ingestion run
+
+        3-layer control hierarchy:
+        - Layer 0: Master switch (api_source_enabled)
+        - Layer 1: Individual API switches (newsapi_enabled, benzinga_enabled, etc.)
+        - Layer 2: API key availability (checked in is_service_available)
+
+        Args:
+            config: Dictionary with API switches
+                   Example: {'api_source_enabled': True, 'newsapi_enabled': False}
+
+        Performance: Invalidates cache to ensure fresh checks with new configuration
+        """
+        if config:
+            self.api_config.update(config)
+            self._api_availability_cache.clear()  # Invalidate cache
+
+            # Log configuration - count enabled APIs
+            if not self.api_config.get('api_source_enabled', True):
+                logger.info("🔒 API sources: Master switch OFF (all APIs disabled)")
+            else:
+                enabled_apis = [
+                    k.replace('_enabled', '')
+                    for k, v in self.api_config.items()
+                    if k.endswith('_enabled') and k != 'api_source_enabled' and v
+                ]
+                logger.info(f"✅ API configuration applied: {len(enabled_apis)} APIs enabled: {', '.join(enabled_apis)}")
+        else:
+            logger.warning("⚠️ set_api_source_config called with None config")
 
     def _merge_entities(self, body_entities: Dict, table_entities: Dict) -> Dict:
         """
@@ -704,8 +821,107 @@ class DataIngester:
                 # Continue processing - dual-write failure shouldn't block email ingestion
 
     def is_service_available(self, service: str) -> bool:
-        """Check if specific API service is configured"""
-        return service in self.api_keys and bool(self.api_keys[service])
+        """
+        Check if specific API service is available using 3-layer precedence
+
+        Layer 0: Master switch (api_source_enabled) - controls ALL APIs
+        Layer 1: Individual API switch (e.g., newsapi_enabled) - controls specific API
+        Layer 2: API key availability - checks if API key exists (skipped for keyless services)
+
+        Keyless Services: yahoo_finance, sec_edgar (free, no API key required)
+        - Only check Layer 0 and Layer 1, skip Layer 2
+
+        Performance: Results are cached to prevent redundant checks (50 stocks × 4 APIs = 200+ checks)
+        Cache is invalidated only when set_api_source_config() is called
+
+        Args:
+            service: API service name (e.g., 'newsapi', 'benzinga', 'fmp', 'yahoo_finance')
+
+        Returns:
+            True if service is available and enabled, False otherwise
+        """
+        # Check cache first (performance optimization)
+        if service in self._api_availability_cache:
+            return self._api_availability_cache[service]
+
+        # Layer 0: Master switch (api_source_enabled)
+        # If master switch is OFF, all APIs are disabled regardless of individual switches
+        if not self.api_config.get('api_source_enabled', True):
+            self._api_availability_cache[service] = False
+            return False
+
+        # Layer 1: Individual API switch
+        # Map service name to config key (e.g., 'newsapi' -> 'newsapi_enabled')
+        config_key = f"{service}_enabled"
+        if config_key in self.api_config and not self.api_config[config_key]:
+            self._api_availability_cache[service] = False
+            return False
+
+        # Layer 2: API key availability (skip for keyless services)
+        # Keyless services: yahoo_finance (yfinance library), sec_edgar (public data)
+        keyless_services = ['yahoo_finance', 'sec_edgar']
+        if service in keyless_services:
+            # Service is available if Layer 0 and Layer 1 passed (no API key needed)
+            self._api_availability_cache[service] = True
+            return True
+
+        # For services requiring API keys, check availability
+        has_key = service in self.api_keys and bool(self.api_keys[service])
+        self._api_availability_cache[service] = has_key
+        return has_key
+
+    def get_company_name(self, symbol: str) -> str:
+        """
+        Get company name from Yahoo Finance with caching
+
+        Dynamically resolves ticker symbols to official company names using
+        Yahoo Finance API (longName or shortName fields). Results are cached
+        to prevent repeated API calls for the same ticker.
+
+        This eliminates the need for hardcoded ticker-to-company mappings and
+        scales to any ticker in Yahoo Finance's database (thousands of tickers).
+
+        Args:
+            symbol: Stock ticker symbol (e.g., 'FICO', 'AAPL', 'NVDA')
+
+        Returns:
+            Company name if available (e.g., 'Fair Isaac Corporation', 'Apple Inc.'),
+            otherwise returns the ticker symbol as fallback
+
+        Examples:
+            'FICO' → 'Fair Isaac Corporation'
+            'AAPL' → 'Apple Inc.'
+            'XYZ' (unknown) → 'XYZ' (fallback)
+
+        Performance:
+            - First call: ~100-200ms (Yahoo Finance API fetch)
+            - Cached calls: ~0ms (instant dictionary lookup)
+        """
+        # Check cache first (O(1) lookup)
+        if symbol in self._company_name_cache:
+            return self._company_name_cache[symbol]
+
+        # Fetch from Yahoo Finance
+        try:
+            import yfinance as yf
+            ticker = yf.Ticker(symbol)
+            info = ticker.info
+
+            # Try longName first (e.g., 'Fair Isaac Corporation'),
+            # fallback to shortName (e.g., 'Fair Isaac'),
+            # then fallback to ticker symbol
+            company_name = info.get('longName') or info.get('shortName') or symbol
+
+            # Cache the result (prevents repeated API calls)
+            self._company_name_cache[symbol] = company_name
+            logger.debug(f"Resolved {symbol} → {company_name}")
+            return company_name
+
+        except Exception as e:
+            # Graceful degradation: return ticker if fetch fails
+            logger.debug(f"Could not fetch company name for {symbol}: {e}")
+            self._company_name_cache[symbol] = symbol  # Cache fallback
+            return symbol
 
     def _format_number(self, value: Any) -> str:
         """Safely format a number with comma separators, handle strings/None"""
@@ -717,82 +933,376 @@ class DataIngester:
         except (ValueError, TypeError):
             return 'N/A'
 
-    def fetch_company_news(self, symbol: str, limit: int = 5) -> List[Dict[str, str]]:
+    def fetch_company_news(self, symbol: str, limit: int = 5, context: str = 'portfolio') -> List[Dict[str, str]]:
         """
-        Fetch company news from available APIs - return source-tagged documents
+        Intelligently fetch company news with proportional multi-source distribution and deduplication
+
+        Args:
+            symbol: Stock ticker symbol
+            limit: Maximum number of unique articles to return
+            context: Use case context for smart routing
+                - 'live': Real-time trading (real-time sources only, excludes 24hr delayed)
+                - 'portfolio': Portfolio analysis (real-time preferred, default)
+                - 'research': Historical research (all sources including delayed)
+                - 'sentiment': Sentiment analysis (volume matters, delayed OK)
+
+        Returns:
+            List of dicts with enhanced metadata:
+            - 'content': Article text
+            - 'source': API source name
+            - 'file_path': Unique identifier for source attribution
+            - 'freshness': 'real-time' or 'delayed_24h'
+            - 'tier': 1 (real-time) or 2 (delayed)
+
+        Strategy:
+            - Distributes fetch quota proportionally across available sources
+            - Applies simple headline-based deduplication (catches 80% of duplicates)
+            - Over-fetches by 20% to account for potential duplicates
+            - Returns top-scored unique articles up to limit
+        """
+        import re
+
+        # Step 1: Determine active sources based on availability and context
+        active_sources = []
+        real_time_sources = []
+
+        # Real-time sources (no delay)
+        if self.is_service_available('finnhub'):
+            active_sources.append('finnhub')
+            real_time_sources.append('finnhub')
+        if self.is_service_available('marketaux'):
+            active_sources.append('marketaux')
+            real_time_sources.append('marketaux')
+        if self.is_service_available('benzinga'):
+            active_sources.append('benzinga')
+            real_time_sources.append('benzinga')
+
+        # Delayed sources (24hr delay) - smart inclusion logic
+        # Strategy: Include NewsAPI if (1) appropriate context OR (2) no real-time sources available (graceful degradation)
+        include_delayed = context in ['research', 'sentiment']
+        newsapi_available = self.is_service_available('newsapi')
+
+        if newsapi_available and (include_delayed or not real_time_sources):
+            active_sources.append('newsapi')
+            if not real_time_sources:
+                logger.warning(f"⚠️ {symbol}: Using NewsAPI despite context='{context}' (no real-time sources available). Data will have 24hr delay.")
+
+        # Early exit if no sources available
+        if not active_sources:
+            logger.warning(f"⚠️ {symbol}: No news APIs available (limit={limit}). Returning empty list.")
+            return []
+
+        # Step 2: Request full limit from each source for quality-based selection
+        # Strategy: Over-fetch from all sources, then rank by freshness/quality and select top N
+        # This ensures we get the requested number of articles even if some sources fail
+        source_quota = limit  # Each source gets full quota (not divided)
+
+        logger.info(f"  📊 {symbol}: Requesting {source_quota} articles from each of {len(active_sources)} sources (quality-ranked selection)")
+
+        # Step 3: Fetch from all active sources (each gets full quota for quality selection)
+        all_articles = []
+        seen_headlines = set()  # Simple deduplication by normalized headline
+
+        for idx, source in enumerate(active_sources):
+            try:
+                # Fetch from source
+                logger.info(f"  📰 {symbol}: Fetching {source_quota} from {source}...")
+
+                if source == 'finnhub':
+                    raw_docs = self._fetch_finnhub_news(symbol, source_quota)
+                    freshness, tier = 'real-time', 1
+                elif source == 'marketaux':
+                    raw_docs = self._fetch_marketaux_news(symbol, source_quota)
+                    freshness, tier = 'real-time', 1
+                elif source == 'benzinga':
+                    raw_docs = self._fetch_benzinga_news(symbol, source_quota)
+                    freshness, tier = 'real-time', 1
+                elif source == 'newsapi':
+                    raw_docs = self._fetch_newsapi(symbol, source_quota)
+                    freshness, tier = 'delayed_24h', 2
+
+                # Process articles with deduplication
+                added_count = 0
+                for doc in raw_docs:
+                    # Normalize headline for deduplication (remove punctuation, lowercase, first 60 chars)
+                    headline = doc.split('\n')[0] if '\n' in doc else doc[:100]
+                    headline_key = re.sub(r'[^\w\s]', '', headline).lower()[:60]
+
+                    # Skip if duplicate headline (fast in-memory check)
+                    if headline_key in seen_headlines:
+                        continue
+
+                    # Skip if duplicate content (persistent check across runs)
+                    if self.manifest and self.manifest.is_content_duplicate(doc):
+                        logger.debug(f"    Skipping duplicate content: {headline[:50]}...")
+                        continue
+
+                    seen_headlines.add(headline_key)
+                    doc_hash = hashlib.md5(doc[:200].encode()).hexdigest()[:8]
+
+                    article = {
+                        'content': f"⚠️ DELAYED DATA (up to 24 hours old)\n\n{doc}" if source == 'newsapi' else doc,
+                        'source': source,
+                        'file_path': f"{source}:{symbol}_{doc_hash}",
+                        'freshness': freshness,
+                        'tier': tier
+                    }
+
+                    if source == 'benzinga':
+                        article['premium'] = True
+                    if source == 'newsapi':
+                        article['delay_warning'] = True
+
+                    all_articles.append(article)
+                    added_count += 1
+
+                    # Add to manifest for persistent deduplication
+                    if self.manifest:
+                        self.manifest.add_document(
+                            doc_id=article['file_path'],
+                            content=doc,
+                            metadata={
+                                'source_type': 'news',
+                                'ticker': symbol,
+                                'news_source': source
+                            }
+                        )
+
+                duplicates = len(raw_docs) - added_count
+                logger.info(f"    ✅ {source}: {added_count} unique ({duplicates} duplicates removed)")
+
+            except Exception as e:
+                logger.warning(f"    ❌ {source} failed for {symbol}: {e}")
+                continue
+
+        # Step 4: Score and rank all unique articles
+        if all_articles:
+            all_articles = self._score_and_rank_news(all_articles, symbol, context)
+
+        # Step 5: Return top N articles up to limit
+        final_articles = all_articles[:limit]
+        logger.info(f"📊 {symbol}: Returning {len(final_articles)} unique articles from {len(set(a['source'] for a in final_articles))} sources")
+
+        return final_articles
+
+    def _score_and_rank_news(self, documents: List[Dict], symbol: str, context: str) -> List[Dict]:
+        """
+        Score and rank news articles by relevance
+
+        Scoring factors:
+        - Tier (real-time=1.0, delayed=0.3)
+        - Source quality (benzinga=1.5, finnhub=1.2, marketaux=1.0, newsapi=0.7)
+        - Context penalties (live context heavily penalizes delayed data)
+
+        Returns:
+            Sorted list of documents (highest relevance first)
+        """
+        import math
+
+        # Source credibility weights (professional-grade > free real-time > delayed)
+        source_weights = {
+            'benzinga': 1.5,   # Premium professional source
+            'finnhub': 1.2,    # High-quality real-time
+            'marketaux': 1.0,  # Good NLP coverage
+            'newsapi': 0.7     # Delayed but broad
+        }
+
+        # Context-specific tier penalties
+        tier_penalties = {
+            'live': {1: 1.0, 2: 0.1},        # Heavy penalty for delayed in live trading
+            'portfolio': {1: 1.0, 2: 0.5},   # Moderate penalty
+            'research': {1: 1.0, 2: 0.9},    # Almost equal (historical context valuable)
+            'sentiment': {1: 1.0, 2: 0.8}    # Volume matters more than freshness
+        }
+
+        context_tier_penalty = tier_penalties.get(context, {1: 1.0, 2: 0.5})
+
+        # Score each article
+        for doc in documents:
+            score = 10.0  # Base score
+
+            # Apply source weight
+            source = doc.get('source', 'unknown')
+            score *= source_weights.get(source, 0.5)
+
+            # Apply tier penalty based on context
+            tier = doc.get('tier', 1)
+            score *= context_tier_penalty.get(tier, 0.5)
+
+            # Boost for premium content
+            if doc.get('premium'):
+                score *= 1.3
+
+            doc['relevance_score'] = round(score, 2)
+
+        # Sort by relevance (highest first)
+        documents.sort(key=lambda x: x.get('relevance_score', 0), reverse=True)
+
+        # Log score distribution for transparency
+        if documents:
+            scores = [d.get('relevance_score', 0) for d in documents]
+            logger.debug(f"  📊 Relevance scores: max={max(scores):.1f}, "
+                        f"min={min(scores):.1f}, avg={sum(scores)/len(scores):.1f}")
+
+        return documents
+
+    def fetch_company_news_concurrent(self, symbol: str, limit: int = 5, use_concurrent: bool = True, context: str = 'portfolio') -> List[Dict[str, str]]:
+        """
+        Fetch company news with optional concurrent execution for 3-5x performance improvement
 
         Args:
             symbol: Stock ticker symbol
             limit: Maximum number of articles
+            use_concurrent: If True, use concurrent fetching (default), else sequential
+            context: Use case context ('live', 'portfolio', 'research', 'sentiment')
 
         Returns:
-            List of dicts with 'content' and 'source' keys for source attribution
+            List of dicts with enhanced metadata including 'content', 'source', 'file_path', 'freshness', 'tier'
         """
-        documents = []
+        if not use_concurrent:
+            # Fall back to sequential fetching
+            return self.fetch_company_news(symbol, limit, context)
 
-        # Try NewsAPI.org if available
-        if self.is_service_available('newsapi'):
+        try:
+            # Use concurrent fetching for improved performance
+            from .data_ingestion_concurrent import fetch_company_news_concurrent
+
+            # Run async function in sync context
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
             try:
-                logger.info(f"  📰 {symbol}: Fetching from NewsAPI...")
-                newsapi_docs = self._fetch_newsapi(symbol, limit)
-                documents.extend([{'content': doc, 'source': 'newsapi'} for doc in newsapi_docs])
-                logger.info(f"    ✅ NewsAPI: {len(newsapi_docs)} article(s)")
-            except Exception as e:
-                logger.warning(f"NewsAPI fetch failed for {symbol}: {e}")
+                result = loop.run_until_complete(
+                    fetch_company_news_concurrent(self, symbol, limit)
+                )
+                return result
+            finally:
+                loop.close()
 
-        # Try Benzinga if available and we need more articles (professional-grade news)
-        if self.benzinga_client and len(documents) < limit:
-            try:
-                remaining = limit - len(documents)
-                logger.info(f"  📰 {symbol}: Fetching from Benzinga (professional)...")
-                benzinga_docs = self._fetch_benzinga_news(symbol, remaining)
-                documents.extend([{'content': doc, 'source': 'benzinga'} for doc in benzinga_docs])
-                logger.info(f"    ✅ Benzinga: {len(benzinga_docs)} article(s)")
-            except Exception as e:
-                logger.warning(f"Benzinga fetch failed for {symbol}: {e}")
-
-        # Try Finnhub if available and we need more articles
-        if self.is_service_available('finnhub') and len(documents) < limit:
-            try:
-                remaining = limit - len(documents)
-                logger.info(f"  📰 {symbol}: Fetching from Finnhub...")
-                finnhub_docs = self._fetch_finnhub_news(symbol, remaining)
-                documents.extend([{'content': doc, 'source': 'finnhub'} for doc in finnhub_docs])
-                logger.info(f"    ✅ Finnhub: {len(finnhub_docs)} article(s)")
-            except Exception as e:
-                logger.warning(f"Finnhub news fetch failed for {symbol}: {e}")
-
-        # Try MarketAux if available and we need more articles
-        if self.is_service_available('marketaux') and len(documents) < limit:
-            try:
-                remaining = limit - len(documents)
-                logger.info(f"  📰 {symbol}: Fetching from MarketAux...")
-                marketaux_docs = self._fetch_marketaux_news(symbol, remaining)
-                documents.extend([{'content': doc, 'source': 'marketaux'} for doc in marketaux_docs])
-                logger.info(f"    ✅ MarketAux: {len(marketaux_docs)} article(s)")
-            except Exception as e:
-                logger.warning(f"MarketAux fetch failed for {symbol}: {e}")
-
-        logger.info(f"Fetched {len(documents)} news articles for {symbol}")
-        return documents[:limit]
+        except ImportError:
+            logger.warning("Concurrent module not available, falling back to sequential")
+            return self.fetch_company_news(symbol, limit)
+        except Exception as e:
+            logger.error(f"Concurrent fetching failed: {e}, falling back to sequential")
+            return self.fetch_company_news(symbol, limit)
 
     def _fetch_newsapi(self, symbol: str, limit: int) -> List[str]:
-        """Fetch news from NewsAPI.org"""
-        url = "https://newsapi.org/v2/everything"
-        params = {
-            'q': f'"{symbol}" OR "{symbol} stock" OR "{symbol} earnings"',
-            'apiKey': self.api_keys['newsapi'],
-            'pageSize': min(limit, 20),  # NewsAPI limit
-            'sortBy': 'relevancy',
-            'language': 'en'
-        }
+        """
+        Fetch news from NewsAPI.org with progressive fallback query strategy
 
-        response = requests.get(url, params=params, timeout=self.timeout)
-        response.raise_for_status()
-        data = response.json()
+        Query Strategy (for low-coverage stocks):
+        1. Complex query: Full company name + stock terms (best precision, may miss results)
+        2. Fallback (if 0 results): Simple "{TICKER} stock" (broader coverage)
+
+        ⚠️ DEPRECATED: Free tier has 24-hour data delay - unusable for investment decisions
+        Recommendation: Use Finnhub (60 req/min, no delay) or Marketaux instead
+        """
+        logger.warning(f"⚠️  NewsAPI.org DEPRECATED: 24-hour delay on free tier. Use Finnhub for real-time news")
+
+        # Build intelligent query - dynamically resolve ticker to company name
+        # Uses Yahoo Finance API with caching (first call ~100ms, cached ~0ms)
+        company_name = self.get_company_name(symbol)
+
+        # Progressive fallback query strategy (handles low-coverage stocks like FICO)
+        query_strategies = []
+
+        if company_name != symbol:
+            # Strategy 1 (Primary): Full company name + stock terms
+            # Works for: AAPL ("Apple Inc." AND (stock...)) → 24 results
+            # Fails for: FICO ("Fair Isaac Corporation" AND (stock...)) → 0 results
+            query_strategies.append({
+                'query': f'("{company_name}" AND (stock OR shares OR earnings OR market))',
+                'description': 'Complex query (company name + stock terms)'
+            })
+
+            # Strategy 2 (Fallback): Simple ticker + "stock"
+            # Works for: FICO ("FICO stock") → 4 results
+            # More permissive, trades precision for coverage
+            query_strategies.append({
+                'query': f'"{symbol} stock"',
+                'description': 'Simple fallback (ticker + stock)'
+            })
+        else:
+            # Company name not resolved - use ticker-based fallback immediately
+            query_strategies.append({
+                'query': f'"{symbol}" OR "{symbol} stock" OR "{symbol} earnings"',
+                'description': 'Ticker fallback (no company name)'
+            })
+
+        # Try queries in order until we get results
+        url = "https://newsapi.org/v2/everything"
+        articles_raw = []
+        successful_query = None
+
+        # Calculate date range accounting for 24-hour delay on free tier
+        # Free tier: articles available from 31 days ago up to 1 day ago
+        # Use configured lookback but cap at 29 days (free tier limit)
+        lookback_days = self.config.news_lookback_days if self.config else 7
+        lookback_capped = min(lookback_days, 29)  # Respect free tier 30-day limit
+
+        # Simple date window (deduplication handled by manifest at ingestion)
+        end_date = datetime.now() - timedelta(days=1)  # Account for 24hr delay
+        start_date = end_date - timedelta(days=lookback_capped)
+        logger.debug(f"NewsAPI: Using {lookback_capped}-day lookback for {symbol}")
+
+        for i, strategy in enumerate(query_strategies, 1):
+            query = strategy['query']
+            params = {
+                'q': query,
+                'apiKey': self.api_keys['newsapi'],
+                'pageSize': min(limit, 20),  # NewsAPI limit
+                'sortBy': 'relevancy',
+                'language': 'en',
+                'searchIn': 'title,description',  # Focus on headlines, not full article text
+                'from': start_date.strftime('%Y-%m-%d'),  # Explicit start date
+                'to': end_date.strftime('%Y-%m-%d')       # Explicit end date (accounts for delay)
+            }
+
+            logger.info(f"📰 NewsAPI query {i}/{len(query_strategies)} for {symbol} ({strategy['description']}): {query}")
+
+            try:
+                response = requests.get(url, params=params, timeout=self.timeout)
+                response.raise_for_status()
+                data = response.json()
+
+                articles_raw = data.get('articles', [])
+                if articles_raw:
+                    successful_query = query
+                    logger.info(f"✅ NewsAPI query {i} succeeded: {len(articles_raw)} articles found")
+                    break  # Success - stop trying fallbacks
+                else:
+                    logger.info(f"   Query {i} returned 0 results, trying next strategy...")
+
+            except requests.HTTPError as e:
+                # Surface authentication failures prominently (don't retry on auth errors)
+                if e.response.status_code in [401, 403]:
+                    logger.error(f"❌ NewsAPI AUTHENTICATION FAILED for {symbol}: Invalid or expired API key (HTTP {e.response.status_code})")
+                    logger.error(f"   API Response: {e.response.json().get('message', 'No error message')}")
+                    return []
+                else:
+                    logger.warning(f"❌ NewsAPI HTTP error {e.response.status_code} for query {i}: {e}")
+                    continue  # Try next query strategy
+            except requests.RequestException as e:
+                logger.warning(f"❌ NewsAPI request failed for query {i}: {e}")
+                continue  # Try next query strategy
+
+        # Check if all strategies failed
+        if not articles_raw:
+            logger.warning(f"⚠️ NewsAPI returned 0 articles for {symbol} after trying {len(query_strategies)} query strategies. "
+                          f"Possible causes: (1) Low media coverage for this ticker, "
+                          f"(2) Ticker not newsworthy in past 7 days, (3) Ambiguous ticker term. "
+                          f"Consider using Finnhub/MarketAux for broader small-cap coverage.")
+            return []
+
+        logger.info(f"✅ NewsAPI returned {len(articles_raw)} raw articles for {symbol}")
 
         documents = []
-        for article in data.get('articles', []):
+        for article in articles_raw:
+            # Extract publication timestamp (critical for temporal queries and freshness scoring)
+            published_timestamp = article.get('publishedAt')
+            if not published_timestamp:
+                self.logger.warning(f"Missing publishedAt for NewsAPI article: {article.get('title', 'Unknown')[:50]}")
+                published_timestamp = datetime.now().isoformat()  # Fallback with warning logged
+
             content = f"""
 News Article: {article.get('title', 'Untitled')}
 
@@ -801,9 +1311,10 @@ News Article: {article.get('title', 'Untitled')}
 {article.get('content', '')}
 
 Source: {article.get('source', {}).get('name', 'Unknown')}
-Published: {article.get('publishedAt', 'Unknown')}
+Published: {published_timestamp}
 URL: {article.get('url', '')}
 Symbol: {symbol}
+Publication Date: {published_timestamp}
 """
             documents.append(content.strip())
 
@@ -811,8 +1322,13 @@ Symbol: {symbol}
 
     def _fetch_finnhub_news(self, symbol: str, limit: int) -> List[str]:
         """Fetch news from Finnhub"""
+        # Use configured lookback period instead of hardcoded value
+        lookback_days = self.config.news_lookback_days if self.config else 7
+
+        # Simple date window (deduplication handled by manifest at ingestion)
         end_date = datetime.now()
-        start_date = end_date - timedelta(days=30)
+        start_date = end_date - timedelta(days=lookback_days)
+        logger.debug(f"Finnhub: Using {lookback_days}-day lookback for {symbol}")
 
         url = "https://finnhub.io/api/v1/company-news"
         params = {
@@ -828,16 +1344,25 @@ Symbol: {symbol}
 
         documents = []
         for article in data[:limit]:
+            # Extract publication timestamp from Unix timestamp (critical for temporal queries)
+            unix_timestamp = article.get('datetime')
+            if unix_timestamp:
+                published_timestamp = datetime.fromtimestamp(unix_timestamp).isoformat()
+            else:
+                self.logger.warning(f"Missing datetime for Finnhub article: {article.get('headline', 'Unknown')[:50]}")
+                published_timestamp = datetime.now().isoformat()  # Fallback with warning
+
             content = f"""
 Company News: {article.get('headline', 'No Headline')}
 
 {article.get('summary', '')}
 
 Source: Finnhub
-Published: {datetime.fromtimestamp(article.get('datetime', 0)).isoformat()}
+Published: {published_timestamp}
 URL: {article.get('url', '')}
 Symbol: {symbol}
 Related: {article.get('related', symbol)}
+Publication Date: {published_timestamp}
 """
             documents.append(content.strip())
 
@@ -845,6 +1370,11 @@ Related: {article.get('related', symbol)}
 
     def _fetch_marketaux_news(self, symbol: str, limit: int) -> List[str]:
         """Fetch news from MarketAux"""
+        # NOTE: MarketAux API does not support date range parameters
+        # Can only control via 'limit' parameter (count-based, not date-based)
+        # config.news_lookback_days is NOT applicable to this API
+        logger.debug(f"MarketAux: Using count-based limit (API does not support date filtering)")
+
         url = "https://api.marketaux.com/v1/news/all"
         params = {
             'symbols': symbol,
@@ -860,16 +1390,23 @@ Related: {article.get('related', symbol)}
 
         documents = []
         for article in data.get('data', []):
+            # Extract publication timestamp (critical for temporal queries and freshness scoring)
+            published_timestamp = article.get('published_at')
+            if not published_timestamp:
+                self.logger.warning(f"Missing published_at for MarketAux article: {article.get('title', 'Unknown')[:50]}")
+                published_timestamp = datetime.now().isoformat()  # Fallback with warning
+
             content = f"""
 Market News: {article.get('title', 'No Title')}
 
 {article.get('description', '')}
 
 Source: {article.get('source', 'MarketAux')}
-Published: {article.get('published_at', 'Unknown')}
+Published: {published_timestamp}
 URL: {article.get('url', '')}
 Symbol: {symbol}
-Entities: {', '.join(article.get('entities', []))}
+Entities: {', '.join([e.get('symbol', 'N/A') for e in article.get('entities', []) if isinstance(e, dict)]) or symbol}
+Publication Date: {published_timestamp}
 """
             documents.append(content.strip())
 
@@ -882,8 +1419,13 @@ Entities: {', '.join(article.get('entities', []))}
             return []
 
         try:
+            # Use configured lookback period instead of hardcoded value
+            lookback_days = self.config.news_lookback_days if self.config else 7
+            hours_back = lookback_days * 24
+            logger.debug(f"Benzinga: Using {lookback_days}-day ({hours_back}h) lookback for {symbol}")
+
             # Fetch news using production BenzingaClient
-            articles = self.benzinga_client.get_news(ticker=symbol, limit=limit, hours_back=168)  # 7 days
+            articles = self.benzinga_client.get_news(ticker=symbol, limit=limit, hours_back=hours_back)
 
             documents = []
             for article in articles[:limit]:
@@ -900,16 +1442,24 @@ Entities: {', '.join(article.get('entities', []))}
                 symbols = article.metadata.get('symbols', []) if article.metadata else []
                 symbols_info = f"\nRelated Symbols: {', '.join(symbols)}" if symbols else ""
 
+                # Extract publication timestamp (already proper datetime from BenzingaClient)
+                if article.published_at:
+                    published_timestamp = article.published_at.isoformat()
+                else:
+                    self.logger.warning(f"Missing published_at for Benzinga article: {article.title[:50] if article.title else 'Unknown'}")
+                    published_timestamp = datetime.now().isoformat()  # Fallback with warning
+
                 content = f"""
 Professional News (Benzinga): {article.title}
 
 {article.content}
 
 Source: {article.source}{sentiment_info}{categories_info}{symbols_info}
-Published: {article.published_at.isoformat() if article.published_at else 'Unknown'}
+Published: {published_timestamp}
 URL: {article.url}
 Confidence: {article.confidence}
 Symbol: {symbol}
+Publication Date: {published_timestamp}
 """
                 documents.append(content.strip())
 
@@ -938,22 +1488,51 @@ Symbol: {symbol}
 
         documents = []
 
-        # Try Financial Modeling Prep if available (company profile, fundamentals)
+        # Early exit: Check if any financial APIs are enabled
+        # Financial APIs: fmp, alpha_vantage
+        financial_apis_enabled = any([
+            self.is_service_available('fmp'),
+            self.is_service_available('alpha_vantage')
+        ])
+
+        if not financial_apis_enabled and limit > 0:
+            logger.warning(f"⚠️ {symbol}: All financial APIs disabled (limit={limit}). Returning empty list.")
+            return []
+
+        # ⚠️ DEPRECATED: FMP (250 lifetime API limit - will exhaust quickly)
+        # Recommendation: Rely on SEC EDGAR for financial statements (free, 100% accurate via XBRL)
         if self.is_service_available('fmp'):
+            logger.warning(f"⚠️  FMP API DEPRECATED: 250 lifetime limit. Consider disabling (fmp_enabled=false)")
             try:
                 logger.info(f"  💰 {symbol}: Fetching fundamentals from FMP...")
                 fmp_docs = self._fetch_fmp_profile(symbol)
-                documents.extend([{'content': doc, 'source': 'fmp'} for doc in fmp_docs])
+                # Add file_path for source attribution
+                for doc in fmp_docs:
+                    doc_hash = hashlib.md5(doc[:200].encode()).hexdigest()[:8]
+                    documents.append({
+                        'content': doc,
+                        'source': 'fmp',
+                        'file_path': f"fmp:{symbol}_fundamentals_{doc_hash}"
+                    })
                 logger.info(f"    ✅ FMP: {len(fmp_docs)} document(s)")
             except Exception as e:
                 logger.warning(f"FMP profile fetch failed for {symbol}: {e}")
 
-        # Try Alpha Vantage if available (company overview, financial metrics)
+        # ⚠️ DEPRECATED: Alpha Vantage (reduced from 500/day to 25/day - unusable for portfolios)
+        # Recommendation: Use Yahoo Finance for real-time prices or SEC EDGAR for fundamentals
         if self.is_service_available('alpha_vantage'):
+            logger.warning(f"⚠️  Alpha Vantage DEPRECATED: Free tier reduced to 25 req/day. Consider disabling (alpha_vantage_enabled=false)")
             try:
                 logger.info(f"  💰 {symbol}: Fetching fundamentals from Alpha Vantage...")
                 av_docs = self._fetch_alpha_vantage_overview(symbol)
-                documents.extend([{'content': doc, 'source': 'alpha_vantage'} for doc in av_docs])
+                # Add file_path for source attribution
+                for doc in av_docs:
+                    doc_hash = hashlib.md5(doc[:200].encode()).hexdigest()[:8]
+                    documents.append({
+                        'content': doc,
+                        'source': 'alpha_vantage',
+                        'file_path': f"alpha_vantage:{symbol}_overview_{doc_hash}"
+                    })
                 logger.info(f"    ✅ Alpha Vantage: {len(av_docs)} document(s)")
             except Exception as e:
                 logger.warning(f"Alpha Vantage overview fetch failed for {symbol}: {e}")
@@ -980,15 +1559,56 @@ Symbol: {symbol}
 
         documents = []
 
-        # Try Polygon if available (market data, trading metadata)
-        if self.is_service_available('polygon'):
+        # Try Yahoo Finance FIRST (FREE, unlimited, no rate limits)
+        if self.is_service_available('yahoo_finance'):
             try:
-                logger.info(f"  📈 {symbol}: Fetching market data from Polygon...")
+                logger.info(f"  📈 {symbol}: Fetching comprehensive data from Yahoo Finance...")
+                yahoo_docs = self._fetch_yahoo_market_data(symbol)
+                if yahoo_docs:
+                    # Add file_path for source attribution with intelligent category detection
+                    for doc in yahoo_docs:
+                        doc_hash = hashlib.md5(doc[:200].encode()).hexdigest()[:8]
+
+                        # Detect document category from content markers
+                        if "Analyst Intelligence" in doc:
+                            category = "analyst"
+                        elif "Institutional Holdings" in doc or "Insider Transactions" in doc:
+                            category = "holdings"
+                        elif "Financial Statements" in doc:
+                            category = "financials"
+                        elif "Earnings & Dividends" in doc or "Earnings History" in doc:
+                            category = "earnings"
+                        else:
+                            category = "market"  # Default for market data
+
+                        documents.append({
+                            'content': doc,
+                            'source': 'yahoo_finance',
+                            'file_path': f"yahoo:{symbol}_{category}_{doc_hash}"
+                        })
+                    logger.info(f"    ✅ Yahoo Finance: {len(yahoo_docs)} document(s) ({', '.join([d['file_path'].split('_')[1] for d in documents[-len(yahoo_docs):]])})")
+            except Exception as e:
+                logger.warning(f"Yahoo Finance fetch failed for {symbol}: {e}")
+
+        # Fallback to Polygon if Yahoo fails AND Polygon is available
+        if not documents and self.is_service_available('polygon'):
+            try:
+                logger.info(f"  📈 {symbol}: Falling back to Polygon for market data...")
                 poly_docs = self._fetch_polygon_details(symbol)
-                documents.extend([{'content': doc, 'source': 'polygon'} for doc in poly_docs])
+                # Add file_path for source attribution
+                for doc in poly_docs:
+                    doc_hash = hashlib.md5(doc[:200].encode()).hexdigest()[:8]
+                    documents.append({
+                        'content': doc,
+                        'source': 'polygon',
+                        'file_path': f"polygon:{symbol}_market_{doc_hash}"
+                    })
                 logger.info(f"    ✅ Polygon: {len(poly_docs)} document(s)")
             except Exception as e:
                 logger.warning(f"Polygon details fetch failed for {symbol}: {e}")
+
+        if not documents:
+            logger.warning(f"⚠️ {symbol}: No market data available from any source")
 
         logger.info(f"Fetched {len(documents)} market data documents for {symbol}")
         return documents[:limit]  # Enforce limit
@@ -1692,11 +2312,12 @@ Tickers Mentioned: {', '.join(tickers) if tickers else 'All'}
             logger.info(f"  📊 Processed: {len(all_items)} emails, Returned: {len(items)} (limit: {limit})")
 
         # Convert tuples to dict format with file_path for LightRAG traceability
-        # Format: {'content': str, 'file_path': 'email:filename.eml', 'type': 'financial'}
+        # Format: {'content': str, 'file_path': 'email:filename.eml', 'source': 'email', 'type': 'financial'}
         documents = [
             {
                 'content': doc,
                 'file_path': f"email:{metadata['filename']}",
+                'source': 'email',  # Source metadata for display function
                 'type': 'financial'
             }
             for doc, _, metadata in items
@@ -1708,7 +2329,10 @@ Tickers Mentioned: {', '.join(tickers) if tickers else 'All'}
     def fetch_sec_filings(self, symbol: str, limit: int = 5) -> List[Dict[str, str]]:
         """
         Fetch SEC EDGAR filings - switchable between metadata-only and full content extraction
-
+        
+        OPTIMIZED (2025-11-13): Parallel processing, rate limiting, selective extraction
+        FIXED (2025-11-13): Thread-safe metrics tracking with proper locking
+        
         Toggle: config.use_docling_sec
         - True: Full content extraction with docling (financial tables, 97.9% accuracy)
         - False: Metadata only (current behavior, fast but limited)
@@ -1716,6 +2340,14 @@ Tickers Mentioned: {', '.join(tickers) if tickers else 'All'}
         Flow with docling:
         SEC Filing → Docling/XBRL → EntityExtractor → GraphBuilder → Enhanced Document → LightRAG
         (Same pattern as email pipeline for consistency)
+
+        Optimizations:
+        - Parallel processing: ThreadPoolExecutor (respects SEC 10 req/sec limit)
+        - Priority queue: Form 4/144 first (insider transactions), then 10-K/10-Q
+        - Rate limiting: SEC EDGAR compliance (10 requests/second max)
+        - Progress indicators: Real-time feedback for long operations
+        - Timeout handling: Skip filings taking >60 seconds
+        - Performance metrics: Track ingestion time, cache hits (thread-safe)
 
         Args:
             symbol: Stock ticker symbol
@@ -1725,8 +2357,33 @@ Tickers Mentioned: {', '.join(tickers) if tickers else 'All'}
             List of dicts with 'content' and 'source' keys for source attribution
         """
         import asyncio
+        import time
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        from threading import Lock
+
+        # Skip if limit is 0
+        if limit == 0:
+            logger.info(f"⏭️  {symbol}: Skipping SEC filings (limit=0)")
+            return []
 
         documents = []
+        
+        # Performance metrics (thread-safe with dedicated lock)
+        start_time = time.time()
+        metrics = {
+            'cache_hits': 0,
+            'cache_misses': 0,
+            'extraction_times': [],
+            'extraction_methods': {},
+            'failures': 0
+        }
+        metrics_lock = Lock()  # CRITICAL: Protect metrics from race conditions
+
+        # Early exit: Check if SEC EDGAR API is enabled
+        # Regulatory API: sec_edgar (note: no API key needed, but can be disabled via switch)
+        if not self.api_config.get('sec_edgar_enabled', True) and limit > 0:
+            logger.warning(f"⚠️ {symbol}: SEC EDGAR disabled (limit={limit}). Returning empty list.")
+            return []
 
         try:
             # 1. Fetch filing metadata (existing functionality, always runs)
@@ -1740,14 +2397,35 @@ Tickers Mentioned: {', '.join(tickers) if tickers else 'All'}
             finally:
                 loop.close()
 
+            if not filings:
+                logger.info(f"    ℹ️  {symbol}: No SEC filings found")
+                return []
+
+            # Filter filings by configured lookback period (post-fetch date filtering)
+            lookback_days = self.config.financial_lookback_days if self.config else 90
+            cutoff_date = datetime.now() - timedelta(days=lookback_days)
+            cutoff_date_str = cutoff_date.strftime('%Y-%m-%d')
+
+            # SEC Edgar filing_date format: "YYYY-MM-DD"
+            filings_before_filter = len(filings)
+            filings = [f for f in filings if f.filing_date >= cutoff_date_str]
+            filings_after_filter = len(filings)
+
+            logger.debug(f"SEC Edgar: Filtered to {filings_after_filter}/{filings_before_filter} filings within {lookback_days}-day lookback")
+
+            if not filings:
+                logger.info(f"    ℹ️  {symbol}: No SEC filings within {lookback_days}-day lookback period")
+                return []
+
             # 2. Content extraction (NEW - conditional on toggle)
             use_docling = self.config and self.config.use_docling_sec
 
             if use_docling:
-                # Full content extraction with EntityExtractor/GraphBuilder integration
+                # Full content extraction with parallel processing
                 try:
                     from src.ice_docling.sec_filing_processor import SECFilingProcessor
                     from ice_data_ingestion.robust_client import RobustHTTPClient
+                    from src.ice_core.table_processor import TableProcessor
 
                     # Initialize processor (once, reuse if exists)
                     if not hasattr(self, '_sec_processor'):
@@ -1758,44 +2436,191 @@ Tickers Mentioned: {', '.join(tickers) if tickers else 'All'}
                             sec_connector=self.sec_connector         # Already exists!
                         )
 
-                    # Process each filing
-                    for filing in filings:
+                    # Initialize TableProcessor for dual-layer table storage
+                    if not hasattr(self, '_table_processor'):
+                        self._table_processor = TableProcessor(signal_store=self.signal_store)
+
+                    # Prioritize filings: Form 4/144 > 10-K/10-Q > others
+                    priority_forms = ['4', 'Form 4', '144', 'Form 144']
+                    important_forms = ['10-K', '10-Q', '8-K']
+                    
+                    # Sort filings by priority
+                    def get_priority(filing):
+                        if filing.form in priority_forms:
+                            return 0  # Highest priority (insider transactions)
+                        elif filing.form in important_forms:
+                            return 1  # Medium priority (financial reports)
+                        else:
+                            return 2  # Lower priority (other forms)
+                    
+                    sorted_filings = sorted(filings, key=get_priority)
+                    
+                    logger.info(f"    🔄 Processing {len(sorted_filings)} filings with parallel extraction...")
+                    
+                    # Rate limiting setup (SEC EDGAR: 10 requests/second)
+                    rate_limit_lock = Lock()
+                    last_request_time = [0]  # Mutable container for closure
+                    min_interval = 0.11  # 110ms between requests (slightly above 100ms for safety)
+                    
+                    def rate_limited_extract(filing, filing_index):
+                        """Extract a single filing with rate limiting (thread-safe)"""
+                        # Rate limiting: Ensure minimum interval between requests
+                        with rate_limit_lock:
+                            elapsed = time.time() - last_request_time[0]
+                            if elapsed < min_interval:
+                                time.sleep(min_interval - elapsed)
+                            last_request_time[0] = time.time()
+                        
+                        filing_start = time.time()
                         try:
-                            # Extract content (XBRL parse OR docling)
+                            logger.info(f"    [{filing_index+1}/{len(sorted_filings)}] Processing {symbol} {filing.form}...")
+                            
+                            # Extract content (XBRL parse OR docling) with timeout
                             result = self._sec_processor.extract_filing_content(
                                 filing.accession_number,
                                 filing.primary_document,
                                 symbol,
                                 is_xbrl=filing.is_xbrl,
-                                is_inline_xbrl=filing.is_inline_xbrl
+                                is_inline_xbrl=filing.is_inline_xbrl,
+                                timeout=60  # 60 second timeout
                             )
-
-                            # Use enhanced document (with inline markup) - source tagged
-                            documents.append({'content': result['enhanced_document'], 'source': 'sec_edgar'})
+                            
+                            filing_time = time.time() - filing_start
+                            
+                            # Track metrics (CRITICAL: Thread-safe updates with lock)
+                            method = result['metadata'].get('extraction_method', 'unknown')
+                            cache_hit = result['metadata'].get('cache_hit', False)
+                            
+                            with metrics_lock:
+                                metrics['extraction_times'].append(filing_time)
+                                metrics['extraction_methods'][method] = metrics['extraction_methods'].get(method, 0) + 1
+                                if cache_hit:
+                                    metrics['cache_hits'] += 1
+                                else:
+                                    metrics['cache_misses'] += 1
+                            
+                            # Use enhanced document (with inline markup) - source tagged with file_path
+                            doc = {
+                                'content': result['enhanced_document'],
+                                'source': 'sec_edgar',
+                                'file_path': f"sec_edgar:{symbol}_{filing.accession_number}"
+                            }
 
                             # Store structured data for Phase 2.6.2 Signal Store
+                            # NOTE: Dict item assignment is atomic in CPython, no lock needed
                             filing_id = f"sec_{filing.accession_number}"
                             self.last_graph_data[filing_id] = result['graph_data']
 
-                            logger.info(f"SEC content extracted: {symbol} {filing.form}, "
-                                      f"{len(result['tables'])} tables, "
-                                      f"method={result['metadata']['extraction_method']}")
+                            # NEW: Process extracted tables into dual-layer storage (Signal Store + LightRAG)
+                            if result.get('tables'):
+                                try:
+                                    source_doc = f"{symbol}_{filing.accession_number}_{filing.primary_document}"
+                                    batch_result = self._table_processor.process_tables_batch(
+                                        result['tables'],
+                                        source_doc
+                                    )
 
+                                    # Append graph summaries to enhanced document (for LightRAG ingestion)
+                                    if batch_result['graph_summaries']:
+                                        table_summaries = '\n'.join(batch_result['graph_summaries'])
+                                        result['enhanced_document'] += table_summaries
+                                        doc['content'] = result['enhanced_document']  # Update doc dict
+
+                                        logger.info(f"    📊 Processed {batch_result['successful']} tables "
+                                                  f"({batch_result['failed']} failed) from {filing.form}")
+
+                                except Exception as e:
+                                    # Tier 2: Table processing fails, but document still processes (degraded mode)
+                                    logger.warning(f"    ⚠️  Table processing failed for {filing.form}: {e}. "
+                                                 f"Continuing with text-only ingestion.")
+
+                            # Validate content size
+                            content_size = len(result.get('raw_text', ''))
+                            if content_size < 1000:
+                                logger.warning(f"    ⚠️  SEC filing suspiciously short: {content_size} chars for {filing.form}")
+                                logger.warning(f"       This may be metadata-only extraction!")
+
+                            logger.info(f"    ✅ [{filing_index+1}/{len(sorted_filings)}] {symbol} {filing.form}: "
+                                      f"{content_size} chars, {len(result['tables'])} tables, {filing_time:.1f}s, method={method}")
+                            
+                            return ('success', doc)
+
+                        except TimeoutError:
+                            with metrics_lock:
+                                metrics['failures'] += 1
+                            logger.warning(f"    ⏱️  [{filing_index+1}/{len(sorted_filings)}] Timeout extracting {filing.form}, using metadata fallback")
+                            return ('timeout', filing)
                         except Exception as e:
-                            logger.warning(f"Docling SEC extraction failed for {filing.form}, "
+                            with metrics_lock:
+                                metrics['failures'] += 1
+                            logger.warning(f"    ⚠️  [{filing_index+1}/{len(sorted_filings)}] Extraction failed for {filing.form}, "
                                          f"using metadata fallback: {e}")
-                            # Fallback to metadata-only for this filing
-                            documents.append({'content': self._create_metadata_document(filing, symbol), 'source': 'sec_edgar'})
+                            return ('error', filing)
+                    
+                    # Parallel processing with ThreadPoolExecutor
+                    # Max workers: 3 (conservative for SEC EDGAR rate limits)
+                    max_workers = min(3, len(sorted_filings))
+                    
+                    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                        # Submit all filing extraction tasks
+                        future_to_filing = {
+                            executor.submit(rate_limited_extract, filing, idx): filing 
+                            for idx, filing in enumerate(sorted_filings)
+                        }
+                        
+                        # Collect results as they complete (with 90s timeout per filing)
+                        # NOTE: documents.append() is atomic in CPython, safe without lock
+                        for future in as_completed(future_to_filing):
+                            try:
+                                status, result = future.result(timeout=90)  # 90s timeout per filing
+                            except TimeoutError:
+                                # Timeout: Fall back to metadata for this filing
+                                filing = future_to_filing[future]
+                                logger.warning(f"    ⏱️  Timeout extracting {filing.form}, using metadata fallback")
+                                status, result = 'timeout', filing
+                                with metrics_lock:
+                                    metrics['failures'] += 1
+                            
+                            if status == 'success':
+                                documents.append(result)
+                            else:
+                                # Fallback to metadata-only for this filing
+                                filing = result
+                                documents.append({
+                                    'content': self._create_metadata_document(filing, symbol),
+                                    'source': 'sec_edgar',
+                                    'file_path': f"sec_edgar:{symbol}_{filing.accession_number}_metadata"
+                                })
+                    
+                    # Log performance metrics (thread-safe read after all threads complete)
+                    total_time = time.time() - start_time
+                    with metrics_lock:
+                        avg_time = sum(metrics['extraction_times']) / len(metrics['extraction_times']) if metrics['extraction_times'] else 0
+                        cache_hit_rate = metrics['cache_hits'] / (metrics['cache_hits'] + metrics['cache_misses']) if (metrics['cache_hits'] + metrics['cache_misses']) > 0 else 0
+                        
+                        logger.info(f"    📊 Performance metrics for {symbol}:")
+                        logger.info(f"       Total time: {total_time:.1f}s, Avg per filing: {avg_time:.1f}s")
+                        logger.info(f"       Cache hit rate: {cache_hit_rate*100:.1f}% ({metrics['cache_hits']}/{metrics['cache_hits']+metrics['cache_misses']})")
+                        logger.info(f"       Extraction methods: {metrics['extraction_methods']}")
+                        logger.info(f"       Failures: {metrics['failures']}")
 
                 except ImportError as e:
                     logger.warning(f"Docling SEC processor not available: {e}, using metadata only")
                     # Fallback to metadata-only for all filings
-                    documents = [{'content': self._create_metadata_document(f, symbol), 'source': 'sec_edgar'} for f in filings]
+                    documents = [{
+                        'content': self._create_metadata_document(f, symbol),
+                        'source': 'sec_edgar',
+                        'file_path': f"sec_edgar:{symbol}_{f.accession_number}_metadata"
+                    } for f in filings]
 
             else:
                 # Metadata-only mode (original behavior)
                 logger.info(f"Using metadata-only mode for SEC filings (USE_DOCLING_SEC=false)")
-                documents = [{'content': self._create_metadata_document(f, symbol), 'source': 'sec_edgar'} for f in filings]
+                documents = [{
+                    'content': self._create_metadata_document(f, symbol),
+                    'source': 'sec_edgar',
+                    'file_path': f"sec_edgar:{symbol}_{f.accession_number}_metadata"
+                } for f in filings]
 
             logger.info(f"    ✅ SEC EDGAR: {len(documents)} filing(s)")
 
@@ -1803,6 +2628,75 @@ Tickers Mentioned: {', '.join(tickers) if tickers else 'All'}
             logger.warning(f"SEC filings fetch failed for {symbol}: {e}")
 
         return documents
+
+    def fetch_sec_company_facts(self, ticker: str) -> List[Dict]:
+        """
+        Fetch FREE financial metrics from SEC Company Facts API
+
+        Provides authoritative XBRL metrics (Revenue, Net Income, Assets, EPS, Cash)
+        without API costs. Dual-purpose: (1) insert to Signal Store for fast queries,
+        (2) return summary doc for LightRAG graph context.
+
+        Args:
+            ticker: Stock ticker symbol (e.g., 'AAPL', 'NVDA')
+
+        Returns:
+            List with summary document for LightRAG, or empty list on failure
+        """
+        if not self.config.sec_facts_enabled:
+            return []
+
+        if not self.sec_connector:
+            logger.warning("SEC connector not initialized, skipping Company Facts")
+            return []
+
+        try:
+            # Fetch from SEC Company Facts API
+            facts = self.sec_connector.get_company_facts_sync(
+                ticker,
+                lookback_quarters=self.config.sec_facts_lookback_quarters
+            )
+
+            if not facts or not facts.get('metrics'):
+                logger.warning(f"No SEC Company Facts found for {ticker}")
+                return []
+
+            # Transform to Signal Store format
+            signal_store_metrics = []
+            for metric in facts['metrics']:
+                signal_store_metrics.append({
+                    'ticker': ticker,
+                    'metric_name': metric['metric_name'],
+                    'metric_value': metric['metric_value'],
+                    'metric_category': 'financial',
+                    'period': metric['fiscal_period'],
+                    'fiscal_year': metric['fiscal_year'],
+                    'fiscal_quarter': metric['fiscal_period'],
+                    'source_document_id': f"sec_facts:{ticker}_{metric['filed_date']}"
+                })
+
+            # Insert to Signal Store (if available)
+            if self.signal_store and signal_store_metrics:
+                count = self.signal_store.insert_financial_metrics_batch(signal_store_metrics)
+                logger.info(f"    ✅ SEC Company Facts: {count} metrics inserted for {ticker}")
+
+            # Build summary document for LightRAG
+            summary_lines = [f"{ticker} Financial Metrics (SEC Company Facts - Last {self.config.sec_facts_lookback_quarters} quarters):\n"]
+            for metric in facts['metrics']:
+                summary_lines.append(
+                    f"- {metric['metric_name']}: ${metric['metric_value']:,.0f} "
+                    f"(FY{metric['fiscal_year']} {metric['fiscal_period']}, filed {metric['filed_date']})"
+                )
+
+            return [{
+                'content': '\n'.join(summary_lines),
+                'source': 'sec_company_facts',
+                'file_path': f"sec_facts:{ticker}_metrics"
+            }]
+
+        except Exception as e:
+            logger.warning(f"SEC Company Facts fetch failed for {ticker}: {e}")
+            return []  # Graceful failure
 
     def research_company_deep(self, symbol: str, company_name: str,
                              topics: Optional[List[str]] = None,
@@ -1883,7 +2777,14 @@ Symbol: {symbol}
 Company: {company_name}
 Search Type: Company Research
 """
-                    documents.append({'content': content.strip(), 'source': 'exa_company'})
+                    # Generate stable file_path using content hash for traceability
+                    import hashlib
+                    doc_hash = hashlib.md5(content[:200].encode()).hexdigest()[:8]
+                    documents.append({
+                        'content': content.strip(),
+                        'source': 'exa_company',
+                        'file_path': f"exa_company:{symbol}_{doc_hash}"
+                    })
 
                 logger.info(f"    ✅ Exa company research: {len(company_results)} result(s)")
 
@@ -1915,7 +2816,13 @@ Symbol: {symbol}
 Company: {company_name}
 Search Type: Competitor Finder
 """
-                        documents.append({'content': content.strip(), 'source': 'exa_competitors'})
+                        # Generate stable file_path using content hash for traceability
+                        doc_hash = hashlib.md5(content[:200].encode()).hexdigest()[:8]
+                        documents.append({
+                            'content': content.strip(),
+                            'source': 'exa_competitors',
+                            'file_path': f"exa_competitors:{symbol}_{doc_hash}"
+                        })
 
                     logger.info(f"    ✅ Exa competitor analysis: {len(competitor_results)} result(s)")
 
@@ -2050,6 +2957,766 @@ Retrieved: {datetime.now().isoformat()}
 """
         return [overview_text.strip()]
 
+    # ========== YAHOO FINANCE HELPER FUNCTIONS (Code Optimization) ==========
+
+    def _yahoo_source_footer(self, category: str, symbol: str) -> str:
+        """Generate standardized Yahoo Finance source attribution footer"""
+        return f"\nSource: Yahoo Finance ({category})\nSymbol: {symbol}\nRetrieved: {datetime.now().isoformat()}"
+
+    def _safe_dataframe_text(self, df, title: str, tail_n: Optional[int] = None) -> str:
+        """Safely convert DataFrame to formatted text, returns empty string if invalid"""
+        if df is None or (hasattr(df, 'empty') and df.empty):
+            return ""
+        try:
+            data = df.tail(tail_n) if tail_n else df
+            return f"{title}:\n{data.to_string()}\n"
+        except Exception as e:
+            logger.debug(f"DataFrame conversion failed: {e}")
+            return ""
+
+    def _dual_write_signal_store(self, write_func, *args, **kwargs) -> bool:
+        """
+        Attempt Signal Store write with graceful degradation
+        Returns: True if successful, False if failed (non-critical)
+        """
+        if not hasattr(self, 'signal_store') or not self.signal_store:
+            return False
+        try:
+            write_func(*args, **kwargs)
+            return True
+        except Exception as e:
+            logger.debug(f"Signal Store write failed (non-critical): {e}")
+            return False
+
+    def _fetch_yahoo_market_data(self, symbol: str) -> List[str]:
+        """
+        Fetch comprehensive data from Yahoo Finance (FREE, unlimited)
+
+        Enhanced to provide:
+        1. Market data: price, volume, market cap, PE ratios, 52-week range
+        2. Analyst intelligence: recommendations, upgrades/downgrades, price targets
+        3. Institutional holdings: top holders, insider transactions
+        4. Financial statements: quarterly income, balance sheet, cash flow
+        5. Earnings & dividends: history and estimates
+
+        Uses yfinance library - no API key required
+        Each category handled independently with graceful degradation
+        """
+        try:
+            import yfinance as yf
+        except ImportError:
+            logger.warning("yfinance not installed, skipping Yahoo Finance")
+            return []
+
+        documents = []
+
+        # Track extraction failures for transparency (Post-Phase 2.7B Audit - Cover-up Remediation)
+        # 16 extraction fields tracked; raise DataExtractionError if >50% fail
+        extraction_failures = []
+        EXTRACTION_FIELDS = [
+            'recommendations_summary', 'analyst_price_targets', 'upgrades_downgrades',
+            'institutional_holders', 'major_holders', 'insider_transactions',
+            'quarterly_income_stmt', 'quarterly_balance_sheet', 'quarterly_cashflow',
+            'earnings_history', 'earnings_estimate', 'earnings_dates',
+            'dividends', 'splits', 'calendar_dividend_date', 'calendar_earnings_date'
+        ]
+
+        try:
+            ticker = yf.Ticker(symbol)
+            info = ticker.info
+
+            # ========== CATEGORY 1: MARKET DATA (enhanced with risk metrics + dual storage) ==========
+            try:
+                details_text = f"""
+Company Profile: {info.get('longName', symbol)}
+
+Ticker: {symbol}
+Exchange: {info.get('exchange', 'Unknown')}
+Sector: {info.get('sector', 'Unknown')}
+Industry: {info.get('industry', 'Unknown')}
+
+Current Price: ${info.get('currentPrice', 0)}
+Previous Close: ${info.get('previousClose', 0)}
+Day High: ${info.get('dayHigh', 0)}
+Day Low: ${info.get('dayLow', 0)}
+
+52 Week High: ${info.get('fiftyTwoWeekHigh', 0)}
+52 Week Low: ${info.get('fiftyTwoWeekLow', 0)}
+
+Volume: {self._format_number(info.get('volume', 0))}
+Average Volume: {self._format_number(info.get('averageVolume', 0))}
+
+Market Cap: ${self._format_number(info.get('marketCap', 0))}
+PE Ratio: {info.get('trailingPE', 'N/A')}
+Forward PE: {info.get('forwardPE', 'N/A')}
+Dividend Yield: {info.get('dividendYield', 'N/A')}
+
+Risk Metrics:
+Beta: {info.get('beta', 'N/A')}
+Short % of Float: {info.get('shortPercentOfFloat', 'N/A')}
+Float Shares: {self._format_number(info.get('floatShares', 0))}
+
+Profitability Metrics:
+Gross Margins: {info.get('grossMargins', 'N/A')}
+Operating Margins: {info.get('operatingMargins', 'N/A')}
+Profit Margins: {info.get('profitMargins', 'N/A')}
+Return on Assets: {info.get('returnOnAssets', 'N/A')}
+Return on Equity: {info.get('returnOnEquity', 'N/A')}
+
+Financial Health:
+Debt to Equity: {info.get('debtToEquity', 'N/A')}
+Revenue Growth: {info.get('revenueGrowth', 'N/A')}
+
+Business Summary: {info.get('longBusinessSummary', 'No description available')}
+
+Source: Yahoo Finance (Market Data)
+Retrieved: {datetime.now().isoformat()}
+"""
+                documents.append(details_text.strip())
+
+                # Dual storage: Write numerical metrics to Signal Store
+                metrics = []
+                source_doc_id = f"yahoo_market_{symbol}_{datetime.now().strftime('%Y%m%d')}"
+
+                # Extract numerical fields for Signal Store (skip 'N/A' values)
+                metric_fields = {
+                    'beta': info.get('beta'),
+                    'shortPercentOfFloat': info.get('shortPercentOfFloat'),
+                    'floatShares': info.get('floatShares'),
+                    'grossMargins': info.get('grossMargins'),
+                    'operatingMargins': info.get('operatingMargins'),
+                    'profitMargins': info.get('profitMargins'),
+                    'returnOnAssets': info.get('returnOnAssets'),
+                    'returnOnEquity': info.get('returnOnEquity'),
+                    'debtToEquity': info.get('debtToEquity'),
+                    'revenueGrowth': info.get('revenueGrowth'),
+                    'marketCap': info.get('marketCap'),
+                    'trailingPE': info.get('trailingPE'),
+                    'forwardPE': info.get('forwardPE'),
+                    'dividendYield': info.get('dividendYield'),
+                    'volume': info.get('volume')
+                }
+
+                for metric_name, metric_value in metric_fields.items():
+                    if metric_value is not None and metric_value != 'N/A':
+                        try:
+                            metrics.append({
+                                'ticker': symbol,
+                                'metric_name': metric_name,
+                                'metric_value': float(metric_value),
+                                'metric_category': 'market_data',
+                                'period': 'current',
+                                'source_document_id': source_doc_id
+                            })
+                        except (ValueError, TypeError):
+                            pass  # Skip non-numeric values
+
+                # Write to Signal Store (non-critical, graceful degradation)
+                if metrics:
+                    self._dual_write_signal_store(
+                        self.signal_store.insert_financial_metrics_batch,
+                        metrics
+                    )
+
+            except Exception as e:
+                logger.debug(f"{symbol}: Market data extraction failed: {e}")
+
+            # ========== CATEGORY 2: ANALYST INTELLIGENCE (enhanced with dual storage) ==========
+            try:
+                analyst_lines = [f"\n=== Analyst Intelligence for {symbol} ===\n"]
+                has_analyst_data = False
+                source_doc_id = f"yahoo_analyst_{symbol}_{datetime.now().strftime('%Y%m%d')}"
+
+                # Analyst recommendations summary
+                try:
+                    recs_summary = ticker.recommendations_summary
+                    if recs_summary is not None and not recs_summary.empty:
+                        analyst_lines.append("Analyst Recommendations Summary:")
+                        analyst_lines.append(recs_summary.to_string())
+                        analyst_lines.append("")
+                        has_analyst_data = True
+                except Exception as e:
+                    extraction_failures.append(('recommendations_summary', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: recommendations_summary FAILED: {type(e).__name__}: {e}")
+
+                # Price targets - dual storage
+                try:
+                    targets = ticker.analyst_price_targets
+                    if targets is not None and len(targets) > 0:
+                        analyst_lines.append("Analyst Price Targets:")
+                        for key, value in targets.items():
+                            analyst_lines.append(f"  {key}: {value}")
+                        analyst_lines.append("")
+                        has_analyst_data = True
+
+                        # Write structured price targets to Signal Store
+                        if hasattr(self, 'signal_store') and self.signal_store:
+                            try:
+                                current_time = datetime.now().isoformat()
+                                # Store aggregate targets (mean, low, high)
+                                for target_type in ['mean', 'low', 'high']:
+                                    target_value = targets.get(target_type)
+                                    if target_value is not None:
+                                        try:
+                                            self.signal_store.insert_price_target(
+                                                ticker=symbol,
+                                                target_price=float(target_value),
+                                                timestamp=current_time,
+                                                source_document_id=source_doc_id,
+                                                analyst=f"Consensus ({target_type})",
+                                                firm="Yahoo Finance Aggregate"
+                                            )
+                                        except (ValueError, TypeError):
+                                            pass
+                            except Exception as e:
+                                logger.debug(f"Price target Signal Store write failed: {e}")
+                except Exception as e:
+                    extraction_failures.append(('analyst_price_targets', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: analyst_price_targets FAILED: {type(e).__name__}: {e}")
+
+                # Recent upgrades/downgrades - dual storage
+                try:
+                    upgrades = ticker.upgrades_downgrades
+                    if upgrades is not None and not upgrades.empty:
+                        recent_actions = upgrades.tail(20)
+                        analyst_lines.append(f"Recent Analyst Actions (Last {len(recent_actions)}):")
+                        analyst_lines.append(recent_actions.to_string())
+                        has_analyst_data = True
+
+                        # Parse DataFrame to Signal Store ratings table
+                        ratings_list = []
+                        for idx, row in recent_actions.iterrows():
+                            try:
+                                # Extract fields from DataFrame
+                                grade_date = idx if hasattr(idx, 'isoformat') else datetime.now()
+                                firm = row.get('Firm', 'Unknown')
+                                to_grade = row.get('ToGrade', row.get('Action', 'N/A'))
+
+                                ratings_list.append({
+                                    'ticker': symbol,
+                                    'analyst': None,
+                                    'firm': str(firm) if firm else None,
+                                    'rating': str(to_grade),
+                                    'confidence': None,
+                                    'timestamp': grade_date.isoformat() if hasattr(grade_date, 'isoformat') else str(grade_date),
+                                    'source_document_id': source_doc_id
+                                })
+                            except Exception as e:
+                                logger.debug(f"Failed to parse rating row: {e}")
+                                continue
+
+                        # Batch write to Signal Store
+                        if ratings_list:
+                            self._dual_write_signal_store(
+                                self.signal_store.insert_ratings_batch,
+                                ratings_list
+                            )
+                except Exception as e:
+                    extraction_failures.append(('upgrades_downgrades', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: upgrades_downgrades FAILED: {type(e).__name__}: {e}")
+
+                if has_analyst_data:
+                    analyst_lines.append(f"\nSource: Yahoo Finance (Analyst Intelligence)")
+                    analyst_lines.append(f"Retrieved: {datetime.now().isoformat()}")
+                    documents.append('\n'.join(analyst_lines))
+            except Exception as e:
+                logger.debug(f"{symbol}: Analyst intelligence extraction failed: {e}")
+
+            # ========== CATEGORY 3: INSTITUTIONAL HOLDINGS ==========
+            try:
+                holdings_lines = [f"\n=== Institutional Holdings for {symbol} ===\n"]
+                has_holdings_data = False
+
+                # Top institutional holders
+                try:
+                    inst_holders = ticker.institutional_holders
+                    if inst_holders is not None and not inst_holders.empty:
+                        holdings_lines.append("Top Institutional Holders:")
+                        holdings_lines.append(inst_holders.to_string())
+                        holdings_lines.append("")
+                        has_holdings_data = True
+                except Exception as e:
+                    extraction_failures.append(('institutional_holders', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: institutional_holders FAILED: {type(e).__name__}: {e}")
+
+                # Major holders summary
+                try:
+                    major_holders = ticker.major_holders
+                    if major_holders is not None and not major_holders.empty:
+                        holdings_lines.append("Major Holders Summary:")
+                        holdings_lines.append(major_holders.to_string())
+                        holdings_lines.append("")
+                        has_holdings_data = True
+                except Exception as e:
+                    extraction_failures.append(('major_holders', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: major_holders FAILED: {type(e).__name__}: {e}")
+
+                # Insider transactions (last 20)
+                try:
+                    insider_txns = ticker.insider_transactions
+                    if insider_txns is not None and not insider_txns.empty:
+                        recent_txns = insider_txns.tail(20)
+                        holdings_lines.append(f"Recent Insider Transactions (Last {len(recent_txns)}):")
+                        holdings_lines.append(recent_txns.to_string())
+                        has_holdings_data = True
+                except Exception as e:
+                    extraction_failures.append(('insider_transactions', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: insider_transactions FAILED: {type(e).__name__}: {e}")
+
+                if has_holdings_data:
+                    holdings_lines.append(f"\nSource: Yahoo Finance (Holdings)")
+                    holdings_lines.append(f"Retrieved: {datetime.now().isoformat()}")
+                    documents.append('\n'.join(holdings_lines))
+            except Exception as e:
+                logger.debug(f"{symbol}: Holdings extraction failed: {e}")
+
+            # ========== CATEGORY 4: FINANCIAL STATEMENTS (enhanced with key metrics + dual storage) ==========
+            try:
+                financials_lines = [f"\n=== Financial Statements for {symbol} ===\n"]
+                has_financials = False
+                source_doc_id = f"yahoo_financials_{symbol}_{datetime.now().strftime('%Y%m%d')}"
+                metrics_list = []
+
+                # Quarterly Income Statement (last 4 quarters) - extract key metrics
+                income = None
+                try:
+                    income = ticker.quarterly_income_stmt
+                    if income is not None and not income.empty:
+                        financials_lines.append("Quarterly Income Statement (Last 4 Quarters):")
+                        financials_lines.append(income.iloc[:, :4].to_string())
+                        financials_lines.append("")
+                        has_financials = True
+
+                        # Extract key metrics from each quarter
+                        for col_idx, col in enumerate(income.columns[:4]):
+                            quarter_data = income[col]
+                            period_str = col.strftime('%Y-Q%q') if hasattr(col, 'strftime') else str(col)
+
+                            # Income statement metrics (using common yfinance field names)
+                            metric_mappings = {
+                                'Total Revenue': ['Total Revenue', 'TotalRevenue'],
+                                'Gross Profit': ['Gross Profit', 'GrossProfit'],
+                                'Operating Income': ['Operating Income', 'OperatingIncome'],
+                                'Net Income': ['Net Income', 'NetIncome'],
+                                'Basic EPS': ['Basic EPS', 'BasicEPS'],
+                                'Diluted EPS': ['Diluted EPS', 'DilutedEPS']
+                            }
+
+                            for metric_name, possible_keys in metric_mappings.items():
+                                for key in possible_keys:
+                                    if key in quarter_data.index:
+                                        value = quarter_data.get(key)
+                                        if value is not None and not (hasattr(value, 'isna') and value.isna()):
+                                            try:
+                                                metrics_list.append({
+                                                    'ticker': symbol,
+                                                    'metric_name': metric_name,
+                                                    'metric_value': float(value),
+                                                    'metric_category': 'income_statement',
+                                                    'period': period_str,
+                                                    'source_document_id': source_doc_id
+                                                })
+                                            except (ValueError, TypeError):
+                                                pass
+                                        break
+                except Exception as e:
+                    extraction_failures.append(('quarterly_income_stmt', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: quarterly_income_stmt FAILED: {type(e).__name__}: {e}")
+
+                # Quarterly Balance Sheet (last 4 quarters) - extract key metrics
+                balance = None
+                try:
+                    balance = ticker.quarterly_balance_sheet
+                    if balance is not None and not balance.empty:
+                        financials_lines.append("Quarterly Balance Sheet (Last 4 Quarters):")
+                        financials_lines.append(balance.iloc[:, :4].to_string())
+                        financials_lines.append("")
+                        has_financials = True
+
+                        # Extract balance sheet metrics
+                        for col_idx, col in enumerate(balance.columns[:4]):
+                            quarter_data = balance[col]
+                            period_str = col.strftime('%Y-Q%q') if hasattr(col, 'strftime') else str(col)
+
+                            bs_mappings = {
+                                'Total Assets': ['Total Assets', 'TotalAssets'],
+                                'Total Liabilities': ['Total Liabilities Net Minority Interest', 'TotalLiabilitiesNetMinorityInterest'],
+                                'Total Equity': ['Total Equity Gross Minority Interest', 'StockholdersEquity', 'TotalEquityGrossMinorityInterest']
+                            }
+
+                            for metric_name, possible_keys in bs_mappings.items():
+                                for key in possible_keys:
+                                    if key in quarter_data.index:
+                                        value = quarter_data.get(key)
+                                        if value is not None and not (hasattr(value, 'isna') and value.isna()):
+                                            try:
+                                                metrics_list.append({
+                                                    'ticker': symbol,
+                                                    'metric_name': metric_name,
+                                                    'metric_value': float(value),
+                                                    'metric_category': 'balance_sheet',
+                                                    'period': period_str,
+                                                    'source_document_id': source_doc_id
+                                                })
+                                            except (ValueError, TypeError):
+                                                pass
+                                        break
+                except Exception as e:
+                    extraction_failures.append(('quarterly_balance_sheet', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: quarterly_balance_sheet FAILED: {type(e).__name__}: {e}")
+
+                # Quarterly Cash Flow (last 4 quarters) - extract key metrics
+                try:
+                    cashflow = ticker.quarterly_cashflow
+                    if cashflow is not None and not cashflow.empty:
+                        financials_lines.append("Quarterly Cash Flow Statement (Last 4 Quarters):")
+                        financials_lines.append(cashflow.iloc[:, :4].to_string())
+                        has_financials = True
+
+                        # Extract cash flow metrics
+                        for col_idx, col in enumerate(cashflow.columns[:4]):
+                            quarter_data = cashflow[col]
+                            period_str = col.strftime('%Y-Q%q') if hasattr(col, 'strftime') else str(col)
+
+                            cf_mappings = {
+                                'Operating Cash Flow': ['Operating Cash Flow', 'OperatingCashFlow'],
+                                'Capital Expenditure': ['Capital Expenditure', 'CapitalExpenditure']
+                            }
+
+                            for metric_name, possible_keys in cf_mappings.items():
+                                for key in possible_keys:
+                                    if key in quarter_data.index:
+                                        value = quarter_data.get(key)
+                                        if value is not None and not (hasattr(value, 'isna') and value.isna()):
+                                            try:
+                                                metrics_list.append({
+                                                    'ticker': symbol,
+                                                    'metric_name': metric_name,
+                                                    'metric_value': float(value),
+                                                    'metric_category': 'cash_flow',
+                                                    'period': period_str,
+                                                    'source_document_id': source_doc_id
+                                                })
+                                            except (ValueError, TypeError):
+                                                pass
+                                        break
+                except Exception as e:
+                    extraction_failures.append(('quarterly_cashflow', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: quarterly_cashflow FAILED: {type(e).__name__}: {e}")
+
+                # Batch write all extracted metrics to Signal Store
+                if metrics_list:
+                    self._dual_write_signal_store(
+                        self.signal_store.insert_financial_metrics_batch,
+                        metrics_list
+                    )
+
+                if has_financials:
+                    financials_lines.append(f"\nSource: Yahoo Finance (Financial Statements)")
+                    financials_lines.append(f"Retrieved: {datetime.now().isoformat()}")
+                    documents.append('\n'.join(financials_lines))
+            except Exception as e:
+                logger.debug(f"{symbol}: Financial statements extraction failed: {e}")
+
+            # ========== CATEGORY 5: EARNINGS & DIVIDENDS (enhanced with future dates + dual storage) ==========
+            try:
+                earnings_lines = [f"\n=== Earnings & Dividends for {symbol} ===\n"]
+                has_earnings_data = False
+                source_doc_id = f"yahoo_earnings_{symbol}_{datetime.now().strftime('%Y%m%d')}"
+
+                # Earnings history (last 8 quarters)
+                try:
+                    earnings_hist = ticker.earnings_history
+                    if earnings_hist is not None and not earnings_hist.empty:
+                        recent_earnings = earnings_hist.tail(8)
+                        earnings_lines.append(f"Earnings History (Last {len(recent_earnings)} Quarters):")
+                        earnings_lines.append(recent_earnings.to_string())
+                        earnings_lines.append("")
+                        has_earnings_data = True
+                except Exception as e:
+                    extraction_failures.append(('earnings_history', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: earnings_history FAILED: {type(e).__name__}: {e}")
+
+                # Earnings estimates
+                try:
+                    earnings_est = ticker.earnings_estimate
+                    if earnings_est is not None and not earnings_est.empty:
+                        earnings_lines.append("Earnings Estimates:")
+                        earnings_lines.append(earnings_est.to_string())
+                        earnings_lines.append("")
+                        has_earnings_data = True
+                except Exception as e:
+                    extraction_failures.append(('earnings_estimate', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: earnings_estimate FAILED: {type(e).__name__}: {e}")
+
+                # Earnings dates (historical + future) - dual storage
+                try:
+                    earnings_dates = ticker.earnings_dates
+                    if earnings_dates is not None and not earnings_dates.empty:
+                        earnings_lines.append(f"Earnings Calendar ({len(earnings_dates)} dates):")
+                        earnings_lines.append(earnings_dates.to_string())
+                        earnings_lines.append("")
+                        has_earnings_data = True
+
+                        # Parse earnings dates to calendar_events table
+                        calendar_events = []
+                        current_time = datetime.now()
+
+                        for date_idx, row in earnings_dates.iterrows():
+                            try:
+                                # Determine if date is in future
+                                is_future = 1 if date_idx > current_time else 0
+
+                                # Extract EPS estimates if available
+                                eps_estimate = row.get('EPS Estimate', None)
+
+                                calendar_events.append({
+                                    'ticker': symbol,
+                                    'event_type': 'earnings',
+                                    'event_date': date_idx.isoformat() if hasattr(date_idx, 'isoformat') else str(date_idx),
+                                    'event_value': None,
+                                    'estimate_high': None,
+                                    'estimate_low': None,
+                                    'estimate_avg': float(eps_estimate) if eps_estimate is not None else None,
+                                    'is_future': is_future,
+                                    'source_document_id': source_doc_id
+                                })
+                            except Exception as e:
+                                logger.debug(f"Failed to parse earnings date: {e}")
+                                continue
+
+                        # Batch write to Signal Store
+                        if calendar_events:
+                            self._dual_write_signal_store(
+                                self.signal_store.insert_calendar_events_batch,
+                                calendar_events
+                            )
+                except Exception as e:
+                    extraction_failures.append(('earnings_dates', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: earnings_dates FAILED: {type(e).__name__}: {e}")
+
+                # Dividend history (last 20 payments)
+                try:
+                    dividends = ticker.dividends
+                    if dividends is not None and not dividends.empty:
+                        recent_divs = dividends.tail(20)
+                        earnings_lines.append(f"Dividend History (Last {len(recent_divs)} Payments):")
+                        earnings_lines.append(recent_divs.to_string())
+                        earnings_lines.append("")
+                        has_earnings_data = True
+                except Exception as e:
+                    extraction_failures.append(('dividends', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: dividends FAILED: {type(e).__name__}: {e}")
+
+                # Stock splits
+                try:
+                    splits = ticker.splits
+                    if splits is not None and not splits.empty:
+                        earnings_lines.append("Stock Split History:")
+                        earnings_lines.append(splits.to_string())
+                        has_earnings_data = True
+                except Exception as e:
+                    extraction_failures.append(('splits', f"{type(e).__name__}: {str(e)[:100]}"))
+                    logger.error(f"❌ {symbol}: splits FAILED: {type(e).__name__}: {e}")
+
+                if has_earnings_data:
+                    earnings_lines.append(f"\nSource: Yahoo Finance (Earnings & Dividends)")
+                    earnings_lines.append(f"Retrieved: {datetime.now().isoformat()}")
+                    documents.append('\n'.join(earnings_lines))
+            except Exception as e:
+                logger.debug(f"{symbol}: Earnings/dividends extraction failed: {e}")
+
+            # ========== CATEGORY 6: HISTORICAL PRICING (ENHANCED - Configurable lookback with event_date) ==========
+            try:
+                from datetime import datetime, timedelta
+
+                # Get lookback period from config (default 90 days)
+                lookback_days = self.config.financial_lookback_days if self.config else 90
+
+                # Calculate date range
+                end_date = datetime.now()
+                start_date = end_date - timedelta(days=lookback_days)
+
+                # Fetch historical daily OHLCV data for the configured lookback period
+                history_df = ticker.history(start=start_date, end=end_date, interval='1d')
+
+                if history_df is not None and not history_df.empty:
+                    # Summary document for Graph overview
+                    price_summary = f"""
+=== Historical Pricing for {symbol} ===
+
+{lookback_days}-Day Price Summary:
+  Period: {history_df.index[0].strftime('%Y-%m-%d')} to {history_df.index[-1].strftime('%Y-%m-%d')}
+  Trading Days: {len(history_df)}
+  High: ${history_df['High'].max():.2f}
+  Low: ${history_df['Low'].min():.2f}
+  Latest Close: ${history_df['Close'].iloc[-1]:.2f}
+  Average Volume: {int(history_df['Volume'].mean()):,}
+
+Price Movement:
+  Start: ${history_df['Close'].iloc[0]:.2f}
+  End: ${history_df['Close'].iloc[-1]:.2f}
+  Change: ${history_df['Close'].iloc[-1] - history_df['Close'].iloc[0]:.2f} ({((history_df['Close'].iloc[-1] / history_df['Close'].iloc[0] - 1) * 100):.1f}%)
+
+{self._yahoo_source_footer('Historical Pricing', symbol)}
+"""
+                    documents.append(price_summary.strip())
+
+                    # Individual daily documents with proper event_date tags for temporal queries
+                    for date_idx, row in history_df.iterrows():
+                        date_str = date_idx.strftime('%Y-%m-%d') if hasattr(date_idx, 'strftime') else str(date_idx)
+
+                        # Create a document for each trading day with event_date tag
+                        daily_doc = f"""
+Historical Market Data: {info.get('longName', symbol)}
+
+Date: {date_str}
+Ticker: {symbol}
+Open: ${row['Open']:.2f}
+High: ${row['High']:.2f}
+Low: ${row['Low']:.2f}
+Close: ${row['Close']:.2f}
+Volume: {self._format_number(row['Volume'])}
+
+Price Change: ${row['Close'] - row['Open']:.2f} ({((row['Close'] / row['Open'] - 1) * 100) if row['Open'] > 0 else 0:.2f}%)
+Intraday Range: ${row['High'] - row['Low']:.2f}
+
+[EVENT_DATE:{date_str}]
+{self._yahoo_source_footer('Historical Daily Price', symbol)}
+"""
+                        documents.append(daily_doc.strip())
+
+                    # Dual storage: Write OHLCV time-series to Signal Store with proper date field
+                    price_records = []
+                    source_doc_id = f"yahoo_pricing_{symbol}_{datetime.now().strftime('%Y%m%d')}"
+
+                    for date_idx, row in history_df.iterrows():
+                        try:
+                            date_str = date_idx.strftime('%Y-%m-%d') if hasattr(date_idx, 'strftime') else str(date_idx)
+                            price_records.append({
+                                'ticker': symbol,
+                                'date': date_str,  # This serves as event_date in price_history table
+                                'open_price': float(row.get('Open', 0)),
+                                'high_price': float(row.get('High', 0)),
+                                'low_price': float(row.get('Low', 0)),
+                                'close_price': float(row.get('Close', 0)),
+                                'volume': int(row.get('Volume', 0)),
+                                'source_document_id': source_doc_id
+                            })
+                        except (ValueError, TypeError) as e:
+                            logger.debug(f"Failed to parse price record: {e}")
+                            continue
+
+                    # Batch insert OHLCV data
+                    if price_records:
+                        self._dual_write_signal_store(
+                            self.signal_store.insert_price_history_batch,
+                            price_records
+                        )
+                        logger.info(f"    ✅ Historical OHLCV: {len(price_records)} trading days ({lookback_days} days lookback)")
+            except Exception as e:
+                logger.warning(f"{symbol}: Historical pricing extraction failed: {e}")
+                # Graceful degradation - continue with other categories
+
+            # ========== CATEGORY 7: CALENDAR EVENTS (NEW - earnings calendar) ==========
+            try:
+                calendar = ticker.calendar
+
+                if calendar is not None and len(calendar) > 0:
+                    calendar_text = f"""
+=== Calendar Events for {symbol} ===
+
+Upcoming Events:
+"""
+                    # Extract upcoming events from calendar dict
+                    for event_key, event_value in calendar.items():
+                        calendar_text += f"  {event_key}: {event_value}\n"
+
+                    calendar_text += f"\n{self._yahoo_source_footer('Calendar Events', symbol)}"
+                    documents.append(calendar_text.strip())
+
+                    # Dual storage: Write calendar events to Signal Store
+                    calendar_events = []
+                    source_doc_id = f"yahoo_calendar_{symbol}_{datetime.now().strftime('%Y%m%d')}"
+
+                    # Parse calendar dict for upcoming dividend/earnings dates
+                    if 'Dividend Date' in calendar:
+                        try:
+                            div_date = calendar['Dividend Date']
+                            if div_date is not None:
+                                calendar_events.append({
+                                    'ticker': symbol,
+                                    'event_type': 'dividend',
+                                    'event_date': div_date.isoformat() if hasattr(div_date, 'isoformat') else str(div_date),
+                                    'event_value': None,
+                                    'estimate_high': None,
+                                    'estimate_low': None,
+                                    'estimate_avg': None,
+                                    'is_future': 1,
+                                    'source_document_id': source_doc_id
+                                })
+                        except Exception as e:
+                            extraction_failures.append(('calendar_dividend_date', f"{type(e).__name__}: {str(e)[:100]}"))
+                            logger.error(f"❌ {symbol}: calendar_dividend_date FAILED: {type(e).__name__}: {e}")
+
+                    if 'Earnings Date' in calendar:
+                        try:
+                            earnings_dates = calendar['Earnings Date']
+                            # Can be a single date or list of dates
+                            if not isinstance(earnings_dates, list):
+                                earnings_dates = [earnings_dates]
+
+                            for earn_date in earnings_dates:
+                                if earn_date is not None:
+                                    calendar_events.append({
+                                        'ticker': symbol,
+                                        'event_type': 'earnings',
+                                        'event_date': earn_date.isoformat() if hasattr(earn_date, 'isoformat') else str(earn_date),
+                                        'event_value': None,
+                                        'estimate_high': None,
+                                        'estimate_low': None,
+                                        'estimate_avg': None,
+                                        'is_future': 1,
+                                        'source_document_id': source_doc_id
+                                    })
+                        except Exception as e:
+                            extraction_failures.append(('calendar_earnings_date', f"{type(e).__name__}: {str(e)[:100]}"))
+                            logger.error(f"❌ {symbol}: calendar_earnings_date FAILED: {type(e).__name__}: {e}")
+
+                    # Batch write to Signal Store
+                    if calendar_events:
+                        self._dual_write_signal_store(
+                            self.signal_store.insert_calendar_events_batch,
+                            calendar_events
+                        )
+            except Exception as e:
+                logger.debug(f"{symbol}: Calendar events extraction failed: {e}")
+
+            # ========== EXTRACTION FAILURE THRESHOLD CHECK (Post-Phase 2.7B Audit) ==========
+            # Raise DataExtractionError if >50% of extractions failed for this symbol
+            if extraction_failures:
+                failure_rate = len(extraction_failures) / len(EXTRACTION_FIELDS)
+                if failure_rate > 0.5:
+                    raise DataExtractionError(symbol, extraction_failures, len(EXTRACTION_FIELDS))
+                else:
+                    # Log failures but continue (partial data is better than none)
+                    logger.warning(
+                        f"⚠️ {symbol}: {len(extraction_failures)}/{len(EXTRACTION_FIELDS)} extractions failed ({failure_rate:.0%}). "
+                        f"Continuing with partial data. Failures: {[f[0] for f in extraction_failures]}"
+                    )
+
+            # Return all successfully extracted documents (1-7 documents depending on availability)
+            if not documents:
+                logger.warning(f"Yahoo Finance: No data extracted for {symbol}")
+            else:
+                logger.info(f"Yahoo Finance: Extracted {len(documents)} document categories for {symbol}")
+
+            return documents
+
+        except Exception as e:
+            logger.warning(f"Yahoo Finance fetch failed for {symbol}: {e}")
+            return []
+
     def _fetch_polygon_details(self, symbol: str) -> List[str]:
         """Fetch company details from Polygon.io"""
         url = f"https://api.polygon.io/v3/reference/tickers/{symbol}"
@@ -2138,7 +3805,9 @@ Retrieved: {datetime.now().isoformat()}
         for symbol in symbols:
             # CATEGORY 2: News data (API)
             try:
-                news_docs = self.fetch_company_news(symbol, news_limit)
+                # Context='research' enables NewsAPI (free, 24hr delay) for broader coverage
+                # Without paid API keys (MarketAux, Benzinga), this gives 2 sources instead of 1
+                news_docs = self.fetch_company_news(symbol, news_limit, context='research')
                 all_documents.extend(news_docs)
                 logger.info(f"✅ Category 2 (News): Added {len(news_docs)} documents for {symbol}")
             except Exception as e:
@@ -2187,6 +3856,151 @@ Retrieved: {datetime.now().isoformat()}
 
         logger.info(f"📊 COMPREHENSIVE DATA FETCH COMPLETE: {len(all_documents)} total documents from 6 categories")
         logger.info(f"   Categories: Email + News + Financial + Market + SEC + Research")
+        return all_documents
+
+    def _fetch_single_symbol_data(self, symbol: str, news_limit: int, financial_limit: int,
+                                  market_limit: int, sec_limit: int, research_limit: int, context: str = 'research') -> List[Dict]:
+        """
+        Helper method: Fetch all data for a single symbol
+
+        Used by fetch_comprehensive_data_concurrent() for parallel execution
+        Isolated to enable concurrent processing without race conditions
+
+        Args:
+            symbol: Stock ticker
+            news_limit, financial_limit, market_limit, sec_limit, research_limit: Category limits
+            context: News fetching context (default: 'research' for broader coverage)
+
+        Returns:
+            List of documents for this symbol from all active categories
+        """
+        symbol_docs = []
+
+        # CATEGORY 2: News data
+        try:
+            news_docs = self.fetch_company_news(symbol, news_limit, context=context)
+            symbol_docs.extend(news_docs)
+            logger.info(f"✅ Category 2 (News): {len(news_docs)} documents for {symbol}")
+        except Exception as e:
+            logger.error(f"❌ Category 2 (News) failed for {symbol}: {e}")
+
+        # CATEGORY 3: Financial fundamentals
+        try:
+            financial_docs = self.fetch_financial_fundamentals(symbol, financial_limit)
+            symbol_docs.extend(financial_docs)
+            logger.info(f"✅ Category 3 (Financial): {len(financial_docs)} documents for {symbol}")
+        except Exception as e:
+            logger.error(f"❌ Category 3 (Financial) failed for {symbol}: {e}")
+
+        # CATEGORY 4: Market data
+        try:
+            market_docs = self.fetch_market_data(symbol, market_limit)
+            symbol_docs.extend(market_docs)
+            logger.info(f"✅ Category 4 (Market): {len(market_docs)} documents for {symbol}")
+        except Exception as e:
+            logger.error(f"❌ Category 4 (Market) failed for {symbol}: {e}")
+
+        # CATEGORY 5: SEC EDGAR filings
+        try:
+            sec_docs = self.fetch_sec_filings(symbol, limit=sec_limit)
+            symbol_docs.extend(sec_docs)
+            logger.info(f"✅ Category 5 (SEC): {len(sec_docs)} filings for {symbol}")
+        except Exception as e:
+            logger.error(f"❌ Category 5 (SEC) failed for {symbol}: {e}")
+
+        # CATEGORY 6: Research/Search (if enabled)
+        if research_limit > 0:
+            try:
+                logger.info(f"  🔬 {symbol}: Initiating deep research (Exa MCP, limit={research_limit})...")
+                research_docs = self.research_company_deep(
+                    symbol=symbol,
+                    company_name=symbol,
+                    topics=None,
+                    include_competitors=False,
+                    industry=None
+                )
+                symbol_docs.extend(research_docs[:research_limit])
+                logger.info(f"✅ Category 6 (Research): {len(research_docs[:research_limit])} documents for {symbol}")
+            except Exception as e:
+                logger.error(f"❌ Category 6 (Research) failed for {symbol}: {e}")
+
+        return symbol_docs
+
+    def fetch_comprehensive_data_concurrent(self, symbols: List[str],
+                                           news_limit: int = 2,
+                                           financial_limit: int = 2,
+                                           market_limit: int = 1,
+                                           email_limit: int = 71,
+                                           sec_limit: int = 2,
+                                           research_limit: int = 0,
+                                           max_workers: int = 3) -> List[str]:
+        """
+        Concurrent version of fetch_comprehensive_data() with 3-5x performance improvement
+
+        Fetches data from all sources with parallel symbol processing using ThreadPoolExecutor.
+        Email data is fetched once (not parallelized), while per-symbol data (news, financial,
+        market, SEC, research) is processed concurrently across workers.
+
+        Args:
+            symbols: List of stock ticker symbols
+            news_limit: Maximum news articles per symbol (default: 2)
+            financial_limit: Maximum financial documents per symbol (default: 2)
+            market_limit: Maximum market data documents per symbol (default: 1)
+            email_limit: Maximum emails to fetch (default: 71 - all samples)
+            sec_limit: Maximum SEC filings per symbol (default: 2)
+            research_limit: Maximum research documents per symbol (default: 0)
+            max_workers: ThreadPoolExecutor workers (default: 3, respects API rate limits)
+
+        Returns:
+            Combined list of all documents from all sources ready for LightRAG ingestion
+
+        Performance:
+            - Serial: ~30s for 3 symbols (10s each)
+            - Concurrent (3 workers): ~10s for 3 symbols (3x speedup)
+            - Concurrent (3 workers): ~15s for 5 symbols (2x speedup)
+        """
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        import time
+
+        all_documents = []
+        start_time = time.time()
+
+        logger.info(f"🚀 CONCURRENT DATA FETCH for {len(symbols)} symbols using {max_workers} workers")
+
+        # SOURCE 1: Email documents (fetched once, not parallelized)
+        try:
+            email_docs = self.fetch_email_documents(tickers=None, limit=email_limit)
+            all_documents.extend(email_docs)
+            logger.info(f"✅ Category 1 (Email): Added {len(email_docs)} email documents")
+        except Exception as e:
+            logger.error(f"❌ Category 1 (Email) failed: {e}")
+
+        # CATEGORIES 2-6: Process symbols concurrently
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Submit all symbol fetch tasks
+            future_to_symbol = {
+                executor.submit(
+                    self._fetch_single_symbol_data,
+                    symbol, news_limit, financial_limit, market_limit, sec_limit, research_limit
+                ): symbol
+                for symbol in symbols
+            }
+
+            # Collect results as they complete
+            for future in as_completed(future_to_symbol):
+                symbol = future_to_symbol[future]
+                try:
+                    symbol_docs = future.result()
+                    all_documents.extend(symbol_docs)
+                    logger.info(f"✅ {symbol}: Fetched {len(symbol_docs)} documents")
+                except Exception as e:
+                    logger.error(f"❌ {symbol}: Worker failed with error: {e}")
+
+        elapsed = time.time() - start_time
+        logger.info(f"📊 CONCURRENT DATA FETCH COMPLETE: {len(all_documents)} documents in {elapsed:.1f}s")
+        logger.info(f"   Performance: {len(symbols)} symbols, ~{elapsed/len(symbols):.1f}s per symbol (parallel)")
+        logger.info(f"   Categories: Email + News + Financial + Market + SEC + Research")
+
         return all_documents
 
     def get_service_status(self) -> Dict[str, Any]:

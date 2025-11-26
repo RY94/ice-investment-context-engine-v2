@@ -4,12 +4,32 @@
 
 **Location**: `/CLAUDE.md`
 **Purpose**: Quick reference for Claude Code instances working on ICE
-**Last Updated**: 2025-11-05
+**Last Updated**: 2025-11-26
 **Target Audience**: Claude Code AI and human developers
 
 > **📖 For comprehensive implementation patterns**: See `CLAUDE_PATTERNS.md`
 > **📖 For Docling/Crawl4AI integration details**: See `CLAUDE_INTEGRATIONS.md`
 > **📖 For complete troubleshooting guide**: See `CLAUDE_TROUBLESHOOTING.md`
+
+---
+
+## ⚠️ SESSION STATE RULE (READ EVERY TIME)
+
+**Before ending ANY session or when completing significant work, you MUST:**
+
+1. **Update `PROGRESS.md`** → "🎯 ACTIVE WORK (This Session)" section with:
+   - What was accomplished
+   - Current blockers (if any)
+   - Next 3-5 actions for continuation
+
+2. **Create/update Serena memory** (`mcp__serena__write_memory`) if:
+   - Implementation work was done
+   - Architecture decisions were made
+   - Complex debugging was solved
+
+**Why this matters**: If Claude Code crashes mid-work, the next instance runs `/resume` which reads these files. **Stale files = broken recovery. This is YOUR responsibility.**
+
+**Recovery command**: `/resume` - Use this at session start after a crash or to continue previous work.
 
 ---
 
@@ -38,18 +58,26 @@ jupyter notebook ice_query_workflow.ipynb  # Investment intelligence analysis
 export ICE_DEBUG=1 && python src/simple_demo.py  # Debug mode
 ```
 
-**Temperature Configuration**
-```bash
-# Entity Extraction (default: 0.3, recommended: ≤0.2 for reproducibility)
-export ICE_LLM_TEMPERATURE_ENTITY_EXTRACTION=0.3
+**Phase 1 Feature: Manifest-Based Ingestion**
+```python
+# In ice_building_workflow.ipynb Cell 15 (ingestion cell)
+USE_MANIFEST = True   # Phase 1: Smart deduplication, 5-20x faster re-runs
+USE_MANIFEST = False  # Legacy: Full re-ingestion (for A/B testing)
+```
+- **Manifest mode**: Prevents duplicates, tracks portfolio changes, incremental updates
+- **Legacy mode**: Complete rebuild every time (use for baseline comparison)
+- **Performance**: 80-95% deduplication rate on second run onwards
+- **See**: Notebook documentation cell before Cell 15 for detailed explanation
 
-# Query Answering (default: 0.5, range: 0.0-1.0)
+**Temperature & Lookback Configuration**
+```bash
+# Temperature: entity=0.3 (≤0.2 for reproducibility), query=0.5 (0.0=deterministic, 1.0=creative)
+export ICE_LLM_TEMPERATURE_ENTITY_EXTRACTION=0.3
 export ICE_LLM_TEMPERATURE_QUERY_ANSWERING=0.5
 
-# Temperature effects:
-# - 0.0: Deterministic (same input → same output, compliance-friendly)
-# - 0.3-0.5: Balanced (moderate creativity, mostly consistent)
-# - 0.7-1.0: Creative (insights-focused, less reproducible)
+# Lookback: news=7d, financial=90d (reduce for 60-70% API cost savings)
+export ICE_NEWS_LOOKBACK_DAYS=7
+export ICE_FINANCIAL_LOOKBACK_DAYS=90
 ```
 
 **Testing & Validation**
@@ -63,7 +91,7 @@ jupyter notebook ice_query_workflow.ipynb  # Portfolio analysis (11 test dataset
 
 | File | Purpose | See Also |
 |------|---------|----------|
-| `ice_simplified.py` | Main orchestrator (1,366 lines) | Section 3.2 |
+| `ice_simplified.py` | Main orchestrator (4,061 lines) | Section 3.2 |
 | `ice_building_workflow.ipynb` | Knowledge graph construction | Section 3.2 |
 | `ice_query_workflow.ipynb` | Investment analysis interface | Section 3.2 |
 | `ICE_PRD.md` | Complete product requirements | - |
@@ -169,6 +197,14 @@ jupyter notebook ice_query_workflow.ipynb  # Portfolio analysis (11 test dataset
 2. **Integration Tests**: Run both notebooks end-to-end
 3. **PIVF Validation**: 20 golden queries covering 1-3 hop reasoning (see `ICE_VALIDATION_FRAMEWORK.md`)
 
+### 3.4 Temporal Enhancement Workflows
+
+For temporal features (freshness scoring, YoY/QoQ, trend detection, event-driven analysis):
+- **Architecture & Code Examples**: See `ARCHITECTURE.md` → "Temporal Architecture" section (lines 193-522)
+- **Testing**: `python -m pytest tests/test_temporal_features_comprehensive.py -v`
+- **Notebook Demos**: Cells 70-78 in `ice_building_workflow.ipynb`
+- **Serena Memories**: 5 comprehensive temporal enhancement guides
+
 ---
 
 ## 4. 📐 DEVELOPMENT STANDARDS
@@ -229,13 +265,44 @@ confidence_threshold = 0.7
 - `ice_building_workflow.ipynb`
 - `ice_query_workflow.ipynb`
 
-### 4.6 Protected Custom Bookmarks Comment - NEVER Delete or Move these navigation markers
+### 4.6 Protected Custom Bookmarks Comment - Strictly NEVER Delete or Move these navigation markers.
 
   - # AQ1, # SW2, # DE3, # FR4, # GT5, # hy6
   - Used for cmd+f navigation - treat as sacred landmarks
 
 
 **Before modifying**: Create timestamped backup in `archive/backups/`
+
+### 4.7 Architecture Change Protocol ⚠️
+
+**CRITICAL**: When implementing architecture changes, you MUST update `ARCHITECTURE.md` and `ICE_PRD.md` BEFORE completing your work.
+
+**What qualifies as architecture changes** (MUST update ARCHITECTURE.md):
+- ✅ **New design patterns**: quality-based selection, context-aware routing, resilience strategies
+- ✅ **Core design principles**: cost optimization, graceful degradation, data flow changes
+- ✅ **Major refactors**: Changes to system behavior, component responsibilities, integration patterns
+- ✅ **New invariants/contracts**: API contracts, data schemas, error handling policies
+- ✅ **Significant data flow changes**: New data sources, processing pipelines, storage architectures
+
+**What does NOT require ARCHITECTURE.md update** (document elsewhere):
+- ❌ Bug fixes (unless they reveal architectural issues requiring design changes)
+- ❌ Minor optimizations (performance tweaks, code cleanup)
+- ❌ Implementation details (goes in code comments, not architecture docs)
+- ❌ Temporary/experimental features (not production-ready)
+
+**Required Process**:
+1. ✅ Make code changes
+2. ✅ Update `ARCHITECTURE.md` with new section or modify existing section
+3. ✅ Update "Last Updated" date and summary at top of ARCHITECTURE.md
+4. ✅ Add cross-references to related files (code locations, Serena memories)
+5. ✅ Include ARCHITECTURE.md in commit/documentation update
+
+**Example Qualifying Changes**:
+- Multi-Source News Aggregation (Nov 22): New design pattern → Added full section to ARCHITECTURE.md
+- Temporal Enhancement (Nov 18): New data flow → Added temporal architecture section
+- Content-Addressable Deduplication (Nov 21): Core principle change → Updated deduplication section
+
+**Enforcement**: This is part of the mandatory TodoWrite checklist ("📋 Review & update 8 core files")
 
 ---
 
@@ -280,3 +347,57 @@ See `CLAUDE_TROUBLESHOOTING.md` for complete guide (10 sections, 50+ solutions, 
 **Backup**: `archive/backups/CLAUDE_20251105_pre_streamlining.md`
 **This Version**: Optimized for effectiveness - added session checklist, improved TodoWrite visibility, removed redundancy
 **Maintenance**: Update this file when major workflows, architecture, or standards change
+
+
+---
+
+## 8. 📦 WORK PHASE ARCHIVAL WORKFLOW
+
+> **When to archive**: Phase complete (all tasks done, tests passing, docs updated, production-ready)
+> **What archives**: Phase tracking files, temporary analysis (*_FIXES.md, CRITICAL_*.md), test logs
+> **What stays**: 8 core files, production code, Serena memories
+
+### Archive Process
+
+**1. Setup** (customize per phase):
+```bash
+PHASE_ID="phase_2_7b"  # e.g., feature_xyz, experiment_123
+TRACKING_FILE="REFINEMENT_PLAN_STATUS.md"
+COMPLETION_DATE=$(date +%Y_%m_%d)
+ARCHIVE_BASE="archive/${PHASE_ID}"
+```
+
+**2. Create structure & move files**:
+```bash
+mkdir -p "${ARCHIVE_BASE}"/{working_docs,test_results}
+mv "${TRACKING_FILE}" "${ARCHIVE_BASE}/${PHASE_ID^^}_COMPLETE_${COMPLETION_DATE}.md"
+mv CRITICAL_*.md *_FIXES.md *_ANALYSIS*.md "${ARCHIVE_BASE}/working_docs/" 2>/dev/null
+```
+
+**3. Create archive README** containing: phase summary, duration, deliverables, key files modified
+
+**4. Run phase tests & save results**:
+```bash
+python3 -m pytest tests/test_${PHASE_ID}*.py -v > "${ARCHIVE_BASE}/test_results/results_${COMPLETION_DATE}.log" 2>&1
+```
+
+**5. Verification checklist**:
+- [ ] Main tracking file archived with timestamp
+- [ ] Archive README.md created
+- [ ] Working docs moved to archive
+- [ ] Root clean (only 8 core files + production code remain)
+
+**6. Update permanent docs & commit**:
+- Update PROGRESS.md (session entry), ICE_DEVELOPMENT_TODO.md (mark complete)
+- `git add archive/${PHASE_ID}/ && git commit -m "Archive: ${PHASE_ID} Complete"`
+
+### Root Directory Policy
+
+**Always keep**: README, CLAUDE, ARCHITECTURE, PROJECT_STRUCTURE, PROJECT_CHANGELOG, ICE_DEVELOPMENT_TODO, ICE_PRD, PROGRESS
+**During active work**: + Phase tracking files, temporary analysis
+**After completion**: Archive everything except 8 core files → `archive/phase_*/`
+
+---
+
+**Applies to**: Refinements, features, prototypes, experiments, research phases
+**Does NOT apply to**: Bug fixes, minor tweaks, documentation-only changes

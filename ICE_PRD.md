@@ -4,7 +4,7 @@
 
 > **Location**: `/ICE_PRD.md`
 > **Purpose**: Unified requirements specification for Claude Code development instances
-> **Last Updated**: 2025-10-15
+> **Last Updated**: 2025-11-27
 > **Status**: Living document - updated with each major milestone
 
 ---
@@ -20,9 +20,10 @@
 - Cross-reference detailed documentation for deep dives
 
 **Cross-References**:
-- **Detailed Roadmap**: `ICE_DEVELOPMENT_TODO.md` (128 tasks, 57% complete - Week 6 complete)
+- **Detailed Roadmap**: `ICE_DEVELOPMENT_TODO.md` (140 tasks, 77% complete - Phase 2.7B complete)
 - **Validation Framework**: `ICE_VALIDATION_FRAMEWORK.md` (PIVF with 20 golden queries)
-- **Architecture Plan**: `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` (UDMA implementation guide with Phase 2.2)
+- **Architecture Plan**: `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` (UDMA implementation guide)
+- **Architecture Blueprint**: `ARCHITECTURE.md` (north star reference - dual-layer, temporal, calendar)
 - **Architecture History**: `archive/strategic_analysis/README.md` (all 5 options analyzed)
 - **Developer Guide**: `CLAUDE.md` (commands, workflows, standards)
 - **User Documentation**: `README.md` (product overview, quick start)
@@ -32,61 +33,75 @@
 ## 1. Executive Summary
 
 ### TL;DR (Quick Scan)
-- **Current Phase**: Phase 2.2 Planning - Investment Signal Integration (dual-layer architecture)
-- **Completion**: 57% (74/129 tasks) - Week 6 UDMA integration complete ✅, Docling integration complete ✅, Phase 2.2 planning complete ✅
-- **Architecture**: Simple orchestrator (879 lines) + production modules (34K+ lines) + planned dual-layer (LightRAG + Signal Store)
-- **Validation**: PIVF framework with 20 golden queries, F1=0.933 achieved ✅, 5/5 integration tests passing ✅
-- **Next Milestone**: Phase 2.2 implementation → Email pipeline integration → Dual-layer validation
+- **Current Phase**: Phase 2.8 Complete - Confidence Centralization & Architecture Verification
+- **Completion**: ~80% (~112/140 tasks) - Week 6 UDMA ✅, Docling ✅, Phase 2.7A ✅, Phase 2.7B ✅, Phase 2.8 ✅
+- **Architecture**: Simple orchestrator (4,061 lines) + production modules (34K+ lines) + dual-layer (LightRAG + Signal Store) + temporal enhancements + real-time monitoring (890 lines) + query processing (1,773 lines) + centralized confidence config
+- **Validation**: PIVF framework with 20 golden queries, F1=0.78 (production-ready), 80+ integration tests passing ✅, 89% architecture verification
+- **Next Milestone**: Production deployment → Real-time monitoring → Phase 2.9 (optional refinements)
 
-### Current Status (2025-10-19)
+### Current Status (2025-11-26)
 
-**Project Phase**: Phase 2 - Architecture Integration (Week 6 Complete ✅, Docling Integration Complete ✅, Phase 2.2 Planning Complete ✅)
-**Completion**: 57% (74/129 tasks)
-**Primary Interfaces**: Dual workflow notebooks (building + query)
-**Architecture Strategy**: Simple Orchestration + Production Modules (34K+ lines) + Dual-Layer (LightRAG + Investment Signal Store)
+**Project Phase**: Phase 2.8 Complete - Confidence Centralization & Architecture Verification (89% production-ready)
+**Completion**: ~80% (~112/140 tasks)
+**Primary Interfaces**: Dual workflow notebooks (building + query) with temporal analysis
+**Architecture Strategy**: Simple Orchestration (4,061 lines) + Production Modules (34K+ lines) + Real-Time Monitoring (890 lines) + Query Processing (1,773 lines) + Dual-Layer (LightRAG + Signal Store) + Centralized Confidence Config
 
 ### Recent Milestones ✅
 
-1. **Docling Professional Document Processing** (2025-10-19)
+1. **Phase 2.8: Confidence Centralization & Architecture Verification** (2025-11-26)
+   - Centralized CONFIDENCE_DEFAULTS (50+ keys) with accessor functions
+   - Migrated 4 core modules (relationship_extractor, ice_query_processor, ice_graph_builder, enhanced_entity_extractor)
+   - 89% architecture verification (ultrathink audit)
+   - 19/19 config propagation tests passing
+   - Price query handlers (query_price, query_pricing_history)
+   - Silent failure remediation (24 bare except blocks fixed)
+
+2. **Phase 2.7B Option 5: Calendar Event Query Integration** (2025-11-25)
+   - Signal Store calendar queries via natural language routing
+   - `query_calendar_events()` method with temporal filtering
+   - `STRUCTURED_CALENDAR` handler in QueryRouter
+   - 17/17 tests passing, earnings/dividend/ex-dividend support
+   - Zero additional infrastructure (leveraged existing Signal Store)
+
+3. **Phase 2.7B Option 5b: Event-to-Signal Store Persistence** (2025-11-27)
+   - Wired EventExtractor output to Signal Store `calendar_events` table
+   - Bridges Event Extraction (Option 1) → Calendar Queries (Option 5)
+   - Business value: "When is NVDA's next earnings?" now returns data (<100ms)
+   - Before: `calendar_events` table was EMPTY despite EventExtractor working
+   - 10/10 tests passing (`tests/test_option5_event_edges.py`)
+
+4. **Phase 2.7B Options 1 & 4: Event & Relationship Extraction** (2025-11-25)
+   - EventExtractor: Earnings, dividends, guidance events from SEC filings
+   - RelationshipExtractor: Universal cross-company relationships
+   - 13-bug critical audit completed (None handling, category validation)
+   - 20/20 Option 1 tests, 10/10 Option 4 tests passing
+
+3. **Phase 2.7A: Temporal Architecture Enhancement** (2025-11-18)
+   - Freshness scoring with configurable decay
+   - YoY/QoQ comparison with trend detection
+   - Event-driven query context
+   - Backfill with incremental fetch optimization
+
+4. **Docling Professional Document Processing** (2025-10-19)
    - SEC Filing Processor: 0% → 97.9% table extraction
    - Email Attachment Processor: 42% → 97.9% accuracy
    - Switchable architecture with instant toggle
-   - Zero cost increase ($0/month local execution)
-   - 2.4x code reuse ratio
-
-2. **Email Pipeline Phase 1 Complete** (2025-01-22)
-   - Enhanced document generation with inline metadata
-   - 27/27 unit tests passing
-   - Ticker extraction >95% accuracy
-   - Single LightRAG graph approach validated
-
-3. **Week 1 Integration Complete** (2025-01-22)
-   - 3 data sources → LightRAG (API/MCP + Email + SEC)
-   - 26 documents successfully ingested
-   - Robust HTTP client integrated (circuit breaker + retry)
-
-4. **Dual Workflow Notebooks Complete** (2025-01)
-   - `ice_building_workflow.ipynb` - Knowledge graph construction
-   - `ice_query_workflow.ipynb` - Investment intelligence analysis
-   - 10 integration tests, 100% pass rate
 
 ### Immediate Priorities 🔴
 
-**Next 2 Weeks (Week 2-3):**
-1. Integrate `ICESystemManager` for orchestration with health monitoring
-2. Upgrade to `SecureConfig` for encrypted API key management
-3. Begin query enhancement with `ICEQueryProcessor` fallback logic
-4. Continue validation against PIVF golden queries
+**Phase 2.8 Complete:**
+1. ✅ P1: Query price handlers (query_price, query_pricing_history) - COMPLETE
+2. ✅ P2: Silent failure remediation (24 bare except blocks) - COMPLETE
+3. ✅ P3: Confidence centralization (50+ keys, 4 modules migrated) - COMPLETE
+4. ✅ Architecture verification (89% production-ready) - COMPLETE
 
-**Week 2 Integration Checklist (Current Focus):**
-- [ ] **File**: `updated_architectures/implementation/ice_simplified.py` - Import `ICESystemManager` from `src/ice_core/`
-- [ ] **File**: `updated_architectures/implementation/ice_simplified.py` - Replace manual orchestration with `ICESystemManager.coordinate()`
-- [ ] **File**: `updated_architectures/implementation/ice_simplified.py` - Add health monitoring method calls (check component status)
-- [ ] **File**: `src/ice_core/ice_system_manager.py` - Verify integration points and method interfaces
-- [ ] **File**: `check/health_checks.py` - Test graceful degradation scenarios (email source fails, API rate limit, etc.)
-- [ ] **Testing**: Run integration tests to verify orchestration working with all 3 data sources
+**Next Steps (Post Phase 2.8):**
+- [ ] Archive Phase 2.7B/2.8 working documents to `archive/`
+- [ ] Production deployment preparation
+- [ ] Real-time monitoring activation
+- [ ] Phase 2.9 (optional): Remaining non-critical module confidence migrations
 
-**Critical Path**: Complete 6-week integration roadmap → End-to-end validation → Local LLM deployment
+**Critical Path**: Production hardening → Deployment → Real-time monitoring → User testing
 
 ---
 
@@ -262,13 +277,23 @@ Boutique hedge funds face critical pain points that ICE addresses:
 - Storage: `src/ice_lightrag/storage/` (persistent knowledge graph)
 
 **3. Orchestration**
-- Simple: `ice_simplified.py` (self-contained orchestrator)
-- Production: `src/ice_core/` (3,955 lines) - Week 2 integration
+- Simple orchestrator: `ice_simplified.py` (4,061 lines - ICECore + ICESimplified)
+- Production core: `src/ice_core/` (3,955 lines)
 - System manager, query processor, graph builder
 
-**4. Configuration**
-- Current: `config.py` (environment variables)
-- Target: `SecureConfig` with encrypted API keys (Week 3)
+**4. Query Processing**
+- ICEQueryProcessor: `src/ice_core/ice_query_processor.py` (1,773 lines)
+- Multi-source routing, temporal enhancement, confidence scoring
+- 44+ methods for query classification, synthesis, formatting
+
+**5. Real-Time Monitoring**
+- RealTimeMonitor: `src/ice_core/real_time_monitor.py` (890 lines)
+- Async polling: News (5-min), SEC (15-min)
+- Multi-channel alerts: Email (SMTP), Slack (webhooks)
+
+**6. Configuration**
+- Centralized: `config.py` (CONFIDENCE_DEFAULTS, environment variables)
+- Production: `SecureConfig` with encrypted API keys
 
 ### Data Flow
 
@@ -320,6 +345,63 @@ Boutique hedge funds face critical pain points that ICE addresses:
 - Graph supports 1-3 hop traversal
 - Every edge traceable to source document
 - Temporal queries work correctly
+
+#### 1.4 Temporal Intelligence ✅ COMPLETE
+- ✅ Dual-timestamp schema (event_date vs created_at separation)
+- ✅ Freshness scoring with exponential decay (30-day half-life)
+- ✅ Recency-aware ranking (composite freshness + confidence)
+- ✅ Year-over-year (YoY) and quarter-over-quarter (QoQ) comparisons
+- ✅ Compound Annual Growth Rate (CAGR) calculation with domain protection
+- ✅ Event-driven queries (time-bounded signal retrieval)
+- ✅ Temporal trend detection (linear regression with statistical significance)
+- ✅ Event date backfill utility for existing data
+- ✅ Calendar event integration (fiscal quarters, earnings dates)
+
+**4-Stage Pipeline Integration** (Temporal affects entire data flow):
+
+| Stage | What Temporal Does | Business Impact |
+|-------|-------------------|-----------------|
+| **1. Data Fetching** | Lookback windows (7-90 days) control API date ranges | 60-70% API cost reduction |
+| **2. Graph Building** | Adds freshness scores, event timestamps, temporal edges | Enables time-aware reasoning |
+| **3. Storage** | Dual timestamps: `event_date` (when occurred) vs `created_at` (when ingested) | "Q2 earnings July 15" visible even if ingested Aug 1 |
+| **4. Query/Answer** | Routes temporal queries to fast Signal Store; applies freshness to confidence | <1s queries vs 12s; recent data weighted 6.7x higher |
+
+**Architecture**:
+- **Layer 1**: `TemporalEnhancer` (528 lines) - Graph enrichment with temporal metadata
+- **Layer 2**: `SignalStore` temporal methods (1,038 lines) - Queries, comparisons, rankings
+- **Layer 3**: `TemporalAnalyzer` (350+ lines) - Statistical trend detection
+
+**Core Capabilities**:
+1. **Event Date vs Ingestion Time**: Prevents blind spots from delayed data ingestion (e.g., SEC filing from Q2 ingested in Q4 correctly tagged as Q2 event)
+2. **Freshness Scoring**: `0.5^(age_days/30)` exponential decay - Recent signals weighted higher in composite ranking
+3. **Temporal Query Types** (7 types, 100% coverage):
+   - Time-bounded: Signals within date range
+   - Temporal evolution: YoY/QoQ metric changes
+   - Recency-aware: Fresh signals prioritized over old
+   - Temporal comparison: CAGR, growth rates
+   - Event-driven: Signals around specific dates
+   - Freshness-filtered: Minimum recency thresholds
+   - Trend detection: Statistical significance testing
+
+**Acceptance Criteria**:
+- ✅ Dual-timestamp schema implemented (event_date + created_at columns)
+- ✅ 100% temporal query coverage (7/7 query types supported)
+- ✅ Freshness scoring formula validated (exponential decay)
+- ✅ YoY/QoQ comparisons handle edge cases (NULL values, sign changes)
+- ✅ CAGR calculation domain-protected (negative value checks)
+- ✅ Event date backfill utility tested (atomic transactions, batching)
+- ✅ Notebook demonstrations (Cells 70-78 in `ice_building_workflow.ipynb`)
+- ✅ Confidence normalization (NULL database values → 0.5 default)
+- ✅ Production test suite covering all temporal methods
+
+**Testing & Validation**:
+- **Notebook**: `ice_building_workflow.ipynb` Cells 70-78 (temporal feature demonstrations)
+- **Test Suite**: 8/8 event date inference tests passing
+- **Documentation**: `TEMPORAL_NOTEBOOK_FIXES_SUMMARY.md` (complete fix history)
+- **Serena Memory**: 5 memory files documenting temporal implementation
+
+> **📖 For complete temporal architecture**: See `ARCHITECTURE.md:189-507` (Temporal Architecture section)
+> **📖 For temporal workflows and code examples**: See `CLAUDE.md:183-442` (Temporal Enhancement Workflows)
 
 ---
 
@@ -751,23 +833,29 @@ Decision Gate:
 
 ## 10. Decision Framework
 
-### When to Use Each LightRAG Query Mode
+### Query Routing: Signal Store vs LightRAG
 
-| Query Mode | Use When | Example Query | Performance |
-|------------|----------|---------------|-------------|
-| **Hybrid** | Portfolio analysis, multi-aspect queries (DEFAULT) | "What are top 3 portfolio risks?" | Medium (2-5s) |
-| **Local** | Document-focused, specific company research | "Summarize NVDA's latest earnings" | Fast (<2s) |
-| **Global** | Entity-level, relationship discovery | "What companies are NVDA suppliers?" | Medium (2-4s) |
-| **Mix** | Complex queries needing adaptive approach | "How does China risk impact tech holdings?" | Slow (3-6s) |
-| **Naive** | Simple keyword search, known fact lookup | "What is NVDA's ticker symbol?" | Very fast (<1s) |
-| **KG** | Pure graph traversal, relationship chains | "Show NVDA → TSMC → Apple path" | Fast (1-3s) |
+ICE automatically routes queries to the optimal layer via QueryRouter:
 
-**Decision Logic**:
-1. Default to **Hybrid** for portfolio analysis
-2. Use **Local** if query mentions specific company/document
-3. Use **Global** if query asks about relationships/connections
-4. Use **Naive** for simple factual lookups
-5. Use **Mix** only for highly complex multi-aspect queries
+| Query Type | Routes To | Speed | Example |
+|------------|-----------|-------|---------|
+| Structured (What/Show) | **Signal Store** | <1s | "What's NVDA's rating?" |
+| Semantic (Why/How) | **LightRAG** | ~12s | "Why did Goldman upgrade NVDA?" |
+
+**Note**: The `mode` parameter in notebook queries (naive, local, global, hybrid, mix) only affects LightRAG searches. Signal Store queries are direct SQL—no modes needed.
+
+> **Full documentation**: See `ARCHITECTURE.md` → "Dual-Layer Query Architecture" section
+
+### LightRAG Query Modes (When Routed to LightRAG)
+
+| Mode | Strategy | Best For |
+|------|----------|----------|
+| `naive` | Vector similarity | Simple fact lookups |
+| `local` | Entity neighborhood | Company-specific queries |
+| `global` | Relationship search | Market trends, themes |
+| `hybrid` | Local + Global | Comprehensive analysis (default) |
+| `mix` | All strategies | Complex multi-aspect queries |
+| `bypass` | Direct LLM | Pure reasoning (no retrieval) |
 
 ### When to Add Email Phase 2 (Dual-layer Graph)
 

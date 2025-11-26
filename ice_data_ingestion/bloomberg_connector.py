@@ -232,14 +232,15 @@ class BloombergConnector:
                             try:
                                 field_value = field.getValue()
                                 row[field_name] = field_value
-                            except:
+                            except Exception as e:
+                                self.logger.debug(f"[BloombergClient._process_response] Field extraction failed for {field_name}: {type(e).__name__}")
                                 row[field_name] = None
-                        
+
                         data.append(row)
                 break
-        
+
         return pd.DataFrame(data)
-    
+
     def _process_historical_response(self, cid, ticker: str) -> pd.DataFrame:
         """Process Bloomberg historical data response."""
         data = []
@@ -263,16 +264,17 @@ class BloombergConnector:
                         for j in range(1, point.numElements()):  # Skip date element
                             field = point.getElement(j)
                             field_name = field.name()
-                            
+
                             try:
                                 field_value = field.getValue()
                                 row[field_name] = field_value
-                            except:
+                            except Exception as e:
+                                self.logger.debug(f"[BloombergClient._process_historical_response] Field extraction failed for {field_name}: {type(e).__name__}")
                                 row[field_name] = None
-                        
+
                         data.append(row)
                 break
-        
+
         return pd.DataFrame(data)
     
     def get_bulk_fundamental_data(self, tickers: List[str], 

@@ -21,7 +21,7 @@ import json
 import hashlib
 import logging
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Dict, List, Optional, Set, Any
 from collections import defaultdict
 
@@ -35,7 +35,7 @@ class IngestionManifest:
     Prevents duplicate ingestion and tracks portfolio evolution.
     """
 
-    VERSION = "2.0"  # Manifest schema version
+    VERSION = "2.1"  # Manifest schema version (2.1: added fetch_history for incremental updates)
 
     def __init__(self, storage_dir: Path):
         """
@@ -89,6 +89,7 @@ class IngestionManifest:
             "documents": {},
             "portfolio_history": [],
             "api_data_coverage": {},
+            "fetch_history": {},  # NEW v2.1: Track (ticker, source, data_type) → fetch metadata
             "statistics": {
                 "total_documents": 0,
                 "total_emails": 0,
@@ -112,6 +113,13 @@ class IngestionManifest:
 
             # Add statistics section
             old_manifest['statistics'] = self._calculate_statistics(old_manifest)
+
+        # Handle v2.0 → v2.1 migration
+        if old_manifest.get('version') in ["2.0", "1.0", None]:
+            # Add fetch_history for incremental updates
+            if 'fetch_history' not in old_manifest:
+                old_manifest['fetch_history'] = {}
+                logger.info("Added fetch_history tracking for incremental updates")
 
         old_manifest['version'] = self.VERSION
         return old_manifest
@@ -358,6 +366,239 @@ class IngestionManifest:
             "total_api_documents": 0,
             "unique_tickers": []
         }
+
+    def get_fetch_key(self, ticker: str, source: str, data_type: str) -> str:
+        """Generate consistent key for fetch_history tracking."""
+        return f"{ticker}:{source}:{data_type}"
+
+    def get_last_fetch(self, ticker: str, source: str, data_type: str) -> Optional[Dict[str, Any]]:
+        """
+        Get last fetch metadata for incremental updates.
+
+        Args:
+            ticker: Stock ticker
+            source: Data source (newsapi, finnhub, yahoo, sec)
+            data_type: Type of data (news, financial, filings)
+
+        Returns:
+            Fetch metadata dict with last_fetch_date, date_range_start, date_range_end, document_count
+            or None if never fetched
+        """
+        fetch_key = self.get_fetch_key(ticker, source, data_type)
+        return self.manifest['fetch_history'].get(fetch_key)
+
+    def update_fetch_history(
+        self,
+        ticker: str,
+        source: str,
+        data_type: str,
+        date_range_start: str,
+        date_range_end: str,
+        document_count: int,
+        requested_lookback_days: Optional[int] = None
+    ) -> None:
+        """
+        Record fetch metadata for incremental update tracking.
+
+        Args:
+            ticker: Stock ticker
+            source: Data source (newsapi, finnhub, yahoo, sec)
+            data_type: Type of data (news, financial, filings)
+            date_range_start: ISO date string for range start
+            date_range_end: ISO date string for range end
+            document_count: Number of documents fetched
+            requested_lookback_days: Original lookback period requested
+        """
+        fetch_key = self.get_fetch_key(ticker, source, data_type)
+        now = datetime.now(timezone.utc).isoformat()
+
+        fetch_entry = {
+            "last_fetch_date": now,
+            "date_range_start": date_range_start,
+            "date_range_end": date_range_end,
+            "document_count": document_count,
+            "requested_lookback_days": requested_lookback_days,
+            "fetch_count": self.manifest['fetch_history'].get(fetch_key, {}).get('fetch_count', 0) + 1
+        }
+
+        self.manifest['fetch_history'][fetch_key] = fetch_entry
+        self.manifest['last_updated'] = now
+
+        logger.debug(f"Updated fetch history: {fetch_key} → {document_count} docs in {date_range_start} to {date_range_end}")
+
+    def get_coverage_status(
+        self,
+        ticker: str,
+        source: str,
+        data_type: str,
+        requested_lookback_days: int
+    ) -> Dict[str, Any]:
+        """
+        Check coverage completeness for validation.
+
+        Args:
+            ticker: Stock ticker
+            source: Data source
+            data_type: Type of data
+            requested_lookback_days: Desired lookback period
+
+        Returns:
+            Coverage status dict with completeness ratio and gap information
+        """
+        fetch_meta = self.get_last_fetch(ticker, source, data_type)
+
+        if not fetch_meta:
+            return {
+                "has_coverage": False,
+                "completeness": 0.0,
+                "gap_days": requested_lookback_days,
+                "message": "No previous fetch"
+            }
+
+        # Parse dates
+        try:
+            # Ensure dates are timezone-aware (UTC)
+            date_end_str = fetch_meta['date_range_end']
+            date_start_str = fetch_meta['date_range_start']
+
+            # Parse dates as naive then make timezone-aware
+            if 'T' in date_end_str:
+                date_end = datetime.fromisoformat(date_end_str.replace('Z', '+00:00'))
+                date_start = datetime.fromisoformat(date_start_str.replace('Z', '+00:00'))
+            else:
+                # Date-only strings (YYYY-MM-DD) - parse and make timezone-aware
+                date_end = datetime.strptime(date_end_str, '%Y-%m-%d').replace(tzinfo=timezone.utc)
+                date_start = datetime.strptime(date_start_str, '%Y-%m-%d').replace(tzinfo=timezone.utc)
+
+            now = datetime.now(timezone.utc)
+
+            # Calculate coverage
+            coverage_days = (date_end - date_start).days
+            gap_days = (now - date_end).days  # Days since last fetch
+
+            # Completeness: How much of requested lookback is covered
+            completeness = min(1.0, coverage_days / requested_lookback_days) if requested_lookback_days > 0 else 1.0
+
+            return {
+                "has_coverage": True,
+                "completeness": completeness,
+                "gap_days": gap_days,
+                "coverage_days": coverage_days,
+                "last_fetch_date": fetch_meta['last_fetch_date'],
+                "document_count": fetch_meta['document_count'],
+                "message": f"{completeness*100:.0f}% coverage, {gap_days} days since last fetch"
+            }
+
+        except (ValueError, KeyError) as e:
+            logger.warning(f"Error parsing fetch metadata: {e}")
+            return {
+                "has_coverage": False,
+                "completeness": 0.0,
+                "gap_days": requested_lookback_days,
+                "message": "Error parsing metadata"
+            }
+
+    def get_fetch_window(
+        self,
+        ticker: str,
+        source: str,
+        data_type: str,
+        requested_lookback_days: int,
+        current_date: Optional[datetime] = None
+    ) -> Dict[str, Any]:
+        """
+        Calculate optimal fetch window for incremental updates (KEY METHOD FOR 80% API REDUCTION).
+
+        Args:
+            ticker: Stock ticker
+            source: Data source
+            data_type: Type of data
+            requested_lookback_days: Desired total lookback period
+            current_date: Current date (defaults to now)
+
+        Returns:
+            Dict with fetch_start, fetch_end, is_incremental, and strategy
+        """
+        # Ensure current_date is timezone-aware
+        if current_date is None:
+            current_date = datetime.now(timezone.utc)
+        elif current_date.tzinfo is None:
+            current_date = current_date.replace(tzinfo=timezone.utc)
+
+        fetch_meta = self.get_last_fetch(ticker, source, data_type)
+
+        if not fetch_meta:
+            # First fetch - full window
+            fetch_start = current_date - timedelta(days=requested_lookback_days)
+            fetch_end = current_date
+            return {
+                "fetch_start": fetch_start.strftime('%Y-%m-%d'),
+                "fetch_end": fetch_end.strftime('%Y-%m-%d'),
+                "is_incremental": False,
+                "strategy": "full_initial",
+                "savings_percent": 0
+            }
+
+        # Parse last fetch metadata
+        try:
+            # Ensure dates are timezone-aware (UTC)
+            date_end_str = fetch_meta['date_range_end']
+            date_start_str = fetch_meta['date_range_start']
+
+            # Parse dates and ensure timezone-aware
+            if 'T' in date_end_str:
+                last_end = datetime.fromisoformat(date_end_str.replace('Z', '+00:00'))
+                last_start = datetime.fromisoformat(date_start_str.replace('Z', '+00:00'))
+            else:
+                # Date-only strings (YYYY-MM-DD) - parse and make timezone-aware
+                last_end = datetime.strptime(date_end_str, '%Y-%m-%d').replace(tzinfo=timezone.utc)
+                last_start = datetime.strptime(date_start_str, '%Y-%m-%d').replace(tzinfo=timezone.utc)
+
+            # Calculate desired full window
+            desired_start = current_date - timedelta(days=requested_lookback_days)
+
+            # Incremental strategy: Only fetch gap from last_end to current_date
+            if last_end >= desired_start:
+                # We have sufficient historical coverage, just fetch new data
+                fetch_start = last_end  # Start where we left off
+                fetch_end = current_date
+
+                days_to_fetch = (fetch_end - fetch_start).days
+                savings_percent = (1 - days_to_fetch / requested_lookback_days) * 100 if requested_lookback_days > 0 else 0
+
+                return {
+                    "fetch_start": fetch_start.strftime('%Y-%m-%d'),
+                    "fetch_end": fetch_end.strftime('%Y-%m-%d'),
+                    "is_incremental": True,
+                    "strategy": "incremental_gap",
+                    "days_to_fetch": days_to_fetch,
+                    "savings_percent": savings_percent,
+                    "message": f"Incremental: Fetching {days_to_fetch} new days (saving {savings_percent:.0f}%)"
+                }
+            else:
+                # Historical coverage insufficient, need full refetch
+                fetch_start = desired_start
+                fetch_end = current_date
+                return {
+                    "fetch_start": fetch_start.strftime('%Y-%m-%d'),
+                    "fetch_end": fetch_end.strftime('%Y-%m-%d'),
+                    "is_incremental": False,
+                    "strategy": "full_refetch",
+                    "savings_percent": 0,
+                    "message": "Full refetch needed (last fetch too old)"
+                }
+
+        except (ValueError, KeyError) as e:
+            logger.warning(f"Error calculating fetch window: {e}, falling back to full fetch")
+            fetch_start = current_date - timedelta(days=requested_lookback_days)
+            fetch_end = current_date
+            return {
+                "fetch_start": fetch_start.strftime('%Y-%m-%d'),
+                "fetch_end": fetch_end.strftime('%Y-%m-%d'),
+                "is_incremental": False,
+                "strategy": "full_fallback",
+                "savings_percent": 0
+            }
 
     def save(self) -> None:
         """Save manifest to disk with backup."""

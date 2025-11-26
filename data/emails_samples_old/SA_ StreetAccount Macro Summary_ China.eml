@@ -1,0 +1,386 @@
+Return-Path: <0100019913e8031e-fdae6277-2373-4e3b-9aa0-6b4bf23902cf-000000@return.news-alerts.factset.com>
+Delivered-To: roy@agtpartners.com.sg
+Received: from web107.vodien.com
+	by web107.vodien.com with LMTP
+	id qEgpJwdSuWgrzToAZ3xOiA
+	(envelope-from <0100019913e8031e-fdae6277-2373-4e3b-9aa0-6b4bf23902cf-000000@return.news-alerts.factset.com>)
+	for <roy@agtpartners.com.sg>; Thu, 04 Sep 2025 16:47:03 +0800
+Return-path: <0100019913e8031e-fdae6277-2373-4e3b-9aa0-6b4bf23902cf-000000@return.news-alerts.factset.com>
+Envelope-to: roy@agtpartners.com.sg
+Delivery-date: Thu, 04 Sep 2025 16:47:03 +0800
+Received: from e228-216.smtp-out.amazonses.com ([23.251.228.216]:44401)
+	by web107.vodien.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+	(Exim 4.96.1)
+	(envelope-from <0100019913e8031e-fdae6277-2373-4e3b-9aa0-6b4bf23902cf-000000@return.news-alerts.factset.com>)
+	id 1uu5cI-00GKij-1Z
+	for roy@agtpartners.com.sg;
+	Thu, 04 Sep 2025 16:47:02 +0800
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw; d=amazonses.com; t=1756975596;
+	h=From:To:Subject:MIME-Version:Content-Type:Message-ID:Date:Feedback-ID;
+	bh=Vg55oxEeDyCTjVJEmyKEmkAgpG2gsULVOt4kOsT3Fgg=;
+	b=NH/9r6gnMFi5WyhyERacGJB+oBUM11EhS/dDbrPHfjFh2A1zzpyVyA6c3Uq5UImb
+	cEkjRTB9tUjNvpOhcILgKv5vxxCSN7faOIYkOAaMLa6a1fHs64+B4uvFu7ZCqrQZv0B
+	Vgb8RNqWuAeAJDiwhXavhbJIY9xB9BdHGGqLn+4I=
+From: FactSet Alerts <FactSet_Alerts@factset.com>
+To: roy@agtpartners.com.sg
+Subject: SA: StreetAccount Macro Summary: China
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_279191_2112201689.1756975596318"
+Message-ID: <0100019913e8031e-fdae6277-2373-4e3b-9aa0-6b4bf23902cf-000000@email.amazonses.com>
+Date: Thu, 4 Sep 2025 08:46:36 +0000
+Feedback-ID: ::1.us-east-1.pWImXW9FCZzsCM8XlKdesXjehPwzPpKbMMsGPJITzQE=:AmazonSES
+X-SES-Outgoing: 2025.09.04-23.251.228.216
+X-Spam-Status: No, score=-1.0
+X-Spam-Score: -9
+X-Spam-Bar: -
+X-Spam-Flag: NO
+
+------=_Part_279191_2112201689.1756975596318
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+FactSet News Alert for:=20
+
+
+
+Headline: StreetAccount Macro Summary: China
+Source:=20
+Identifier(s):=20
+
+Date & Time: 4:42 AM 4 Sep '25
+
+     *=C2=A0Markets:
+
+          *=C2=A0Greater China stocks sharply lower Thursday. Hang Seng (1.=
+12%), Shanghai Composite (1.25%), Shenzhen (2.83%),
+            ChiNext (4.25%). In mainland markets, STAR 50 index plunged 6% =
+amid tech sell-off, blue chips and small caps
+            posted similar declines. Telecommunication services, semiconduc=
+tors, information technology all plunged.
+            Cambricon Technologies (688256.CH) fell 14.5%. Banks were highe=
+r. Turnover in Shanghai and Shenzhen rose to
+            CNY2.54T($356B) from CNY2.36T in prior session. In Hong Kong, b=
+anks eked out mild gains, while innovative drugs,
+            biotech, and information technology were all sharply down. Hang=
+ Seng Tech underperformed benchmark. Yuan edged up
+            slightly against dollar.
+          *=C2=A0Chinese stocks tumbled, extending declines into third stra=
+ight session as investors booked profits on the rally
+            that had added $1.2T to market value since start of August, pro=
+mpting potential regulatory curbs on stock
+            speculation. End of Victory Day parade on Wednesday added to pr=
+ofit-taking as investors had expected authorities
+            to ensure capital market stability ahead of the key event. Sent=
+iment in Hong Kong-listed stocks also soured,
+            partly due to lackluster earnings results, on top of concerns t=
+hat Chinese regulators will intervene to cool down
+            excessive stock gains on the mainland.
+
+     *=C2=A0Equities:
+
+          *=C2=A0China mulls cooling measures to rein in stock speculation:=
+ Bloomberg reported China's financial regulators are
+            considering curbs on stock speculation as bubble risks grow fro=
+m a $1.2T rally since start of August. Measures
+            proposed to top policymakers include removal of some short-sell=
+ing curbs and some other options to restrain
+            speculative trading. Regulators have already asked brokers to r=
+efrain from aggressively promoting round-the-clock
+            services to help open new stock accounts and urged social media=
+ platforms not to overly publicize content such as
+            "bull market", "margin transactions hitting new high" and "shif=
+ting bank deposits into stocks".
+          *=C2=A0Nasdaq revamps listing rules for Chinese companies and sma=
+ll IPOs: Bloomberg reported Nasdaq would require at
+            least $25M public offering proceeds for new listings of Chinese=
+ companies as part of proposed rules submitted to
+            SEC for approval. Two other changes were raising minimum compan=
+y public float to $15M from current threshold of
+            at least $5M and accelerating process of suspending and de-list=
+ing companies with market value of listed
+            securities below $5M. Moves came amid growing scrutiny over sha=
+rp moves in publicly traded companies with
+            relatively small market capitalization and scant liquidity and =
+follow review of emerging patterns associated with
+            potential pump-and-dump schemes in US cross-market trading envi=
+ronments.
+
+     *=C2=A0Trade:
+
+          *=C2=A0China to impose tariffs on certain types of US single-mode=
+ optical fiber: Reuters reported China's commerce
+            ministry said country will levy tariffs of up to 78.2% on certa=
+in US optical fiber imports from 4-Sep, accusing
+            US producers of skirting anti-dumping measures. Levies cover a =
+type known as cut-off shifted single-mode optical
+            fiber, singling out Corning (GLW), OFS-Felite and Drake Communi=
+cations for rates of 37.9%, 33.3% and 78.2%
+            respectively, with other American companies also paying the hig=
+hest rate.
+
+     *=C2=A0Technology:
+
+          *=C2=A0China tech firms still want Nvidia's chips despite governm=
+ent discouragement: Reuters reported Alibaba (9988.HK),
+            ByteDance and other Chinese tech companies are still keen to bu=
+y Nvidia's (NVDA) AI chips despite regulators in
+            Beijing strongly discouraging them from such purchases. These c=
+ompanies want reassurance that their orders of H20
+            models are being processed and closely monitoring Nvidia's plan=
+ to sell a more powerful chip, potentially named
+            B30A that based on Blackwell architecture. Demand for Nvidia's =
+products remains strong partly due to supply
+            constraints from domestic rivals such as Huawei and Cambricon. =
+And some have also pointed to better performance
+            in Nvidia's products.
+
+   Subjects: News - Asia, Macro Daily Summaries China
+
+
+
+ =20
+
+
+
+
+
+
+
+
+
+View more in FactSet: https://company-security.apps.factset.com/news-all/ |=
+ https://company-security.apps.factset.com/ic_price/ | https://time-sales-a=
+pp.apps.factset.com/
+
+
+
+Please do not reply to this e-mail
+
+
+DISCLAIMER: This email and/or attachment are confidential and intended sole=
+ly=20
+for the use of the individual to whom they are addressed.  Disclosing, copy=
+ing=20
+or distributing the contents of this email is prohibited.  FactSet Research=
+ Systems=20
+Inc. does not accept liability for the content of this email, or for the co=
+nsequences=20
+of any actions or inactions taken on the basis of the information provided.=
+ The=20
+content of this email is not investment advice and any opinions or assertio=
+n contained=20
+in this email do not represent the opinions or beliefs of FactSet Research =
+Systems Inc. or=20
+its affiliates or any of their respective employees.
+
+If you are not entitled to receive this e-mail or have questions regarding =
+news and research=20
+services in FactSet, please contact FactSet at=20
+Support@FactSet.com
+or 1-877-FACTSET (North America), +44.(0)20.7374.4445 (Europe),=20
+or +81.3.6268.5200 (Asia Pacific).
+
+------=_Part_279191_2112201689.1756975596318
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<div syle="font-family:Arial;max-width:660px;color:#646464;font-size:11px;margin:0;padding:0;">
+  
+  
+  
+
+  
+
+  
+
+  
+    <font style="color:#3399CC;font-size:13px;font-family:Arial;">
+      4:42 AM 4 Sep '25
+    </font>
+    <font style="font-size:13px;font-family:Arial;">
+      <font color="#2F6CA8"><strong></strong></font><font color="#000000"></font>
+    </font>
+    <font style="color:#000000;font-size:13px;font-family:Arial;font-weight:bold;">
+      StreetAccount Macro Summary: China
+    </font>
+  
+
+  
+
+  <p>
+    <script>
+// Utility function to add an event listener
+function dd2addEvent(o,e,f){
+    if (o.addEventListener){ o.addEventListener(e,f,true); return true; }
+    else if (o.attachEvent){ return o.attachEvent("on"+e,f); }
+    else { return false; }
+}
+
+
+function point_links_external()
+{
+    if (!document.getElementsByTagName) return false;
+    var links = document.getElementsByTagName("a");
+    for (var i=0; i<links.length; i++)
+    {
+        if (links[i].getAttribute("href", 2) !== null) {
+            if ((links[i].getAttribute("href", 2).length >= 4 && (links[i].getAttribute("href", 2).substring(0,4).toLowerCase() == "http" || links[i].getAttribute("href", 2).substring(0,4).toLowerCase() == "file")) || (links[i].getAttribute("href", 2).length >= 3 && links[i].getAttribute("href", 2).substring(0,3).toLowerCase() == "www"))
+            {
+                if (links[i].getAttribute("target") == null || (links[i].getAttribute("target").toLowerCase() != "blank" && links[i].getAttribute("target").toLowerCase() != "_blank")) {
+                    if (links[i].getAttribute("rel") == null || links[i].getAttribute("rel").length < 7 || links[i].getAttribute("rel").substring(0,7).toLowerCase() != "milkbox") {
+                        links[i].onclick = function()
+                        {
+                            if(this.fds_click_dest == undefined) {
+                                this.fds_click_dest = this.href;
+                                this.href = 'javascript:void(0);';
+                            }
+                            return !window.open(this.fds_click_dest, '_blank');
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+dd2addEvent(window, 'load', point_links_external);
+
+</script>
+<style>
+
+.related_container{margin-left:0;padding-left:25px;padding-top:10px}.related_content{padding-left:0}.fds_reference_heading{padding-left:25px}
+
+#story_text ul{padding-left:20px}
+
+.dd_highlight{background-color:yellow}{height:1em}.fds_headline{font-weight:bold}.fds_date_time{font-weight:bold}.fds_subheadline{font-weight:bold}.fds_footer_heading{font-weight:bold}.fds_footer{top:2px}.fds_copyright{top:2px}.fds_disclaimer_footer{font-size:smaller}body{background-color:white}
+
+div{display:block;width:auto}#story_text pre{font-family:Courier New;font-size:10pt;font-weight:normal;font-style:normal;word-wrap:break-word;white-space:pre-wrap;line-height:normal}#story_text,#story_text table{font-family:Arial;font-size:10pt;font-weight:normal;font-style:normal;background-color:white !important;color:black !important;line-height:normal}#story_text{top:0;left:0;right:0;bottom:0;padding:10px;overflow:auto;line-height:normal}
+
+</style>
+
+<div id="story_text">
+<!-- DD HEADLINE MARKER --><!-- DD DATETIME MARKER -->
+<ul>
+ <li><b><span style='text-decoration:underline'>Markets:</span></b>
+ <ul>
+ <li><b>Greater China stocks sharply lower Thursday. Hang Seng (1.12%), Shanghai Composite (1.25%), Shenzhen (2.83%), ChiNext (4.25%).</b> In <b>mainland markets</b>, STAR 50 index plunged 6% amid tech sell-off, blue chips and small caps posted similar declines. Telecommunication services, semiconductors, information technology all plunged. Cambricon Technologies (688256.CH) fell 14.5%. Banks were higher. <b>Turnover in Shanghai and Shenzhen</b> rose to CNY2.54T($356B) from CNY2.36T in prior session. In <b>Hong Kong</b>, banks eked out mild gains, while innovative drugs, biotech, and information technology were all sharply down. <b>Hang Seng Tech</b> underperformed benchmark. <b>Yuan</b> edged up slightly against dollar.</li>
+ <li><b>Chinese stocks tumbled, </b>extending declines into third straight session as investors booked profits on the rally that had added $1.2T to market value since start of August, prompting potential regulatory curbs on stock speculation. End of Victory Day parade on Wednesday added to profit-taking as investors had expected authorities to ensure capital market stability ahead of the key event. Sentiment in Hong Kong-listed stocks also soured, partly due to lackluster earnings results, on top of concerns that Chinese regulators will intervene to cool down excessive stock gains on the mainland. </li>
+ </ul>
+ </li>
+ <li><b><span style='text-decoration:underline'>Equities:</span></b>
+ <ul>
+ <li><b>China mulls cooling measures to rein in stock speculation: </b><a href="https://www.bloomberg.com/news/articles/2025-09-04/china-weighs-curbs-on-stock-speculation-to-foster-steady-gains" target="_blank">Bloomberg</a> reported China's financial regulators are considering curbs on stock speculation as bubble risks grow from a $1.2T rally since start of August. Measures proposed to top policymakers include removal of some short-selling curbs and some other options to restrain speculative trading. Regulators have already asked brokers to refrain from aggressively promoting round-the-clock services to help open new stock accounts and urged social media platforms not to overly publicize content such as "bull market", "margin transactions hitting new high" and "shifting bank deposits into stocks". </li>
+ <li><b>Nasdaq revamps listing rules for Chinese companies and small IPOs: </b><a href="https://www.bloomberg.com/opinion/articles/2025-09-03/china-s-military-parade-shows-who-s-calling-the-shots">Bloomberg</a> reported Nasdaq would require at least $25M public offering proceeds for new listings of Chinese companies as part of proposed rules submitted to SEC for approval. Two other changes were raising minimum company public float to $15M from current threshold of at least $5M and accelerating process of suspending and de-listing companies with market value of listed securities below $5M. Moves came amid growing scrutiny over sharp moves in publicly traded companies with relatively small market capitalization and scant liquidity and follow review of emerging patterns associated with potential pump-and-dump schemes in US cross-market trading environments. </li>
+ </ul>
+ </li>
+ <li><b><span style='text-decoration:underline'>Trade:</span></b>
+ <ul>
+ <li><b>China to impose tariffs on certain types of US single-mode optical fiber: </b><a href="https://www.reuters.com/markets/emerging/china-impose-tariffs-some-types-us-single-mode-optical-fibre-2025-09-04/">Reuters</a> reported China's commerce ministry said country will levy tariffs of up to 78.2% on certain US optical fiber imports from 4-Sep, accusing US producers of skirting anti-dumping measures. Levies cover a type known as cut-off shifted single-mode optical fiber, singling out Corning (GLW), OFS-Felite and Drake Communications for rates of 37.9%, 33.3% and 78.2% respectively, with other American companies also paying the highest rate. </li>
+ </ul>
+ </li>
+ <li><b><span style='text-decoration:underline'>Technology:</span></b>
+ <ul>
+ <li><b>China tech firms still want Nvidia's chips despite government discouragement: </b><a href="https://www.reuters.com/world/china/chinese-firms-still-want-nvidia-chips-despite-government-pressure-not-buy-2025-09-04/">Reuters</a> reported Alibaba (9988.HK), ByteDance and other Chinese tech companies are still keen to buy Nvidia's (NVDA) AI chips despite regulators in Beijing strongly discouraging them from such purchases. These companies want reassurance that their orders of H20 models are being processed and closely monitoring Nvidia's plan to sell a more powerful chip, potentially named B30A that based on Blackwell architecture. Demand for Nvidia's products remains strong partly due to supply constraints from domestic rivals such as Huawei and Cambricon. And some have also pointed to better performance in Nvidia's products. </li>
+ </ul>
+ </li>
+</ul>
+<br ><br >
+<span class="fds_footer metaentry" id="fds_subjects">
+
+        <b>Subjects: </b> News - Asia, Macro Daily Summaries China
+
+        </span>
+<br >
+</div>
+  </p>
+
+  <br>
+  <table cellspacing="0" cellpadding="1" style="font-size:11px;font-family:Arial;padding-left:30px;padding-right:30px;">
+    
+  </table>
+  <br>
+
+  <table cellspacing="0" cellpadding="0" border="0" style="color:#4B4B4B;font-size:12px;font-family:Arial;font-weight:bold;">
+    <tr>
+      <td>FactSet News Alert for: </td>
+    </tr>
+    
+  </table>
+
+  
+  <table cellspacing="0" cellpadding="0" border="0" style="color:#4B4B4B;font-size:12px;font-family:Arial;">
+    
+    <tr>
+      <td><ul><li style="margin-left: 0px; margin-right: 0px;"><strong>Macro News</strong></li></ul></td>
+    </tr>
+    
+    
+    <tr>
+      <td><ul><li style="margin-left: 0px; margin-right: 0px;"><strong>China Macro Daily</strong></li></ul></td>
+    </tr>
+    
+    
+  </table>
+  
+
+  
+  <table cellspacing="0" cellpadding="0" border="0" style="color:color:#000000;font-size:12px;font-family:Arial;">
+    <tr>
+      <td>
+        Disable this alert in <a href="fdsup://factset/Alerts?_TAB=activeAlerts&_UNSUB=18C40B2AAE9B4C4BBD49999F33C957E3&_FDSUPID=6184e293-ba84-4c22-b7e0-8ff1a48b0de7">Workstation</a> <a href="https://my.apps.factset.com/alert-manager/?tab=activeAlerts&unsub_id=18C40B2AAE9B4C4BBD49999F33C957E3">Web</a>
+      </td>
+    </tr>
+  </table>
+  
+
+  
+  <table cellspacing="0" cellpadding="0" border="0" style="color:color:#000000;font-size:12px;font-family:Arial;">
+    <tr>
+      <td>
+        <br><strong>View more in FactSet:</strong><br>
+        <a href="https://company-security.apps.factset.com/news-all/">News</a> | <a href="https://company-security.apps.factset.com/ic_price/">Chart</a> | <a href="https://time-sales-app.apps.factset.com/">Time &amp; Sales</a></td>
+    </tr>
+  </table>
+  
+
+  <br>
+
+  
+  <hr>
+  
+
+  
+
+  
+
+  <div style="color:#646464;font-size:11px;font-family:Arial;">
+    
+    
+    <font size=-2>
+      
+      <i>**Please do not reply to this e-mail. </i>
+      <br>
+      <br>
+      
+      
+      DISCLAIMER: This email and/or attachment are confidential and intended solely
+      for the use of the individual to whom they are addressed.  Disclosing, copying
+      or distributing the contents of this email is prohibited.  FactSet Research Systems
+      Inc. does not accept liability for the content of this email, or for the consequences
+      of any actions or inactions taken on the basis of the information provided. The
+      content of this email is not investment advice and any opinions or assertion contained
+      in this email do not represent the opinions or beliefs of FactSet Research Systems Inc. or
+      its affiliates or any of their respective employees.
+      <br>
+      If you are not entitled to receive this e-mail or have questions regarding news and research
+      services in FactSet, please contact FactSet at
+      <a href="mailto:Support@FactSet.com">Support@FactSet.com</a>
+      or 1-877-FACTSET (North America), +44.(0)20.7374.4445 (Europe),
+      or +81.3.6268.5200 (Asia Pacific).
+    </font>
+  </div>
+</div>
+
+------=_Part_279191_2112201689.1756975596318--

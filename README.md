@@ -23,10 +23,20 @@ ICE addresses critical pain points faced by lean boutique hedge funds through an
 - ⏱️ **Manual Triage Bottlenecks**: Fully manual context stitching limiting speed and scale
 
 ### Key Value Propositions
-- **Multi-hop Reasoning**: Connect dots across 1-3 relationship hops (e.g., "How does China risk impact NVDA through TSMC?")
+- **Multi-hop Reasoning**: Connect dots across 1-3 relationship hops with universal cross-company relationship extraction
+  - **7 relationship types**: RELATED_TO, HOLDS, EMPLOYED_BY, SUBSIDIARY, PARTNER, IMPACTS, MENTIONED_WITH
+  - **Source confidence weighting**: SEC filings (1.0x), news (0.75x), email (0.70x) for reliability scoring
+  - **Example**: "How does Taiwan tension on TSMC impact data center REITs?" → TSMC → NVDA → Hyperscalers → REITs
+  - **Business value**: Uncover cascading risks that require dedicated research teams at larger funds
 - **Graph-RAG Intelligence**: Hybrid retrieval combining semantic search, keyword search, and graph traversal
 - **End-to-end Traceability**: Every fact and inference traces back to verifiable source documents
-- **Real-time Context**: Continuously updated investment knowledge graph with temporal awareness
+- **Temporal Intelligence**: Time-aware analysis separating when events happened from when they were ingested
+  - **Recency-aware ranking**: Prioritize fresh signals with exponential decay weighting (30-day half-life)
+  - **Event-driven queries**: Retrieve signals around specific dates (earnings, regulatory events)
+  - **Temporal comparisons**: Year-over-year (YoY), quarter-over-quarter (QoQ), CAGR calculations
+  - **Trend detection**: Statistical significance testing for metric evolution over time
+  - **Prevents blind spots**: Late-filed SEC documents correctly tagged to original quarter, not ingestion date
+  - **Business value**: Accurate portfolio risk assessment considering signal recency and relevance
 
 ## 🏗️ Architecture Overview
 
@@ -49,7 +59,8 @@ ICE addresses critical pain points faced by lean boutique hedge funds through an
 │  1. API/MCP (ice_data_ingestion/)      │
 │     ├── NewsAPI, Finnhub, Alpha Vantage│
 │     ├── MCP infrastructure             │
-│     └── SEC EDGAR connector (+ docling)│
+│     ├── SEC EDGAR connector (+ docling)│
+│     └── SEC Company Facts (XBRL metrics)│
 │                                         │
 │  2. Email (imap_email_ingestion/)      │
 │     ├── Broker research emails         │
@@ -291,6 +302,32 @@ rel_stats = categorize_relationships(relationships_data)
    # Or run the simple demo
    python src/simple_demo.py
    ```
+
+## ⚙️ Environment Variables
+
+Control API data lookback periods to manage costs:
+
+```bash
+# News APIs (NewsAPI, Finnhub, Benzinga) - Default: 7 days
+export ICE_NEWS_LOOKBACK_DAYS=7
+
+# Financial APIs (Yahoo Finance, SEC Edgar) - Default: 90 days
+export ICE_FINANCIAL_LOOKBACK_DAYS=90
+```
+
+**Cost Optimization**: Reduce lookback periods for significant API call savings:
+- `ICE_NEWS_LOOKBACK_DAYS=3` → 57% reduction in news API calls
+- `ICE_FINANCIAL_LOOKBACK_DAYS=30` → 66% reduction in financial API calls
+- **Combined**: 60-70% total API call reduction
+
+**Temperature Configuration** (optional):
+```bash
+# Entity extraction (default: 0.3, recommended: ≤0.2 for reproducibility)
+export ICE_LLM_TEMPERATURE_ENTITY_EXTRACTION=0.3
+
+# Query answering (default: 0.5, range: 0.0-1.0)
+export ICE_LLM_TEMPERATURE_QUERY_ANSWERING=0.5
+```
 
 ## 💡 Usage Examples
 

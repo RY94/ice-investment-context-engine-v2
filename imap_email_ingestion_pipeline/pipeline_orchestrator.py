@@ -573,7 +573,8 @@ class PipelineOrchestrator:
             try:
                 state_stats = self.state_manager.get_processing_stats()
                 status['processing_stats'] = state_stats
-            except:
+            except Exception as e:
+                self.logger.debug(f"[PipelineOrchestrator.get_pipeline_status] State stats unavailable: {type(e).__name__}")
                 status['processing_stats'] = {'error': 'Failed to get state stats'}
             
             return status

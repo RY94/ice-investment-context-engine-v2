@@ -1,0 +1,515 @@
+Return-Path: <sebastian@agtpartners.com.sg>
+Received: from web107.vodien.com
+	by web107.vodien.com with LMTP
+	id LtZjJYowrWhZszQAZ3xOiA
+	(envelope-from <sebastian@agtpartners.com.sg>); Tue, 26 Aug 2025 11:56:58 +0800
+Return-path: <sebastian@agtpartners.com.sg>
+Envelope-to: avrian@agtpartners.com.sg,
+ darren@agtpartners.com.sg,
+ greg@agtpartners.com.sg,
+ hongjun@agtpartners.com.sg,
+ jiajun@agtpartners.com.sg,
+ roy@agtpartners.com.sg,
+ tim@agtpartners.com.sg
+Delivery-date: Tue, 26 Aug 2025 11:56:58 +0800
+Received: from [66.96.193.166] (port=62491 helo=Seb)
+	by web107.vodien.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96.1)
+	(envelope-from <sebastian@agtpartners.com.sg>)
+	id 1uqknq-00EUY7-0x;
+	Tue, 26 Aug 2025 11:56:58 +0800
+From: "Sebastian \(AGT Partners\)" <sebastian@agtpartners.com.sg>
+To: <avrian@agtpartners.com.sg>,
+	<greg@agtpartners.com.sg>,
+	<tim@agtpartners.com.sg>,
+	<darren@agtpartners.com.sg>,
+	"'Jia Jun \(AGT Partners\)'" <jiajun@agtpartners.com.sg>,
+	<roy@agtpartners.com.sg>,
+	"'Hong Jun \(AGT Partners\)'" <hongjun@agtpartners.com.sg>
+Subject: Robosense 2Q25
+Date: Tue, 26 Aug 2025 11:55:57 +0800
+Message-ID: <018001dc163d$54c1b7b0$fe452710$@agtpartners.com.sg>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0181_01DC1680.62E545D0"
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AdwWPTN3puQC9JKdQ56gYwQJtgquwg==
+Content-Language: en-us
+
+This is a multipart message in MIME format.
+
+------=_NextPart_000_0181_01DC1680.62E545D0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+Summary:
+
+*	ADAS LiDAR shipments: BYD, Geely, GAC volumes improved vs 1H24 which
+offset loss of Xpeng & Huawei-related OEMs
+*	GPM improving & reached 28%, losses narrowing, potential for 4Q25
+breakeven and full year FY26 profitability (most likely >100x FY26 P/E)
+*	2026 outlook stronger than in 1Q25 on the back of EMX/EM4 ramp up
+and robotics (mainly lawn mowers for now) LiDAR adoption
+*	FY25 guidance: 6-700k ADAS shipment (+25% yoy) & 2-300k robotics
+shipment (+900% yoy)
+
+ 
+
+BYD relationship:
+
+*	Next phase for BYD would be EMX (lower ASP of RMB1,500 vs RMB2,500+
+now).
+*	Robosense is sole supplier for 32 BYD models (BYD is amongst its
+largest customers, couldn't talk about % revenue contribution but for
+comparison, total reported Robosense design wins is 119 models)
+*	Could deepen relationship with BYD (right now from industry checks
+it sounds like ~70% of BYD's lidars comes from Robosense). 
+*	BYD is asking Robosense for EMX plus some tailor made software
+improvements in their new projects. The additional requirement of tailor
+made software improvement is chargeable (increase ASP) but due to bulk
+purchase they will give more favourable price which offsets this. This BYD
+win is speculative but, in the works, volume unknown.
+*	There is still the possibility that as an extension of God's Eye,
+LiDAR is a standard configuration for its future models.
+
+ 
+
+Robosense chip development
+
+*	Most of the chips they use are designed themselves and the fab is
+SMIC (Kevin hinted) with the small, unimportant chips purchased from Texas
+Instruments. Hesai primarily uses 3rd party chips. 
+*	Robosense is having technological advantage due to its own chip
+development and digital architecture in an increasingly digital battleground
+for LiDARs.
+
+ 
+
+Mammotion 1.2mn order:
+
+*	ASP is around RMB1,500-2,000, some products E1R, some Airy, still
+negotiating with Mammotion. Margin is 40-55%. Signed 1.2mn order but it
+isn't 400k each year (straight line). First year 2-300k and in the 3rd year
+volume will increase.
+
+ 
+
+Potential wins (thoughts from Kelvin, CFO)
+
+*	Alluded to potentially winning orders from Li Auto and Xiaomi (for
+their next model). Currently Xiaomi using Hesai but Xiaomi did mention that
+they will want to have another Lidar supplier and that down the line they
+will let Robosense "win something".
+
+ 
+
+
+------=_NextPart_000_0181_01DC1680.62E545D0
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
+xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
+xmlns=3D"http://www.w3.org/TR/REC-html40"><head><meta =
+http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii"><meta name=3DGenerator content=3D"Microsoft Word 15 =
+(filtered medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Aptos;}
+@font-face
+	{font-family:"\@DengXian";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-ligatures:standardcontextual;}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{mso-style-priority:34;
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-ligatures:standardcontextual;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Aptos",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+/* List Definitions */
+@list l0
+	{mso-list-id:57704198;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1161673716 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l0:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l0:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l1
+	{mso-list-id:603347437;
+	mso-list-type:hybrid;
+	mso-list-template-ids:427320340 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l1:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l1:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l1:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l1:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l1:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l1:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l1:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l1:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l2
+	{mso-list-id:1136292969;
+	mso-list-type:hybrid;
+	mso-list-template-ids:1877359942 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l2:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l2:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l2:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l2:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l2:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l2:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l2:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l2:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l3
+	{mso-list-id:1330332111;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-666998046 1208549377 1208549379 1208549381 =
+1208549377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l3:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l3:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l3:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l3:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l3:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l3:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l3:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l3:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l3:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body lang=3DEN-SG =
+link=3D"#467886" vlink=3D"#96607D" style=3D'word-wrap:break-word'><div =
+class=3DWordSection1><p class=3DMsoNormal><b><span =
+lang=3DEN-US>Summary:<o:p></o:p></span></b></p><ul =
+style=3D'margin-top:0in' type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l2 level1 lfo1'>ADAS LiDAR shipments: =
+BYD, Geely, GAC volumes improved vs 1H24 which offset loss of Xpeng =
+&amp; Huawei-related OEMs<o:p></o:p></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l2 level1 lfo1'>GPM improving &amp; =
+reached 28%, losses narrowing, potential for 4Q25 breakeven and full =
+year FY26 profitability (most likely &gt;100x FY26 =
+P/E)<o:p></o:p></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l2 level1 lfo1'>2026 outlook stronger =
+than in 1Q25 on the back of EMX/EM4 ramp up and robotics (mainly lawn =
+mowers for now) LiDAR adoption<o:p></o:p></li><li =
+class=3DMsoListParagraph style=3D'margin-left:0in;mso-list:l2 level1 =
+lfo1'>FY25 guidance: 6-700k ADAS shipment (+25% yoy) &amp; 2-300k =
+robotics shipment (+900% yoy)<o:p></o:p></li></ul><p =
+class=3DMsoNormal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal><b>BYD =
+relationship:<o:p></o:p></b></p><ul style=3D'margin-top:0in' =
+type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l0 level1 lfo2'>Next phase for BYD =
+would be EMX (lower ASP of RMB1,500 vs RMB2,500+ =
+now).<o:p></o:p></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l0 level1 lfo2'>Robosense is sole =
+supplier for 32 BYD models (BYD is amongst its largest customers, =
+couldn&#8217;t talk about % revenue contribution but for comparison, =
+total reported Robosense design wins is 119 models)<o:p></o:p></li><li =
+class=3DMsoListParagraph style=3D'margin-left:0in;mso-list:l0 level1 =
+lfo2'>Could deepen relationship with BYD (right now from industry checks =
+it sounds like ~70% of BYD&#8217;s lidars comes from Robosense). =
+<o:p></o:p></li><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l0 level1 lfo2'>BYD is asking =
+Robosense for EMX plus some tailor made software improvements in their =
+new projects. The additional requirement of tailor made software =
+improvement is chargeable (increase ASP) but due to bulk purchase they =
+will give more favourable price which offsets this. This BYD win is =
+speculative but, in the works, volume unknown.<o:p></o:p></li><li =
+class=3DMsoListParagraph style=3D'margin-left:0in;mso-list:l0 level1 =
+lfo2'>There is still the possibility that as an extension of God&#8217;s =
+Eye, LiDAR is a standard configuration for its future =
+models.<o:p></o:p></li></ul><p class=3DMsoNormal><o:p>&nbsp;</o:p></p><p =
+class=3DMsoNormal><b>Robosense chip development<o:p></o:p></b></p><ul =
+style=3D'margin-top:0in' type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l3 level1 lfo3'>Most of the chips they =
+use are designed themselves and the fab is SMIC (Kevin hinted) with the =
+small, unimportant chips purchased from Texas Instruments. Hesai =
+primarily uses 3<sup>rd</sup> party chips. <o:p></o:p></li><li =
+class=3DMsoListParagraph style=3D'margin-left:0in;mso-list:l3 level1 =
+lfo3'>Robosense is having technological advantage due to its own chip =
+development and digital architecture in an increasingly digital =
+battleground for LiDARs.<o:p></o:p></li></ul><p =
+class=3DMsoNormal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal><b>Mammotion =
+1.2mn order:<o:p></o:p></b></p><ul style=3D'margin-top:0in' =
+type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l1 level1 lfo4'>ASP is around =
+RMB1,500-2,000, some products E1R, some Airy, still negotiating with =
+Mammotion. Margin is 40-55%. Signed 1.2mn order but it isn&#8217;t 400k =
+each year (straight line). First year 2-300k and in the 3<sup>rd</sup> =
+year volume will increase.<o:p></o:p></li></ul><p =
+class=3DMsoNormal><o:p>&nbsp;</o:p></p><p class=3DMsoNormal><b>Potential =
+wins (thoughts from Kelvin, CFO)<o:p></o:p></b></p><ul =
+style=3D'margin-top:0in' type=3Ddisc><li class=3DMsoListParagraph =
+style=3D'margin-left:0in;mso-list:l1 level1 lfo4'>Alluded to potentially =
+winning orders from Li Auto and Xiaomi (for their next model). Currently =
+Xiaomi using Hesai but Xiaomi did mention that they will want to have =
+another Lidar supplier and that down the line they will let Robosense =
+&#8220;win something&#8221;.<o:p></o:p></li></ul><p =
+class=3DMsoNormal><span =
+lang=3DEN-US><o:p>&nbsp;</o:p></span></p></div></body></html>
+------=_NextPart_000_0181_01DC1680.62E545D0--
+

@@ -76,6 +76,9 @@ logs/
 temp/
 tmp/
 
+# Backup files (compressed archives only, not expanded directories)
+backups/
+
 # Configuration files that might contain sensitive data
 ice_config.json
 config.json

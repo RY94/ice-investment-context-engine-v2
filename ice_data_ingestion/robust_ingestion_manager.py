@@ -133,7 +133,8 @@ class DataValidator:
         try:
             if isinstance(date_value, (int, float)):
                 return datetime.fromtimestamp(date_value)
-        except:
+        except Exception as e:
+            logger.debug(f"[DataValidator.parse_date] Timestamp parsing failed: {type(e).__name__}: {e}")
             pass
 
         return None
@@ -187,7 +188,8 @@ class DataValidator:
                 elif price > 1000000:
                     warnings.append("Unusually high price detected")
                 sanitized['price'] = price
-            except:
+            except Exception as e:
+                logger.debug(f"[DataValidator.validate_and_sanitize] Price parsing failed: {type(e).__name__}: {e}")
                 issues.append("Invalid price format")
 
             # Validate timestamp
@@ -247,7 +249,8 @@ class DataDeduplicator:
             try:
                 with open(cache_file, 'r') as f:
                     return set(json.load(f))
-            except:
+            except Exception as e:
+                logger.warning(f"[DuplicateDetector._load_cache] Cache load failed: {type(e).__name__}: {e}")
                 return set()
         return set()
 

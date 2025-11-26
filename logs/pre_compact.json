@@ -1830,5 +1830,869 @@
     "hook_event_name": "PreCompact",
     "trigger": "manual",
     "custom_instructions": ""
+  },
+  {
+    "session_id": "1d1ffa11-24e5-4254-a938-964f8bc8fa3b",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/1d1ffa11-24e5-4254-a938-964f8bc8fa3b.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "1d1ffa11-24e5-4254-a938-964f8bc8fa3b",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/1d1ffa11-24e5-4254-a938-964f8bc8fa3b.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "2a6bd82d-46b0-4148-a628-5e0b781bca2e",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2a6bd82d-46b0-4148-a628-5e0b781bca2e.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "2a6bd82d-46b0-4148-a628-5e0b781bca2e",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2a6bd82d-46b0-4148-a628-5e0b781bca2e.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "2a6bd82d-46b0-4148-a628-5e0b781bca2e",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2a6bd82d-46b0-4148-a628-5e0b781bca2e.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4384d7a7-aaab-401b-8831-a7d66a963101",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4384d7a7-aaab-401b-8831-a7d66a963101.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4384d7a7-aaab-401b-8831-a7d66a963101",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4384d7a7-aaab-401b-8831-a7d66a963101.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4384d7a7-aaab-401b-8831-a7d66a963101",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4384d7a7-aaab-401b-8831-a7d66a963101.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "56757369-3c79-476c-963b-6c3add91ecf0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/56757369-3c79-476c-963b-6c3add91ecf0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "309d4aec-a744-4aed-a640-697dc0cada0f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/309d4aec-a744-4aed-a640-697dc0cada0f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "94bc5f3e-02ea-4af4-a948-d5e823563ab2",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/94bc5f3e-02ea-4af4-a948-d5e823563ab2.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "94bc5f3e-02ea-4af4-a948-d5e823563ab2",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/94bc5f3e-02ea-4af4-a948-d5e823563ab2.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "94bc5f3e-02ea-4af4-a948-d5e823563ab2",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/94bc5f3e-02ea-4af4-a948-d5e823563ab2.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "94bc5f3e-02ea-4af4-a948-d5e823563ab2",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/94bc5f3e-02ea-4af4-a948-d5e823563ab2.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "f6831f5e-c90f-4f1c-993f-635d76fe5d56",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/f6831f5e-c90f-4f1c-993f-635d76fe5d56.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "f6831f5e-c90f-4f1c-993f-635d76fe5d56",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/f6831f5e-c90f-4f1c-993f-635d76fe5d56.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "cb0ae756-90f6-4fa9-975f-f6dc2aa68447",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/cb0ae756-90f6-4fa9-975f-f6dc2aa68447.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "9b45c872-2fdc-4f09-8f7b-e0b43d5e2fd0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/9b45c872-2fdc-4f09-8f7b-e0b43d5e2fd0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "9b45c872-2fdc-4f09-8f7b-e0b43d5e2fd0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/9b45c872-2fdc-4f09-8f7b-e0b43d5e2fd0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "9b45c872-2fdc-4f09-8f7b-e0b43d5e2fd0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/9b45c872-2fdc-4f09-8f7b-e0b43d5e2fd0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "9b45c872-2fdc-4f09-8f7b-e0b43d5e2fd0",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/9b45c872-2fdc-4f09-8f7b-e0b43d5e2fd0.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "9c55ace6-d5cf-45d6-94d0-19d52814ef3c",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/9c55ace6-d5cf-45d6-94d0-19d52814ef3c.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "9c55ace6-d5cf-45d6-94d0-19d52814ef3c",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/9c55ace6-d5cf-45d6-94d0-19d52814ef3c.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "85ba8171-a368-4a09-bbcb-9f1afaa9ca94",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/85ba8171-a368-4a09-bbcb-9f1afaa9ca94.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "85ba8171-a368-4a09-bbcb-9f1afaa9ca94",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/85ba8171-a368-4a09-bbcb-9f1afaa9ca94.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "e66c28cc-3679-46e9-b4f8-65bb0b7d1f9b",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/e66c28cc-3679-46e9-b4f8-65bb0b7d1f9b.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "2293dec4-44f4-4420-993c-263e857c979f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2293dec4-44f4-4420-993c-263e857c979f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "2293dec4-44f4-4420-993c-263e857c979f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2293dec4-44f4-4420-993c-263e857c979f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "2293dec4-44f4-4420-993c-263e857c979f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2293dec4-44f4-4420-993c-263e857c979f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "59562a2f-1d09-41ed-8c0e-8ae9099a9a7f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/59562a2f-1d09-41ed-8c0e-8ae9099a9a7f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "2293dec4-44f4-4420-993c-263e857c979f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2293dec4-44f4-4420-993c-263e857c979f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "59562a2f-1d09-41ed-8c0e-8ae9099a9a7f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/59562a2f-1d09-41ed-8c0e-8ae9099a9a7f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "2293dec4-44f4-4420-993c-263e857c979f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2293dec4-44f4-4420-993c-263e857c979f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "2293dec4-44f4-4420-993c-263e857c979f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2293dec4-44f4-4420-993c-263e857c979f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "59562a2f-1d09-41ed-8c0e-8ae9099a9a7f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/59562a2f-1d09-41ed-8c0e-8ae9099a9a7f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "2293dec4-44f4-4420-993c-263e857c979f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2293dec4-44f4-4420-993c-263e857c979f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "59562a2f-1d09-41ed-8c0e-8ae9099a9a7f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/59562a2f-1d09-41ed-8c0e-8ae9099a9a7f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "2293dec4-44f4-4420-993c-263e857c979f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2293dec4-44f4-4420-993c-263e857c979f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "2293dec4-44f4-4420-993c-263e857c979f",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2293dec4-44f4-4420-993c-263e857c979f.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "2acdfb1e-d8b2-4013-af85-fa861c2dfc77",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2acdfb1e-d8b2-4013-af85-fa861c2dfc77.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "2acdfb1e-d8b2-4013-af85-fa861c2dfc77",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2acdfb1e-d8b2-4013-af85-fa861c2dfc77.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "2acdfb1e-d8b2-4013-af85-fa861c2dfc77",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2acdfb1e-d8b2-4013-af85-fa861c2dfc77.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "2acdfb1e-d8b2-4013-af85-fa861c2dfc77",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2acdfb1e-d8b2-4013-af85-fa861c2dfc77.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "2acdfb1e-d8b2-4013-af85-fa861c2dfc77",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2acdfb1e-d8b2-4013-af85-fa861c2dfc77.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "2acdfb1e-d8b2-4013-af85-fa861c2dfc77",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/2acdfb1e-d8b2-4013-af85-fa861c2dfc77.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "a7d2d98c-7212-426b-836f-302b4037bd43",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/a7d2d98c-7212-426b-836f-302b4037bd43.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "a7d2d98c-7212-426b-836f-302b4037bd43",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/a7d2d98c-7212-426b-836f-302b4037bd43.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "a7d2d98c-7212-426b-836f-302b4037bd43",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/a7d2d98c-7212-426b-836f-302b4037bd43.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "ea147be2-4584-480a-a4fc-82f18913af76",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/ea147be2-4584-480a-a4fc-82f18913af76.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "ea147be2-4584-480a-a4fc-82f18913af76",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/ea147be2-4584-480a-a4fc-82f18913af76.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "ea147be2-4584-480a-a4fc-82f18913af76",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/ea147be2-4584-480a-a4fc-82f18913af76.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "ea147be2-4584-480a-a4fc-82f18913af76",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/ea147be2-4584-480a-a4fc-82f18913af76.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "ea147be2-4584-480a-a4fc-82f18913af76",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/ea147be2-4584-480a-a4fc-82f18913af76.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "ea147be2-4584-480a-a4fc-82f18913af76",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/ea147be2-4584-480a-a4fc-82f18913af76.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "ea147be2-4584-480a-a4fc-82f18913af76",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/ea147be2-4584-480a-a4fc-82f18913af76.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "ea147be2-4584-480a-a4fc-82f18913af76",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/ea147be2-4584-480a-a4fc-82f18913af76.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "ea147be2-4584-480a-a4fc-82f18913af76",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/ea147be2-4584-480a-a4fc-82f18913af76.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "ea147be2-4584-480a-a4fc-82f18913af76",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/ea147be2-4584-480a-a4fc-82f18913af76.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "ab058a63-86a3-445d-8f89-f2812e52161b",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/ab058a63-86a3-445d-8f89-f2812e52161b.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "ea147be2-4584-480a-a4fc-82f18913af76",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/ea147be2-4584-480a-a4fc-82f18913af76.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "9dff3bfb-36de-4f13-9caa-50f19e1d92be",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/9dff3bfb-36de-4f13-9caa-50f19e1d92be.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "f2052df6-e784-49d4-a1a4-a7d679197294",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/f2052df6-e784-49d4-a1a4-a7d679197294.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "4e56c749-3876-4a95-8111-304dc0515cea",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/4e56c749-3876-4a95-8111-304dc0515cea.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "6d022ce6-e35f-4337-9985-03d45209e218",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/6d022ce6-e35f-4337-9985-03d45209e218.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "6d022ce6-e35f-4337-9985-03d45209e218",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/6d022ce6-e35f-4337-9985-03d45209e218.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "6d022ce6-e35f-4337-9985-03d45209e218",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/6d022ce6-e35f-4337-9985-03d45209e218.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
+  },
+  {
+    "session_id": "6d022ce6-e35f-4337-9985-03d45209e218",
+    "transcript_path": "/Users/royyeo/.claude/projects/-Users-royyeo-Library-CloudStorage-OneDrive-NationalUniversityofSingapore-Capstone-Project/6d022ce6-e35f-4337-9985-03d45209e218.jsonl",
+    "cwd": "/Users/royyeo/Library/CloudStorage/OneDrive-NationalUniversityofSingapore/Capstone Project",
+    "hook_event_name": "PreCompact",
+    "trigger": "manual",
+    "custom_instructions": ""
   }
 ]

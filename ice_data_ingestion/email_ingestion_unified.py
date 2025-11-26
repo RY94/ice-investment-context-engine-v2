@@ -476,7 +476,8 @@ class EmailIngestionClient(BaseDataClient):
         date_str = email_message.get('Date', '')
         try:
             email_date = parsedate_to_datetime(date_str) if date_str else datetime.now()
-        except:
+        except Exception as e:
+            logger.debug(f"[EmailIngestionUnified._parse_email] Date parsing failed for '{date_str}': {type(e).__name__}")
             email_date = datetime.now()
 
         # Threading information
@@ -630,7 +631,8 @@ class EmailIngestionClient(BaseDataClient):
                     if encoding:
                         try:
                             result.append(part.decode(encoding))
-                        except:
+                        except Exception as e:
+                            logger.debug(f"[EmailIngestionUnified._decode_header] Decode failed with encoding '{encoding}': {type(e).__name__}")
                             # Fallback to chardet
                             detected = chardet.detect(part)
                             encoding = detected['encoding'] or 'utf-8'
@@ -753,7 +755,8 @@ class EmailIngestionClient(BaseDataClient):
                     # Try to parse the date (would need more sophisticated parsing)
                     # This is simplified - could use dateutil.parser
                     dates.append(datetime.now())  # Placeholder
-                except:
+                except Exception as e:
+                    logger.debug(f"[EmailIngestionUnified._extract_dates] Date extraction failed: {type(e).__name__}")
                     pass
 
         return dates
@@ -1066,7 +1069,8 @@ class EmailIngestionClient(BaseDataClient):
                 payload = email_message.get_payload(decode=True)
                 if payload:
                     return payload.decode('utf-8', errors='ignore')[:500]
-        except:
+        except Exception as e:
+            logger.debug(f"[EmailIngestionUnified._get_preview] Preview extraction failed: {type(e).__name__}")
             pass
 
         return ''

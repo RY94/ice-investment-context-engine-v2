@@ -11,6 +11,8 @@ from datetime import datetime
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
+
 
 class ICEException(Exception):
     """Base exception class for ICE system errors with recovery suggestions"""
@@ -69,8 +71,8 @@ class ICESystemHealthCheck:
                     mod = sys.modules[module]
                     if hasattr(mod, '__version__'):
                         import_results[module]["version"] = mod.__version__
-                except:
-                    pass
+                except Exception as e:
+                    logger.debug(f"[ICESystemHealthCheck.check_python_environment] Version check failed for {module}: {type(e).__name__}")
                     
             except ImportError as e:
                 import_results[module] = {"available": False, "error": str(e)}

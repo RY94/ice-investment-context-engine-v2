@@ -250,14 +250,113 @@ class SECEdgarConnector:
     async def search_filings_by_form(self, ticker: str, form_types: List[str], limit: int = 10) -> List[SECFiling]:
         """Get filings filtered by form type"""
         all_filings = await self.get_recent_filings(ticker, limit * 3)  # Get more to filter
-        
+
         # Filter by form types
         filtered_filings = []
         for filing in all_filings:
             if filing.form in form_types and len(filtered_filings) < limit:
                 filtered_filings.append(filing)
-        
+
         return filtered_filings
+
+    # ========== SEC Company Facts API (Financial Metrics) ==========
+
+    # XBRL metric mappings with fallback chains for robust extraction
+    METRIC_MAPPINGS = {
+        'Revenue': ['Revenues', 'RevenueFromContractWithCustomerExcludingAssessedTax', 'SalesRevenueNet'],
+        'NetIncome': ['NetIncomeLoss', 'ProfitLoss', 'NetIncomeLossAttributableToParent'],
+        'TotalAssets': ['Assets', 'AssetsCurrent'],
+        'EPS_Diluted': ['EarningsPerShareDiluted', 'EarningsPerShareBasic'],
+        'Cash': ['CashAndCashEquivalentsAtCarryingValue', 'Cash'],
+    }
+
+    def _fetch_company_facts(self, cik: str) -> Optional[Dict]:
+        """Fetch Company Facts JSON from SEC API"""
+        try:
+            url = f"{self.base_url}/api/xbrl/companyfacts/CIK{cik}.json"
+            response = requests.get(url, headers=self._get_headers(), timeout=15)
+
+            if response.status_code == 200:
+                return response.json()
+            else:
+                logger.warning(f"SEC Company Facts request failed: HTTP {response.status_code}")
+                return None
+        except Exception as e:
+            logger.error(f"Error fetching Company Facts for CIK {cik}: {e}")
+            return None
+
+    def _extract_recent_metrics(self, facts_json: Dict, ticker: str, lookback_quarters: int = 8) -> Optional[Dict]:
+        """Extract recent financial metrics from Company Facts JSON"""
+        if not facts_json or 'facts' not in facts_json:
+            return None
+
+        us_gaap = facts_json.get('facts', {}).get('us-gaap', {})
+        if not us_gaap:
+            return None
+
+        extracted = {'ticker': ticker, 'metrics': []}
+
+        # Extract each target metric with fallback chain
+        for metric_name, xbrl_variants in self.METRIC_MAPPINGS.items():
+            for xbrl_key in xbrl_variants:
+                if xbrl_key in us_gaap:
+                    metric_data = us_gaap[xbrl_key]
+                    usd_data = metric_data.get('units', {}).get('USD', [])
+
+                    if not usd_data:
+                        continue
+
+                    # Filter to quarterly data (form 10-Q/10-K), sort by date descending
+                    quarterly = [
+                        item for item in usd_data
+                        if item.get('form') in ['10-Q', '10-K'] and item.get('fy') and item.get('fp')
+                    ]
+                    quarterly.sort(key=lambda x: (x.get('filed', ''), x.get('end', '')), reverse=True)
+
+                    # Take only recent quarters
+                    for item in quarterly[:lookback_quarters]:
+                        extracted['metrics'].append({
+                            'metric_name': metric_name,
+                            'metric_value': item.get('val'),
+                            'fiscal_year': item.get('fy'),
+                            'fiscal_period': item.get('fp'),
+                            'filed_date': item.get('filed'),
+                            'end_date': item.get('end'),
+                            'form': item.get('form'),
+                            'source': 'SEC Company Facts API'
+                        })
+                    break  # Found valid data, skip remaining fallbacks
+
+        return extracted if extracted['metrics'] else None
+
+    def get_company_facts_sync(self, ticker: str, lookback_quarters: int = 8) -> Optional[Dict]:
+        """
+        Synchronous wrapper for Company Facts API
+
+        Args:
+            ticker: Stock ticker symbol
+            lookback_quarters: Number of recent quarters to fetch (default: 8 = 2 years)
+
+        Returns:
+            Dict with ticker and list of metrics, or None if failed
+        """
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            cik = loop.run_until_complete(self.get_cik_by_ticker(ticker))
+            if not cik:
+                logger.warning(f"No CIK found for ticker {ticker}")
+                return None
+
+            # Fetch Company Facts JSON
+            facts_json = self._fetch_company_facts(cik)
+            if not facts_json:
+                return None
+
+            # Extract recent metrics
+            return self._extract_recent_metrics(facts_json, ticker, lookback_quarters)
+        finally:
+            loop.close()
 
 
 # Global instance for easy access

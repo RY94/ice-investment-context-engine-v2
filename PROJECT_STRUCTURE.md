@@ -172,6 +172,7 @@ ICE-Investment-Context-Engine/
 │   │   ├── test_lightrag.py             # LightRAG integration tests
 │   │   ├── test_unified_rag.py          # Unified RAG system tests
 │   │   ├── test_imap_email_pipeline_comprehensive.py  # 🆕 IMAP pipeline comprehensive test (496 lines, 21 tests)
+│   │   ├── test_temporal_features_comprehensive.py    # ✅ Week 6: Temporal architecture tests (450+ lines, 30+ tests)
 │   │   ├── ice_data_tests/              # Data ingestion tests
 │   │   ├── ice_lightrag_tests/          # Core AI engine tests
 │   │   └── mock_data/                   # Test data fixtures
@@ -224,13 +225,18 @@ ICE-Investment-Context-Engine/
 │       └── ice_ui_v1.py-v16.py         # Previous development iterations
 │
 ├── 🏗️ Infrastructure & Integration (Production Modules - WEEK 2-4 INTEGRATED)
-│   ├── src/ice_core/                    # 🏭 PRODUCTION ORCHESTRATION (3,955 lines, 9 files)
+│   ├── src/ice_core/                    # 🏭 PRODUCTION ORCHESTRATION (4,505 lines, 11 files)
 │   │   ├── ice_unified_rag.py           # Unified RAG engine implementation
 │   │   ├── ice_error_handling.py        # Error handling utilities
 │   │   ├── ice_system_manager.py        # ✅ Week 2: System orchestration (used by ice_simplified.py)
 │   │   ├── ice_query_processor.py       # ✅ Week 4: Enhanced query processing with fallback logic (enabled via use_graph_context=True)
 │   │   ├── ice_graph_builder.py         # Graph construction utilities
-│   │   └── ice_data_manager.py          # Data management coordination
+│   │   ├── ice_data_manager.py          # Data management coordination
+│   │   ├── temporal_analyzer.py         # ✅ Week 6: Trend detection and temporal analysis (350 lines)
+│   │   ├── period_utils.py              # ✅ Week 6: Period arithmetic utilities (200 lines)
+│   │   ├── temporal_enhancer.py         # Temporal enhancement utilities
+│   │   ├── enhanced_entity_adapter.py   # Entity extraction adapter
+│   │   └── enhanced_entity_extractor.py # Enhanced entity extraction
 │   │
 │   ├── src/ice_docling/                 # 🏭 DOCLING INTEGRATION (568 lines, 4 files)
 │   │   │                                # Switchable architecture: Toggle via config.py
@@ -274,6 +280,17 @@ ICE-Investment-Context-Engine/
 │   │   │   └── lightrag_query_workflow.md     # Query processing pipeline guide
 │   │   ├── about_graphrag/             # 🆕 GraphRAG focused documentation
 │   │   │   └── GraphRAG_notes.md       # Comprehensive GraphRAG research and analysis notes
+│   │   ├── about_news_apis/            # 🆕 News API integration documentation (100% complete)
+│   │   │   ├── README.md               # Overview and quick reference (313 lines)
+│   │   │   ├── DOCUMENTATION_STATUS.md # Status tracker and index (213 lines)
+│   │   │   ├── IMPLEMENTATION.md       # Technical deep-dive with ASCII diagrams (602 lines)
+│   │   │   ├── INTEGRATION.md          # ICE system integration with visual flows (491 lines)
+│   │   │   └── apis/                   # Individual API documentation (5 files, 2,122 lines)
+│   │   │       ├── finnhub.md         # Priority #1: Real-time, 60 req/min free (336 lines)
+│   │   │       ├── newsapi.md         # Priority #4: 24hr delay warning (413 lines)
+│   │   │       ├── marketaux.md       # Unlimited free, NLP features (454 lines)
+│   │   │       ├── benzinga.md        # Premium quality (434 lines)
+│   │   │       └── exa.md             # On-demand semantic search (485 lines)
 │   │   ├── proposals/                   # Capstone proposals and variations
 │   │   ├── research_papers/            # Academic research and analysis
 │   │   ├── development_plans/          # Development planning documents (moved from root)
@@ -380,6 +397,12 @@ ICE-Investment-Context-Engine/
 - **IMAP Pipeline Tests**: `tests/test_imap_email_pipeline_comprehensive.py` - 🆕 Entry #59: Comprehensive IMAP email pipeline test (496 lines, 21 tests) ✅ ALL PASSING
 - **Entity Extraction Tests**: `tests/test_entity_extraction.py` - 🆕 Phase 2.6.1: EntityExtractor integration validation (182 lines)
 - **Quick Entity Test**: `tests/quick_entity_test.py` - 🆕 Phase 2.6.1: Fast validation script (42 lines)
+- **API Switches Unit Tests**: `tests/test_api_source_switches.py` - 🆕 Entry #127: Granular API switches validation (16 tests covering precedence, caching, early exit) ✅ ALL PASSING
+- **API Switches Integration Tests**: `tests/test_api_switches_integration.py` - 🆕 Entry #127: Config flow validation (6 tests for multi-ticker scenarios) ✅ ALL PASSING
+- **API Switches E2E Tests**: `tests/test_sec_only_config.py` - 🆕 Entry #127: End-to-end validation (2 tests for SEC-only and master switch) ✅ ALL PASSING
+- **Relationship Extraction Tests**: `tests/test_relationship_extraction.py` - 🆕 Refinement #3: Universal cross-company relationship extraction (15 tests, 14/15 passing)
+- **Event Extraction Tests**: `tests/test_option1_integration.py` - 🆕 Entry #149: EventExtractor integration & webhook delivery (10 tests) ✅ ALL PASSING (100%)
+- **Relationship Production Tests**: `tests/test_relationship_production.py` - 🆕 Entry #150: RelationshipExtractor production validation (10 tests) ✅ ALL PASSING (100%)
 
 ### **Data & Storage**
 - **Document Storage**: `data/attachments/` - **SINGLE SOURCE OF TRUTH** for all documents

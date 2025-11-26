@@ -7,9 +7,12 @@ import time
 import json
 import psutil
 import os
+import logging
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -328,15 +331,17 @@ class ICEHealthMonitor:
             load_avg = None
             try:
                 load_avg = os.getloadavg()[0] if hasattr(os, 'getloadavg') else None
-            except:
+            except Exception as e:
+                logger.debug(f"[ICEHealthMonitor._check_system] Load average check failed: {type(e).__name__}")
                 pass
-            
+
             # Network connectivity (basic check)
             network_ok = True
             try:
                 import socket
                 socket.create_connection(("8.8.8.8", 53), timeout=3)
-            except:
+            except Exception as e:
+                logger.debug(f"[ICEHealthMonitor._check_system] Network check failed: {type(e).__name__}")
                 network_ok = False
             
             status = "healthy"

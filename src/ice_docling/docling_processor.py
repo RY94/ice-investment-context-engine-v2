@@ -420,7 +420,8 @@ class DoclingProcessor:
                 # Add markdown preview for debugging/logging
                 try:
                     table_data['markdown'] = table_df.to_markdown(index=False)
-                except:
+                except Exception as e:
+                    self.logger.debug(f"[DoclingProcessor._extract_tables] Markdown conversion failed: {type(e).__name__}")
                     pass  # Markdown conversion optional, don't fail on error
                 
                 tables.append(table_data)

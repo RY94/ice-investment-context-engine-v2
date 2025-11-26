@@ -1,0 +1,572 @@
+# Location: /tests/test_signal_store_comprehensive.py
+# Purpose: Comprehensive test suite for Signal Store module
+# Why: Increase test coverage for Phase 3 robustness
+# Relevant Files: signal_store.py, query_router.py
+
+"""
+Comprehensive test suite for Signal Store functionality
+
+Tests the signal storage, retrieval, and temporal enhancement features
+that are critical to ICE's investment intelligence capabilities.
+"""
+
+import pytest
+import sys
+import os
+from pathlib import Path
+from unittest.mock import Mock, patch, MagicMock
+from datetime import datetime, timedelta
+import json
+import uuid
+from typing import Dict, List, Any
+
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parents[1]))
+
+from updated_architectures.implementation.signal_store import (
+    SignalStoreClient,
+    SignalRating,
+    SignalMetadata
+)
+
+
+class TestSignalStoreInitialization:
+    """Test Signal Store initialization and configuration"""
+
+    def test_basic_initialization(self):
+        """Test basic Signal Store client initialization"""
+        client = SignalStoreClient(base_url="http://localhost:8000")
+
+        assert client is not None
+        assert client.base_url == "http://localhost:8000"
+        assert hasattr(client, 'store_signal')
+        assert hasattr(client, 'query_rating')
+
+    def test_initialization_with_auth(self):
+        """Test initialization with authentication"""
+        client = SignalStoreClient(
+            base_url="http://localhost:8000",
+            api_key="test_api_key"
+        )
+
+        assert client.api_key == "test_api_key"
+
+    def test_initialization_with_custom_config(self):
+        """Test initialization with custom configuration"""
+        config = {
+            'timeout': 30,
+            'max_retries': 3,
+            'freshness_weight': 0.4
+        }
+
+        client = SignalStoreClient(
+            base_url="http://localhost:8000",
+            config=config
+        )
+
+        assert client.config['timeout'] == 30
+        assert client.config['max_retries'] == 3
+
+
+class TestSignalStorage:
+    """Test signal storage functionality"""
+
+    @pytest.fixture
+    def signal_client(self):
+        """Create Signal Store client for testing"""
+        client = SignalStoreClient(base_url="http://localhost:8000")
+        client._session = Mock()
+        return client
+
+    def test_store_basic_signal(self, signal_client):
+        """Test storing a basic investment signal"""
+        signal = {
+            'ticker': 'AAPL',
+            'signal_type': 'BUY',
+            'confidence': 0.85,
+            'reasoning': 'Strong earnings and product pipeline'
+        }
+
+        with patch.object(signal_client._session, 'post') as mock_post:
+            mock_post.return_value.json.return_value = {
+                'id': 'signal_123',
+                'status': 'stored'
+            }
+
+            result = signal_client.store_signal(signal)
+
+            assert result['status'] == 'stored'
+            assert 'id' in result
+            mock_post.assert_called_once()
+
+    def test_store_signal_with_metadata(self, signal_client):
+        """Test storing signal with rich metadata"""
+        signal = {
+            'ticker': 'NVDA',
+            'signal_type': 'STRONG_BUY',
+            'confidence': 0.92,
+            'reasoning': 'AI dominance',
+            'metadata': {
+                'source': 'earnings_analysis',
+                'analyst': 'system',
+                'factors': ['revenue_growth', 'market_position', 'guidance']
+            }
+        }
+
+        with patch.object(signal_client._session, 'post') as mock_post:
+            mock_post.return_value.json.return_value = {'status': 'stored'}
+
+            result = signal_client.store_signal(signal)
+
+            assert result['status'] == 'stored'
+            call_args = mock_post.call_args
+            assert 'metadata' in call_args.kwargs.get('json', {})
+
+    def test_batch_signal_storage(self, signal_client):
+        """Test batch storage of multiple signals"""
+        signals = [
+            {'ticker': 'AAPL', 'signal_type': 'BUY', 'confidence': 0.8},
+            {'ticker': 'MSFT', 'signal_type': 'HOLD', 'confidence': 0.7},
+            {'ticker': 'TSLA', 'signal_type': 'SELL', 'confidence': 0.6}
+        ]
+
+        with patch.object(signal_client, 'store_signal') as mock_store:
+            mock_store.return_value = {'status': 'stored'}
+
+            results = signal_client.batch_store(signals)
+
+            assert len(results) == 3
+            assert mock_store.call_count == 3
+
+    def test_signal_validation(self, signal_client):
+        """Test signal validation before storage"""
+        # Invalid signal (missing required fields)
+        invalid_signal = {
+            'ticker': 'AAPL'
+            # Missing signal_type and confidence
+        }
+
+        with pytest.raises(ValueError) as excinfo:
+            signal_client.store_signal(invalid_signal)
+
+        assert "required field" in str(excinfo.value).lower()
+
+    def test_duplicate_signal_handling(self, signal_client):
+        """Test handling of duplicate signals"""
+        signal = {
+            'ticker': 'AAPL',
+            'signal_type': 'BUY',
+            'confidence': 0.85,
+            'unique_id': 'signal_duplicate_test'
+        }
+
+        with patch.object(signal_client._session, 'post') as mock_post:
+            # First attempt - success
+            mock_post.return_value.json.return_value = {'status': 'stored'}
+            result1 = signal_client.store_signal(signal)
+
+            # Second attempt - duplicate
+            mock_post.return_value.json.return_value = {
+                'status': 'duplicate',
+                'existing_id': 'signal_123'
+            }
+            result2 = signal_client.store_signal(signal)
+
+            assert result1['status'] == 'stored'
+            assert result2['status'] == 'duplicate'
+
+
+class TestSignalRetrieval:
+    """Test signal retrieval and querying"""
+
+    @pytest.fixture
+    def signal_client_with_data(self):
+        """Create Signal Store client with mock data"""
+        client = SignalStoreClient(base_url="http://localhost:8000")
+        client._session = Mock()
+
+        # Mock stored signals
+        client._mock_signals = [
+            {
+                'id': '1',
+                'ticker': 'AAPL',
+                'signal_type': 'BUY',
+                'confidence': 0.85,
+                'created_at': datetime.now().isoformat()
+            },
+            {
+                'id': '2',
+                'ticker': 'NVDA',
+                'signal_type': 'STRONG_BUY',
+                'confidence': 0.92,
+                'created_at': (datetime.now() - timedelta(days=7)).isoformat()
+            }
+        ]
+
+        return client
+
+    def test_query_signals_by_ticker(self, signal_client_with_data):
+        """Test querying signals by ticker symbol"""
+        with patch.object(signal_client_with_data._session, 'get') as mock_get:
+            mock_get.return_value.json.return_value = {
+                'signals': [signal_client_with_data._mock_signals[0]]
+            }
+
+            results = signal_client_with_data.query_signals(ticker='AAPL')
+
+            assert len(results['signals']) == 1
+            assert results['signals'][0]['ticker'] == 'AAPL'
+
+    def test_query_signals_by_date_range(self, signal_client_with_data):
+        """Test querying signals within date range"""
+        start_date = (datetime.now() - timedelta(days=10)).isoformat()
+        end_date = datetime.now().isoformat()
+
+        with patch.object(signal_client_with_data._session, 'get') as mock_get:
+            mock_get.return_value.json.return_value = {
+                'signals': signal_client_with_data._mock_signals
+            }
+
+            results = signal_client_with_data.query_signals(
+                start_date=start_date,
+                end_date=end_date
+            )
+
+            assert len(results['signals']) > 0
+            call_args = mock_get.call_args
+            assert 'start_date' in call_args.kwargs.get('params', {})
+
+    def test_query_signals_with_confidence_threshold(self, signal_client_with_data):
+        """Test querying signals above confidence threshold"""
+        with patch.object(signal_client_with_data._session, 'get') as mock_get:
+            # Filter for high confidence signals
+            high_confidence = [s for s in signal_client_with_data._mock_signals
+                             if s['confidence'] >= 0.9]
+            mock_get.return_value.json.return_value = {
+                'signals': high_confidence
+            }
+
+            results = signal_client_with_data.query_signals(min_confidence=0.9)
+
+            assert all(s['confidence'] >= 0.9 for s in results['signals'])
+
+    def test_query_latest_signals(self, signal_client_with_data):
+        """Test retrieving latest signals with limit"""
+        with patch.object(signal_client_with_data._session, 'get') as mock_get:
+            mock_get.return_value.json.return_value = {
+                'signals': signal_client_with_data._mock_signals[:5]
+            }
+
+            results = signal_client_with_data.get_latest_signals(limit=5)
+
+            assert len(results['signals']) <= 5
+
+
+class TestTemporalFeatures:
+    """Test temporal enhancement features"""
+
+    @pytest.fixture
+    def temporal_client(self):
+        """Create client with temporal features"""
+        client = SignalStoreClient(base_url="http://localhost:8000")
+        client._session = Mock()
+        client.freshness_weight = 0.3
+        return client
+
+    def test_freshness_scoring(self, temporal_client):
+        """Test freshness score calculation"""
+        now = datetime.now()
+
+        signals = [
+            {'created_at': now.isoformat(), 'content': 'Fresh signal'},
+            {'created_at': (now - timedelta(days=7)).isoformat(), 'content': 'Week old'},
+            {'created_at': (now - timedelta(days=30)).isoformat(), 'content': 'Month old'}
+        ]
+
+        scored_signals = temporal_client.calculate_freshness_scores(signals)
+
+        # Fresh signal should have highest score
+        assert scored_signals[0]['freshness_score'] > scored_signals[1]['freshness_score']
+        assert scored_signals[1]['freshness_score'] > scored_signals[2]['freshness_score']
+
+    def test_composite_scoring(self, temporal_client):
+        """Test composite scoring with confidence and freshness"""
+        signals = [
+            {
+                'confidence': 0.9,
+                'created_at': datetime.now().isoformat(),
+                'content': 'High conf, fresh'
+            },
+            {
+                'confidence': 0.6,
+                'created_at': (datetime.now() - timedelta(days=30)).isoformat(),
+                'content': 'Low conf, old'
+            }
+        ]
+
+        scored_signals = temporal_client.calculate_composite_scores(signals)
+
+        # First signal should have higher composite score
+        assert scored_signals[0]['composite_score'] > scored_signals[1]['composite_score']
+
+    def test_temporal_decay_function(self, temporal_client):
+        """Test temporal decay function for freshness"""
+        # Test exponential decay
+        score_today = temporal_client.calculate_decay(0)  # 0 days old
+        score_week = temporal_client.calculate_decay(7)   # 7 days old
+        score_month = temporal_client.calculate_decay(30) # 30 days old
+
+        assert score_today == 1.0
+        assert 0.5 < score_week < 0.8
+        assert score_month < 0.3
+
+    def test_temporal_filtering(self, temporal_client):
+        """Test filtering signals by temporal criteria"""
+        signals = [
+            {'created_at': datetime.now().isoformat()},
+            {'created_at': (datetime.now() - timedelta(days=45)).isoformat()},
+            {'created_at': (datetime.now() - timedelta(days=90)).isoformat()}
+        ]
+
+        # Filter for signals within 30 days
+        filtered = temporal_client.filter_by_recency(signals, max_age_days=30)
+
+        assert len(filtered) == 1  # Only the recent signal
+
+
+class TestRatingSystem:
+    """Test signal rating and ranking system"""
+
+    @pytest.fixture
+    def rating_client(self):
+        """Create client with rating capabilities"""
+        client = SignalStoreClient(base_url="http://localhost:8000")
+        client._session = Mock()
+        return client
+
+    def test_query_with_rating(self, rating_client):
+        """Test querying signals with rating system"""
+        query = "Technology stocks with high growth potential"
+
+        with patch.object(rating_client._session, 'post') as mock_post:
+            mock_post.return_value.json.return_value = {
+                'results': [
+                    {
+                        'ticker': 'NVDA',
+                        'signal': 'STRONG_BUY',
+                        'rating': 9.2,
+                        'confidence': 0.92
+                    },
+                    {
+                        'ticker': 'AAPL',
+                        'signal': 'BUY',
+                        'rating': 8.5,
+                        'confidence': 0.85
+                    }
+                ]
+            }
+
+            results = rating_client.query_rating(query)
+
+            assert len(results['results']) == 2
+            # Should be sorted by rating
+            assert results['results'][0]['rating'] > results['results'][1]['rating']
+
+    def test_multi_factor_rating(self, rating_client):
+        """Test multi-factor rating system"""
+        factors = {
+            'revenue_growth': 0.3,
+            'market_position': 0.3,
+            'analyst_consensus': 0.2,
+            'technical_indicators': 0.2
+        }
+
+        signal = {
+            'ticker': 'MSFT',
+            'metrics': {
+                'revenue_growth': 0.15,
+                'market_position': 0.9,
+                'analyst_consensus': 0.8,
+                'technical_indicators': 0.7
+            }
+        }
+
+        rating = rating_client.calculate_rating(signal, factors)
+
+        # Weighted average calculation
+        expected = (0.15 * 0.3 + 0.9 * 0.3 + 0.8 * 0.2 + 0.7 * 0.2)
+        assert abs(rating - expected) < 0.01
+
+
+class TestPerformanceOptimization:
+    """Test performance and optimization features"""
+
+    @pytest.fixture
+    def optimized_client(self):
+        """Create optimized client"""
+        client = SignalStoreClient(base_url="http://localhost:8000")
+        client._session = Mock()
+        client.enable_caching = True
+        client._cache = {}
+        return client
+
+    def test_query_caching(self, optimized_client):
+        """Test query result caching"""
+        query = "AAPL signals"
+
+        with patch.object(optimized_client._session, 'get') as mock_get:
+            mock_get.return_value.json.return_value = {'signals': [{'ticker': 'AAPL'}]}
+
+            # First query - hits API
+            result1 = optimized_client.query_signals_cached(query)
+            assert mock_get.call_count == 1
+
+            # Second query - uses cache
+            result2 = optimized_client.query_signals_cached(query)
+            assert mock_get.call_count == 1  # No additional API call
+
+            assert result1 == result2
+
+    def test_batch_query_optimization(self, optimized_client):
+        """Test batch query optimization"""
+        tickers = ['AAPL', 'MSFT', 'GOOGL', 'NVDA', 'TSLA']
+
+        with patch.object(optimized_client._session, 'post') as mock_post:
+            mock_post.return_value.json.return_value = {
+                'results': {ticker: {'signal': 'BUY'} for ticker in tickers}
+            }
+
+            # Batch query instead of individual queries
+            results = optimized_client.batch_query(tickers)
+
+            assert mock_post.call_count == 1  # Single API call
+            assert len(results['results']) == 5
+
+    def test_connection_pooling(self, optimized_client):
+        """Test connection pooling for performance"""
+        import concurrent.futures
+
+        def make_query(ticker):
+            return optimized_client.query_signals(ticker=ticker)
+
+        with patch.object(optimized_client._session, 'get') as mock_get:
+            mock_get.return_value.json.return_value = {'signals': []}
+
+            # Concurrent queries should reuse connections
+            with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+                futures = [executor.submit(make_query, f"TICK{i}") for i in range(20)]
+                results = [f.result() for f in concurrent.futures.as_completed(futures)]
+
+            assert len(results) == 20
+            # Connection pool should handle concurrent requests efficiently
+
+
+class TestErrorHandlingAndResilience:
+    """Test error handling and resilience features"""
+
+    @pytest.fixture
+    def resilient_client(self):
+        """Create resilient client with retry logic"""
+        client = SignalStoreClient(
+            base_url="http://localhost:8000",
+            config={'max_retries': 3, 'retry_delay': 0.1}
+        )
+        client._session = Mock()
+        return client
+
+    def test_retry_on_temporary_failure(self, resilient_client):
+        """Test retry logic for temporary failures"""
+        with patch.object(resilient_client._session, 'get') as mock_get:
+            # First two calls fail, third succeeds
+            mock_get.side_effect = [
+                Exception("Connection error"),
+                Exception("Timeout"),
+                Mock(json=Mock(return_value={'signals': []}))
+            ]
+
+            result = resilient_client.query_with_retry("test query")
+
+            assert result is not None
+            assert mock_get.call_count == 3
+
+    def test_circuit_breaker(self, resilient_client):
+        """Test circuit breaker pattern for failing service"""
+        resilient_client.circuit_breaker_threshold = 5
+        resilient_client.circuit_open = False
+        resilient_client.failure_count = 0
+
+        with patch.object(resilient_client._session, 'get') as mock_get:
+            mock_get.side_effect = Exception("Service unavailable")
+
+            # After threshold failures, circuit should open
+            for i in range(6):
+                try:
+                    resilient_client.query_signals(ticker="TEST")
+                except:
+                    pass
+
+            assert resilient_client.circuit_open == True
+
+            # Subsequent calls should fail fast
+            with pytest.raises(Exception) as excinfo:
+                resilient_client.query_signals(ticker="TEST")
+
+            assert "circuit breaker open" in str(excinfo.value).lower()
+
+    def test_graceful_degradation(self, resilient_client):
+        """Test graceful degradation when service is degraded"""
+        with patch.object(resilient_client._session, 'get') as mock_get:
+            # Simulate degraded service (slow response)
+            def slow_response(*args, **kwargs):
+                import time
+                time.sleep(0.5)
+                return Mock(json=Mock(return_value={'signals': [], 'degraded': True}))
+
+            mock_get.side_effect = slow_response
+
+            # Should return partial results with degradation flag
+            result = resilient_client.query_signals(ticker="TEST", timeout=0.3)
+
+            assert 'degraded' in result or 'timeout' in result
+
+
+class TestIntegrationWithICE:
+    """Test integration with main ICE system"""
+
+    def test_signal_store_ice_integration(self):
+        """Test Signal Store integration with ICE"""
+        from updated_architectures.implementation.ice_simplified import ICESimplified
+
+        with patch('updated_architectures.implementation.ice_simplified.LightRAG'):
+            ice = ICESimplified()
+            ice.signal_store_client = SignalStoreClient("http://localhost:8000")
+
+            # Mock signal store response
+            ice.signal_store_client._session = Mock()
+            ice.signal_store_client._session.post.return_value.json.return_value = {
+                'results': [{'ticker': 'AAPL', 'signal': 'BUY'}]
+            }
+
+            # Query through ICE
+            result = ice.query_with_router("AAPL signals", mode='signal_store')
+
+            assert 'results' in result
+            assert result['results'][0]['ticker'] == 'AAPL'
+
+    def test_temporal_routing_decision(self):
+        """Test temporal-aware routing decisions"""
+        from updated_architectures.implementation.query_router import QueryRouter
+
+        router = QueryRouter()
+
+        # Recent data query should route to signal store
+        route = router.determine_route("Latest signals from today")
+        assert route == 'signal_store'
+
+        # Historical query should route to LightRAG
+        route = router.determine_route("Signals from 2020")
+        assert route == 'lightrag'
+
+
+if __name__ == '__main__':
+    pytest.main([__file__, '-v', '-s'])

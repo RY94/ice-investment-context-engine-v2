@@ -138,7 +138,8 @@ class NewsAPIConnector:
                 try:
                     error_data = response.json()
                     error_text = error_data.get("message", error_text)
-                except:
+                except Exception as e:
+                    logger.debug(f"[NewsAPIClient._make_request] Error response parsing failed: {type(e).__name__}")
                     error_text = response.text[:200]
                     
                 return NewsAPIResponse(

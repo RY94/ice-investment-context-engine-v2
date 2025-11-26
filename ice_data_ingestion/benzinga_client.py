@@ -48,6 +48,7 @@ from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime, timedelta
 import logging
 from urllib.parse import urlencode
+import xml.etree.ElementTree as ET
 
 from .news_apis import (
     NewsAPIClient, NewsAPIProvider, NewsArticle, SentimentScore,
@@ -79,13 +80,61 @@ class BenzingaClient(NewsAPIClient):
         """Build Benzinga API URL with parameters"""
         base_params = {'token': self.api_token}
         base_params.update(params)
-        
+
         url = f"{self.BASE_URL}/{endpoint}"
         if base_params:
             url += f"?{urlencode(base_params)}"
-        
+
         return url
-    
+
+    def _make_request(self, url: str, params: Dict[str, Any], endpoint: str = "") -> Optional[List[Dict[str, Any]]]:
+        """Override to handle Benzinga's XML response format"""
+        # Check cache
+        cached_response = self.cache.get(self.provider, endpoint, params)
+        if cached_response:
+            logger.debug(f"Cache hit for {self.provider.value} {endpoint}")
+            return cached_response
+
+        # Check quota and rate limit
+        if not self.quota.can_make_request():
+            logger.warning(f"API quota exceeded for {self.provider.value}")
+            return None
+
+        self.rate_limiter.wait_if_needed()
+
+        try:
+            logger.info(f"Making API request to {self.provider.value}: {url}")
+            response = self.session.get(url, params=params, timeout=30)
+            response.raise_for_status()
+
+            # Benzinga returns XML, not JSON
+            content_type = response.headers.get('Content-Type', '')
+            if 'xml' in content_type.lower():
+                # Parse XML response
+                root = ET.fromstring(response.text)
+                data = []
+                for item in root.findall('item'):
+                    article_dict = {child.tag: child.text for child in item}
+                    data.append(article_dict)
+            else:
+                # Fallback to JSON if not XML
+                data = response.json()
+
+            # Record successful request
+            self.quota.record_request()
+
+            # Cache response
+            self.cache.set(self.provider, endpoint, params, data)
+
+            return data
+
+        except ET.ParseError as e:
+            logger.error(f"XML parsing failed for {self.provider.value}: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"API request failed for {self.provider.value}: {e}")
+            return None
+
     def _parse_sentiment_score(self, sentiment_str: Optional[str]) -> Optional[float]:
         """Parse Benzinga sentiment to numeric score"""
         if not sentiment_str:
@@ -239,21 +288,39 @@ class BenzingaClient(NewsAPIClient):
         
         response_data = self._make_request(url, {}, endpoint='news')
         if not response_data:
+            logger.warning(f"⚠️ Benzinga returned no response data for {ticker or 'general news'}. "
+                          f"Possible causes: (1) API quota exceeded, (2) Request timeout, "
+                          f"(3) Ticker not in coverage database.")
             return []
-        
+
         articles = []
-        
+
         # Benzinga response can be a list or have a 'data' field
         news_data = response_data
         if isinstance(response_data, dict):
             news_data = response_data.get('data', response_data.get('news', []))
-        
+
+        # Check for empty news data after extraction
+        if not news_data:
+            logger.warning(f"⚠️ Benzinga returned 0 articles for {ticker or 'general news'}. "
+                          f"Ticker may not be in coverage database (popular tickers only). "
+                          f"Benzinga covers Wilshire 5000 + ~1000 popular tickers. "
+                          f"Consider using Finnhub/MarketAux for broader small-cap coverage.")
+            return []
+
+        logger.info(f"📰 Benzinga returned {len(news_data)} raw articles for {ticker or 'general news'}")
+
         for article_data in news_data[:limit]:
             article = self._parse_news_article(article_data, ticker)
             if article:
                 articles.append(article)
-        
-        logger.info(f"Retrieved {len(articles)} articles from Benzinga" + 
+
+        # Warn if parsing failed for all articles
+        if not articles and news_data:
+            logger.warning(f"⚠️ Benzinga: All {len(news_data)} raw articles failed to parse for {ticker or 'general news'}. "
+                          f"Check article data format and _parse_news_article() logic.")
+
+        logger.info(f"✅ Retrieved {len(articles)} parsed articles from Benzinga" +
                    (f" for {ticker}" if ticker else ""))
         return articles
     

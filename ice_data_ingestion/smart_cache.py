@@ -133,7 +133,8 @@ class AlphaVantageValidator(CacheValidator):
                 age_days = (datetime.now() - last_refreshed).days
                 if age_days > 7:
                     confidence *= 0.7
-            except:
+            except Exception as e:
+                logger.debug(f"[CacheValidator.validate] lastRefreshed parsing failed: {type(e).__name__}: {e}")
                 pass
 
         return True, confidence

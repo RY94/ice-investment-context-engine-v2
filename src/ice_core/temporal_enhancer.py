@@ -442,5 +442,88 @@ class TemporalEnhancer:
             date1 = parse_date(date1_str)
             date2 = parse_date(date2_str)
             return abs((date2 - date1).days)
-        except:
+        except Exception as e:
+            logger.debug(f"[TemporalEnhancer._calculate_date_diff] Date diff calculation failed: {type(e).__name__}: {e}")
             return 0
+
+    @staticmethod
+    def calculate_freshness_from_timestamp(timestamp_str: str) -> Tuple[float, str]:
+        """
+        Calculate freshness score and category from an ISO timestamp string.
+
+        This is a static helper method for use by other components like SignalStore
+        to calculate freshness scores without needing a TemporalEnhancer instance.
+
+        Args:
+            timestamp_str: ISO format timestamp (e.g., '2024-03-15T10:30:00Z')
+
+        Returns:
+            Tuple of (score, category):
+            - score: 0.0-1.0 freshness score using exponential decay (half-life: 30 days)
+            - category: 'very_fresh'|'fresh'|'moderate'|'stale'|'very_stale'
+
+        Examples:
+            >>> score, category = TemporalEnhancer.calculate_freshness_from_timestamp('2024-03-15T10:30:00Z')
+            >>> print(f"Score: {score:.3f}, Category: {category}")
+            Score: 0.125, Category: moderate  # If ~90 days old
+
+        Formula:
+            score = 0.5 ^ (age_days / 30)
+            - 0 days old: 1.000 (perfectly fresh)
+            - 7 days old: 0.850 (very fresh)
+            - 30 days old: 0.500 (fresh, half-life point)
+            - 90 days old: 0.125 (moderate)
+            - 365 days old: 0.0002 (very stale)
+        """
+        try:
+            # Parse the timestamp with robust handling
+            if isinstance(timestamp_str, str):
+                # Handle various timestamp formats
+                if 'Z' in timestamp_str:
+                    # Replace Z with +00:00 for ISO parsing
+                    timestamp = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+                elif 'T' in timestamp_str:
+                    # Try ISO format
+                    timestamp = parse_date(timestamp_str)
+                else:
+                    # Try basic date format
+                    timestamp = datetime.fromisoformat(timestamp_str)
+
+                # Ensure UTC timezone
+                if timestamp.tzinfo is None:
+                    timestamp = timestamp.replace(tzinfo=timezone.utc)
+            elif isinstance(timestamp_str, datetime):
+                # If already a datetime object
+                timestamp = timestamp_str
+                if timestamp.tzinfo is None:
+                    timestamp = timestamp.replace(tzinfo=timezone.utc)
+            else:
+                raise ValueError(f"Invalid timestamp type: {type(timestamp_str)}")
+
+            # Calculate age in days
+            current_time = datetime.now(timezone.utc)
+            age_days = max(0, (current_time - timestamp).days)
+
+            # Calculate freshness score using exponential decay
+            half_life = 30  # days
+            score = 0.5 ** (age_days / half_life)
+            score = round(score, 3)
+
+            # Determine category
+            if age_days <= 7:
+                category = 'very_fresh'
+            elif age_days <= 30:
+                category = 'fresh'
+            elif age_days <= 90:
+                category = 'moderate'
+            elif age_days <= 365:
+                category = 'stale'
+            else:
+                category = 'very_stale'
+
+            return score, category
+
+        except Exception as e:
+            logger.warning(f"Failed to calculate freshness from timestamp '{timestamp_str}': {e}")
+            # Return neutral values on error
+            return 0.5, 'unknown'

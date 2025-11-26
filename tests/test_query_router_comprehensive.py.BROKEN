@@ -1,0 +1,526 @@
+# Location: /tests/test_query_router_comprehensive.py
+# Purpose: Comprehensive test suite for Query Router module
+# Why: Ensure intelligent query routing works correctly for Phase 3 robustness
+# Relevant Files: query_router.py, ice_simplified.py
+
+"""
+Comprehensive test suite for Query Router
+
+Tests the intelligent query routing system that determines whether
+queries should go to Signal Store, LightRAG, or hybrid processing.
+"""
+
+import pytest
+import sys
+import os
+from pathlib import Path
+from unittest.mock import Mock, patch, MagicMock
+from datetime import datetime, timedelta
+import re
+from typing import Dict, List, Tuple
+
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parents[1]))
+
+from updated_architectures.implementation.query_router import QueryRouter
+
+
+class TestQueryRouterInitialization:
+    """Test Query Router initialization"""
+
+    def test_basic_initialization(self):
+        """Test basic router initialization"""
+        router = QueryRouter()
+
+        assert router is not None
+        assert hasattr(router, 'determine_route')
+        assert hasattr(router, 'analyze_query')
+
+    def test_initialization_with_config(self):
+        """Test router initialization with custom config"""
+        config = {
+            'confidence_threshold': 0.8,
+            'temporal_keywords': ['latest', 'recent', 'today'],
+            'signal_keywords': ['signal', 'rating', 'recommendation']
+        }
+
+        router = QueryRouter(config=config)
+
+        assert router.config['confidence_threshold'] == 0.8
+        assert 'latest' in router.config['temporal_keywords']
+
+
+class TestQueryAnalysis:
+    """Test query analysis and classification"""
+
+    @pytest.fixture
+    def router(self):
+        """Create router instance for testing"""
+        return QueryRouter()
+
+    def test_temporal_query_detection(self, router):
+        """Test detection of temporal queries"""
+        temporal_queries = [
+            "What are the latest signals for AAPL?",
+            "Show me today's investment recommendations",
+            "Recent news about tech stocks",
+            "Signals from this week",
+            "Current market sentiment"
+        ]
+
+        for query in temporal_queries:
+            analysis = router.analyze_query(query)
+            assert analysis['has_temporal'] == True
+
+    def test_entity_extraction_from_query(self, router):
+        """Test entity extraction from queries"""
+        queries_with_entities = [
+            ("What is Apple's stock price?", ['Apple']),
+            ("Compare MSFT and GOOGL performance", ['MSFT', 'GOOGL']),
+            ("Tesla Q3 earnings analysis", ['Tesla']),
+            ("NVDA vs AMD in AI market", ['NVDA', 'AMD'])
+        ]
+
+        for query, expected_entities in queries_with_entities:
+            analysis = router.analyze_query(query)
+            extracted = analysis.get('entities', [])
+
+            for entity in expected_entities:
+                assert any(entity.upper() in e.upper() for e in extracted)
+
+    def test_signal_query_detection(self, router):
+        """Test detection of signal-specific queries"""
+        signal_queries = [
+            "What signals exist for AAPL?",
+            "Show investment ratings",
+            "Buy/sell recommendations",
+            "Signal strength for tech stocks",
+            "Rating analysis for portfolio"
+        ]
+
+        for query in signal_queries:
+            analysis = router.analyze_query(query)
+            assert analysis['is_signal_query'] == True
+
+    def test_knowledge_graph_query_detection(self, router):
+        """Test detection of knowledge graph queries"""
+        kg_queries = [
+            "What companies compete with Apple?",
+            "Who is the CEO of Microsoft?",
+            "Relationship between NVDA and Taiwan Semiconductor",
+            "Supply chain connections for Tesla",
+            "Executive movements in tech industry"
+        ]
+
+        for query in kg_queries:
+            analysis = router.analyze_query(query)
+            assert analysis['needs_graph'] == True
+
+    def test_historical_query_detection(self, router):
+        """Test detection of historical queries"""
+        historical_queries = [
+            "Apple's performance in 2020",
+            "Historical stock prices",
+            "Past earnings reports",
+            "5-year revenue trend",
+            "Compare Q3 2022 vs Q3 2023"
+        ]
+
+        for query in historical_queries:
+            analysis = router.analyze_query(query)
+            assert analysis['is_historical'] == True
+
+
+class TestRoutingDecisions:
+    """Test routing decision logic"""
+
+    @pytest.fixture
+    def router(self):
+        """Create router with mock dependencies"""
+        router = QueryRouter()
+        router.signal_store_available = True
+        router.lightrag_available = True
+        return router
+
+    def test_route_to_signal_store(self, router):
+        """Test queries that should route to Signal Store"""
+        queries = [
+            "Latest investment signals",
+            "Today's buy recommendations",
+            "Current signal ratings",
+            "Real-time market signals"
+        ]
+
+        for query in queries:
+            route = router.determine_route(query)
+            assert route == 'signal_store'
+
+    def test_route_to_lightrag(self, router):
+        """Test queries that should route to LightRAG"""
+        queries = [
+            "Apple's historical performance",
+            "Company relationships in tech sector",
+            "Who founded Microsoft?",
+            "2020 market analysis"
+        ]
+
+        for query in queries:
+            route = router.determine_route(query)
+            assert route == 'lightrag'
+
+    def test_route_to_hybrid(self, router):
+        """Test queries that should use hybrid routing"""
+        queries = [
+            "Compare current signals with historical performance",
+            "Latest news and relationships for AAPL",
+            "Today's signals plus company fundamentals",
+            "Real-time data with knowledge graph context"
+        ]
+
+        for query in queries:
+            route = router.determine_route(query)
+            assert route == 'hybrid'
+
+    def test_fallback_routing(self, router):
+        """Test fallback when preferred route unavailable"""
+        # Disable Signal Store
+        router.signal_store_available = False
+
+        route = router.determine_route("Latest signals")
+        assert route == 'lightrag'  # Falls back to LightRAG
+
+        # Disable LightRAG too
+        router.lightrag_available = False
+
+        with pytest.raises(Exception) as excinfo:
+            router.determine_route("Any query")
+        assert "No available route" in str(excinfo.value)
+
+    def test_confidence_based_routing(self, router):
+        """Test routing based on confidence scores"""
+        # High confidence temporal query
+        analysis = {
+            'has_temporal': True,
+            'temporal_confidence': 0.95,
+            'is_signal_query': True
+        }
+        route = router.determine_route_from_analysis(analysis)
+        assert route == 'signal_store'
+
+        # Low confidence, ambiguous query
+        analysis = {
+            'has_temporal': True,
+            'temporal_confidence': 0.4,
+            'is_signal_query': True,
+            'signal_confidence': 0.4
+        }
+        route = router.determine_route_from_analysis(analysis)
+        assert route == 'hybrid'  # Use both due to low confidence
+
+
+class TestRouterOptimization:
+    """Test router optimization and caching"""
+
+    @pytest.fixture
+    def optimized_router(self):
+        """Create router with optimization features"""
+        router = QueryRouter()
+        router.enable_caching = True
+        router._cache = {}
+        return router
+
+    def test_routing_cache(self, optimized_router):
+        """Test caching of routing decisions"""
+        query = "What are the latest signals for AAPL?"
+
+        # First call - computes route
+        route1 = optimized_router.determine_route_cached(query)
+        assert query in optimized_router._cache
+
+        # Second call - uses cache
+        with patch.object(optimized_router, 'analyze_query') as mock_analyze:
+            route2 = optimized_router.determine_route_cached(query)
+            mock_analyze.assert_not_called()
+
+        assert route1 == route2
+
+    def test_cache_invalidation(self, optimized_router):
+        """Test cache invalidation on configuration change"""
+        query = "Test query"
+
+        route1 = optimized_router.determine_route_cached(query)
+
+        # Change configuration
+        optimized_router.update_config({'temporal_weight': 0.8})
+
+        # Cache should be invalidated
+        assert query not in optimized_router._cache
+
+    def test_pattern_compilation_optimization(self, optimized_router):
+        """Test pre-compilation of regex patterns"""
+        # Patterns should be pre-compiled
+        assert hasattr(optimized_router, '_temporal_pattern')
+        assert hasattr(optimized_router, '_signal_pattern')
+        assert hasattr(optimized_router, '_ticker_pattern')
+
+        # Test pattern matching performance
+        import time
+
+        queries = ["AAPL signal" for _ in range(1000)]
+
+        start = time.time()
+        for q in queries:
+            optimized_router.extract_tickers(q)
+        elapsed = time.time() - start
+
+        # Should process 1000 queries quickly (< 0.1s)
+        assert elapsed < 0.1
+
+
+class TestQueryRewriting:
+    """Test query rewriting and enhancement"""
+
+    @pytest.fixture
+    def router(self):
+        return QueryRouter()
+
+    def test_query_expansion(self, router):
+        """Test query expansion for better results"""
+        original = "AAPL news"
+        expanded = router.expand_query(original)
+
+        assert "Apple" in expanded or "AAPL" in expanded
+        assert len(expanded) > len(original)
+
+    def test_query_normalization(self, router):
+        """Test query normalization"""
+        queries_and_normalized = [
+            ("  AAPL  stock  price  ", "AAPL stock price"),
+            ("what's the LATEST???", "what's the latest"),
+            ("SHOW ME SIGNALS!!!", "show me signals")
+        ]
+
+        for original, expected in queries_and_normalized:
+            normalized = router.normalize_query(original)
+            assert normalized.lower() == expected.lower()
+
+    def test_temporal_query_enhancement(self, router):
+        """Test enhancement of temporal queries"""
+        query = "recent signals"
+        enhanced = router.enhance_temporal_query(query)
+
+        # Should add date context
+        assert "date" in enhanced.lower() or "time" in enhanced.lower()
+
+    def test_entity_disambiguation(self, router):
+        """Test entity disambiguation in queries"""
+        ambiguous_queries = [
+            ("Apple signals", "AAPL signals"),
+            ("Microsoft analysis", "MSFT analysis"),
+            ("Google trends", "GOOGL trends")
+        ]
+
+        for ambiguous, disambiguated in ambiguous_queries:
+            result = router.disambiguate_entities(ambiguous)
+            assert any(ticker in result for ticker in ['AAPL', 'MSFT', 'GOOGL'])
+
+
+class TestRouterIntegration:
+    """Test router integration with ICE system"""
+
+    def test_integration_with_ice_simplified(self):
+        """Test router integration with ICE Simplified"""
+        from updated_architectures.implementation.ice_simplified import ICESimplified
+
+        with patch('updated_architectures.implementation.ice_simplified.LightRAG'):
+            ice = ICESimplified()
+            ice.query_router = QueryRouter()
+
+            # Mock components
+            ice.signal_store_client = Mock()
+            ice.core._system_manager = Mock()
+
+            # Test routing decision
+            with patch.object(ice.query_router, 'determine_route') as mock_route:
+                mock_route.return_value = 'signal_store'
+
+                ice.query_with_router("Latest AAPL signals")
+
+                mock_route.assert_called_once()
+
+    def test_route_execution_signal_store(self):
+        """Test execution of Signal Store route"""
+        from updated_architectures.implementation.ice_simplified import ICESimplified
+
+        ice = ICESimplified()
+        ice.signal_store_client = Mock()
+        ice.signal_store_client.query_rating.return_value = {
+            'results': [{'signal': 'BUY', 'ticker': 'AAPL'}]
+        }
+
+        result = ice.execute_route('signal_store', "AAPL signals")
+
+        assert 'results' in result
+        ice.signal_store_client.query_rating.assert_called_once()
+
+    def test_route_execution_lightrag(self):
+        """Test execution of LightRAG route"""
+        from updated_architectures.implementation.ice_simplified import ICESimplified
+
+        with patch('updated_architectures.implementation.ice_simplified.LightRAG'):
+            ice = ICESimplified()
+            ice.core._system_manager = Mock()
+            ice.core._system_manager.query_ice.return_value = {
+                'status': 'success',
+                'results': []
+            }
+
+            result = ice.execute_route('lightrag', "Historical data")
+
+            assert 'status' in result
+            ice.core._system_manager.query_ice.assert_called_once()
+
+    def test_route_execution_hybrid(self):
+        """Test execution of hybrid route"""
+        from updated_architectures.implementation.ice_simplified import ICESimplified
+
+        ice = ICESimplified()
+        ice.signal_store_client = Mock()
+        ice.core._system_manager = Mock()
+
+        ice.signal_store_client.query_rating.return_value = {'signals': []}
+        ice.core._system_manager.query_ice.return_value = {'knowledge': []}
+
+        result = ice.execute_route('hybrid', "Complex query")
+
+        assert 'signals' in result or 'knowledge' in result
+        # Both should be called
+        ice.signal_store_client.query_rating.assert_called()
+        ice.core._system_manager.query_ice.assert_called()
+
+
+class TestEdgeCases:
+    """Test edge cases and error handling"""
+
+    @pytest.fixture
+    def router(self):
+        return QueryRouter()
+
+    def test_empty_query_handling(self, router):
+        """Test handling of empty queries"""
+        with pytest.raises(ValueError):
+            router.determine_route("")
+
+        with pytest.raises(ValueError):
+            router.determine_route(None)
+
+    def test_very_long_query_handling(self, router):
+        """Test handling of very long queries"""
+        long_query = "AAPL " * 1000  # Very long query
+
+        # Should handle gracefully
+        route = router.determine_route(long_query)
+        assert route in ['signal_store', 'lightrag', 'hybrid']
+
+    def test_special_character_queries(self, router):
+        """Test queries with special characters"""
+        special_queries = [
+            "What's AAPL's P/E ratio?",
+            "Show $TSLA #signals",
+            "@latest %growth {metrics}",
+            "Q3'24 earnings [preliminary]"
+        ]
+
+        for query in special_queries:
+            # Should handle without crashing
+            route = router.determine_route(query)
+            assert route is not None
+
+    def test_multilingual_query_handling(self, router):
+        """Test handling of non-English queries"""
+        # Should gracefully handle or reject
+        non_english = "什么是苹果公司的信号？"
+
+        try:
+            route = router.determine_route(non_english)
+            # If it processes, should have a route
+            assert route is not None
+        except ValueError as e:
+            # Or should raise clear error
+            assert "language" in str(e).lower()
+
+    def test_concurrent_routing_requests(self, router):
+        """Test handling of concurrent routing requests"""
+        import concurrent.futures
+
+        queries = [f"Query {i}" for i in range(100)]
+
+        def route_query(q):
+            return router.determine_route(q)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            futures = [executor.submit(route_query, q) for q in queries]
+            results = [f.result() for f in concurrent.futures.as_completed(futures)]
+
+        assert len(results) == 100
+        assert all(r in ['signal_store', 'lightrag', 'hybrid'] for r in results)
+
+
+class TestRouterMetrics:
+    """Test router metrics and monitoring"""
+
+    @pytest.fixture
+    def router_with_metrics(self):
+        """Create router with metrics tracking"""
+        router = QueryRouter()
+        router.enable_metrics = True
+        router.metrics = {
+            'total_queries': 0,
+            'route_counts': {'signal_store': 0, 'lightrag': 0, 'hybrid': 0},
+            'avg_decision_time': 0
+        }
+        return router
+
+    def test_metrics_collection(self, router_with_metrics):
+        """Test collection of routing metrics"""
+        queries = [
+            "Latest signals",
+            "Historical data",
+            "Complex analysis"
+        ]
+
+        for query in queries:
+            router_with_metrics.determine_route(query)
+
+        assert router_with_metrics.metrics['total_queries'] == 3
+        assert sum(router_with_metrics.metrics['route_counts'].values()) == 3
+
+    def test_performance_metrics(self, router_with_metrics):
+        """Test performance metric tracking"""
+        import time
+
+        query = "Test query for metrics"
+
+        start = time.time()
+        router_with_metrics.determine_route(query)
+        elapsed = time.time() - start
+
+        # Should track decision time
+        assert router_with_metrics.metrics.get('last_decision_time', 0) > 0
+        assert router_with_metrics.metrics.get('last_decision_time', 0) < 1.0  # Should be fast
+
+    def test_metrics_reporting(self, router_with_metrics):
+        """Test metrics reporting functionality"""
+        # Generate some activity
+        for _ in range(10):
+            router_with_metrics.determine_route("Test query")
+
+        report = router_with_metrics.get_metrics_report()
+
+        assert 'total_queries' in report
+        assert 'route_distribution' in report
+        assert 'performance' in report
+
+
+if __name__ == '__main__':
+    pytest.main([__file__, '-v', '-s'])

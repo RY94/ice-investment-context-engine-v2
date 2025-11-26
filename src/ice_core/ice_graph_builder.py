@@ -7,12 +7,22 @@ Relevant files: ice_lightrag/ice_rag.py, ui_mockups/ice_ui_v17.py, ice_system_ma
 """
 
 import re
+import sys
 import json
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any, Tuple, Set
 from pathlib import Path
 import networkx as nx
+
+# Add project root to path for config import
+project_root = Path(__file__).resolve().parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+from updated_architectures.implementation.config import (
+    get_confidence, get_confidence_weight, CONFIDENCE_WEIGHTS
+)
 
 logger = logging.getLogger(__name__)
 
@@ -81,12 +91,8 @@ class ICEGraphBuilder:
         # Entity extraction patterns for financial relationships
         self.entity_patterns = self._build_entity_patterns()
 
-        # Confidence scoring weights
-        self.confidence_weights = {
-            "source_reliability": 0.3,
-            "relationship_clarity": 0.4,
-            "evidence_strength": 0.3
-        }
+        # Confidence scoring weights (from centralized config)
+        self.confidence_weights = CONFIDENCE_WEIGHTS
 
         logger.info("ICE Graph Builder initialized")
 
@@ -260,27 +266,27 @@ class ICEGraphBuilder:
         # Extract entities first
         entities = self._extract_entities_from_text(text)
         
-        # Look for relationship patterns between entities
+        # Look for relationship patterns between entities (confidences from centralized config)
         relationship_patterns = [
             # Dependency relationships
-            (r'(\w+)\s+(?:depends on|relies on|requires)\s+(\w+)', "depends_on", 0.8),
-            (r'(\w+)\s+(?:supplies|provides|delivers)\s+(?:to\s+)?(\w+)', "supplies", 0.75),
-            
-            # Risk relationships  
-            (r'(\w+)\s+(?:exposed to|vulnerable to|at risk from)\s+(\w+)', "exposed_to", 0.85),
-            (r'(\w+)\s+(?:risk|risks)\s+(?:from|due to|because of)\s+(\w+)', "exposed_to", 0.8),
-            
+            (r'(\w+)\s+(?:depends on|relies on|requires)\s+(\w+)', "depends_on", get_confidence('pattern_depends_on')),
+            (r'(\w+)\s+(?:supplies|provides|delivers)\s+(?:to\s+)?(\w+)', "supplies", get_confidence('pattern_supplies')),
+
+            # Risk relationships
+            (r'(\w+)\s+(?:exposed to|vulnerable to|at risk from)\s+(\w+)', "exposed_to", get_confidence('pattern_exposed_to')),
+            (r'(\w+)\s+(?:risk|risks)\s+(?:from|due to|because of)\s+(\w+)', "exposed_to", get_confidence('pattern_exposed_to')),
+
             # Performance relationships
-            (r'(\w+)\s+(?:drives|boosts|increases)\s+(\w+)', "drives", 0.8),
-            (r'(\w+)\s+(?:impacts|affects|influences)\s+(\w+)', "impacts", 0.7),
-            
+            (r'(\w+)\s+(?:drives|boosts|increases)\s+(\w+)', "drives", get_confidence('pattern_drives')),
+            (r'(\w+)\s+(?:impacts|affects|influences)\s+(\w+)', "impacts", get_confidence('pattern_impacts')),
+
             # Business relationships
-            (r'(\w+)\s+(?:competes with|rival|competitor)\s+(\w+)', "competes_with", 0.75),
-            (r'(\w+)\s+(?:owns|acquired|purchased)\s+(\w+)', "owns", 0.9),
-            
+            (r'(\w+)\s+(?:competes with|rival|competitor)\s+(\w+)', "competes_with", get_confidence('pattern_competes_with')),
+            (r'(\w+)\s+(?:owns|acquired|purchased)\s+(\w+)', "owns", get_confidence('pattern_owns')),
+
             # Operational relationships
-            (r'(\w+)\s+(?:operates in|based in|located in)\s+(\w+)', "operates_in", 0.7),
-            (r'(\w+)\s+(?:manufactures in|produces in)\s+(\w+)', "manufactures_in", 0.8)
+            (r'(\w+)\s+(?:operates in|based in|located in)\s+(\w+)', "operates_in", get_confidence('pattern_operates_in')),
+            (r'(\w+)\s+(?:manufactures in|produces in)\s+(\w+)', "manufactures_in", get_confidence('pattern_manufactures_in'))
         ]
         
         for pattern, edge_type, base_confidence in relationship_patterns:
@@ -388,18 +394,18 @@ class ICEGraphBuilder:
         context_lower = context.lower()
         
         financial_term_count = sum(1 for term in financial_terms if term in context_lower)
-        confidence += financial_term_count * 0.05
-        
+        confidence += financial_term_count * get_confidence('boost_financial_term')
+
         # Boost confidence for ticker symbols (usually more reliable)
         if re.match(r'^[A-Z]{2,5}$', source) or re.match(r'^[A-Z]{2,5}$', target):
-            confidence += 0.1
-            
+            confidence += get_confidence('boost_source_verified')
+
         # Penalize very long entities (less reliable)
         if len(source) > 20 or len(target) > 20:
-            confidence -= 0.1
-            
+            confidence -= get_confidence('penalty_ambiguous')
+
         # Ensure confidence stays within bounds
-        return max(0.1, min(1.0, confidence))
+        return max(get_confidence('confidence_floor'), min(1.0, confidence))
     
     def _is_contrarian_relationship(self, relationship_text: str, context: str) -> bool:
         """
@@ -441,7 +447,7 @@ class ICEGraphBuilder:
             # Map to standard edge types
             edge_type = self.EDGE_TYPE_MAPPING.get(edge_type.upper(), edge_type)
             
-            confidence = relationship_data.get('confidence', 0.7)
+            confidence = relationship_data.get('confidence', get_confidence('chunk_default'))
             age_days = relationship_data.get('age_days', 1)
             is_contrarian = relationship_data.get('is_contrarian', False)
             
@@ -543,7 +549,7 @@ class ICEGraphBuilder:
                 else:
                     edge_info = edge_data
                 
-                confidence = edge_info.get('confidence', 0.5)
+                confidence = edge_info.get('confidence', get_confidence('edge_default'))
                 edge_type = edge_info.get('edge_type', 'linked_to')
                 
                 if confidence < min_confidence:

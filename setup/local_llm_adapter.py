@@ -7,6 +7,9 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional
 import requests
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class LocalLLMAdapter(ABC):
@@ -71,7 +74,8 @@ class OllamaAdapter(LocalLLMAdapter):
         try:
             response = requests.get(f"{self.base_url}/api/tags", timeout=5)
             return response.status_code == 200
-        except:
+        except Exception as e:
+            logger.debug(f"[OllamaAdapter.health_check] Health check failed: {type(e).__name__}")
             return False
 
 
@@ -113,7 +117,8 @@ class TextGenerationWebUIAdapter(LocalLLMAdapter):
         try:
             response = requests.get(f"{self.base_url}/api/v1/model", timeout=5)
             return response.status_code == 200
-        except:
+        except Exception as e:
+            logger.debug(f"[TextGenerationWebUIAdapter.health_check] Health check failed: {type(e).__name__}")
             return False
 
 

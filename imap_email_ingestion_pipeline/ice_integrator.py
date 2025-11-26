@@ -504,7 +504,8 @@ class ICEEmailIntegrator:
                 try:
                     # This would depend on LightRAG's internal stats methods
                     lightrag_stats = {'status': 'available'}
-                except:
+                except Exception as e:
+                    self.logger.debug(f"[ICEIntegrator.get_integration_stats] LightRAG stats unavailable: {type(e).__name__}")
                     lightrag_stats = {'status': 'limited_access'}
             
             return {

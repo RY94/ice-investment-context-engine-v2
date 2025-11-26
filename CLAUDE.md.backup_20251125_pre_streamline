@@ -1,0 +1,618 @@
+# CLAUDE.md - ICE Development Guide
+
+> **🔗 LINKED DOCUMENTATION**: This is one of 8 essential core files that must stay synchronized. When updating this file, always cross-check and update related files: `ARCHITECTURE.md`, `README.md`, `PROJECT_STRUCTURE.md`, `ICE_DEVELOPMENT_TODO.md`, `PROJECT_CHANGELOG.md`, `ICE_PRD.md`, and `PROGRESS.md`.
+
+**Location**: `/CLAUDE.md`
+**Purpose**: Quick reference for Claude Code instances working on ICE
+**Last Updated**: 2025-11-05
+**Target Audience**: Claude Code AI and human developers
+
+> **📖 For comprehensive implementation patterns**: See `CLAUDE_PATTERNS.md`
+> **📖 For Docling/Crawl4AI integration details**: See `CLAUDE_INTEGRATIONS.md`
+> **📖 For complete troubleshooting guide**: See `CLAUDE_TROUBLESHOOTING.md`
+
+---
+
+## ⚠️ SESSION STATE RULE (READ EVERY TIME)
+
+**Before ending ANY session or when completing significant work, you MUST:**
+
+1. **Update `PROGRESS.md`** → "🎯 ACTIVE WORK (This Session)" section with:
+   - What was accomplished
+   - Current blockers (if any)
+   - Next 3-5 actions for continuation
+
+2. **Create/update Serena memory** (`mcp__serena__write_memory`) if:
+   - Implementation work was done
+   - Architecture decisions were made
+   - Complex debugging was solved
+
+**Why this matters**: If Claude Code crashes mid-work, the next instance runs `/resume` which reads these files. **Stale files = broken recovery. This is YOUR responsibility.**
+
+**Recovery command**: `/resume` - Use this at session start after a crash or to continue previous work.
+
+---
+
+## 1. 🚀 QUICK REFERENCE
+
+### 1.1 Current Project Status
+
+**Phase**: UDMA Integration Complete (Week 6/6) ✅ | 65% (91/140 tasks)
+
+> **📖 For sprint priorities and detailed status**: See `ICE_DEVELOPMENT_TODO.md:1-60`
+> **📖 For week completion tracking**: See `PROJECT_CHANGELOG.md`
+
+### 1.2 Essential Commands
+
+**Quick Start**
+```bash
+export OPENAI_API_KEY="sk-..." && cd updated_architectures/implementation
+python config.py  # Test configuration
+python ice_simplified.py  # Run complete system
+```
+
+**Development Workflows**
+```bash
+jupyter notebook ice_building_workflow.ipynb  # Knowledge graph building
+jupyter notebook ice_query_workflow.ipynb  # Investment intelligence analysis
+export ICE_DEBUG=1 && python src/simple_demo.py  # Debug mode
+```
+
+**Phase 1 Feature: Manifest-Based Ingestion**
+```python
+# In ice_building_workflow.ipynb Cell 15 (ingestion cell)
+USE_MANIFEST = True   # Phase 1: Smart deduplication, 5-20x faster re-runs
+USE_MANIFEST = False  # Legacy: Full re-ingestion (for A/B testing)
+```
+- **Manifest mode**: Prevents duplicates, tracks portfolio changes, incremental updates
+- **Legacy mode**: Complete rebuild every time (use for baseline comparison)
+- **Performance**: 80-95% deduplication rate on second run onwards
+- **See**: Notebook documentation cell before Cell 15 for detailed explanation
+
+**Temperature Configuration**
+```bash
+# Entity Extraction (default: 0.3, recommended: ≤0.2 for reproducibility)
+export ICE_LLM_TEMPERATURE_ENTITY_EXTRACTION=0.3
+
+# Query Answering (default: 0.5, range: 0.0-1.0)
+export ICE_LLM_TEMPERATURE_QUERY_ANSWERING=0.5
+
+# Temperature effects:
+# - 0.0: Deterministic (same input → same output, compliance-friendly)
+# - 0.3-0.5: Balanced (moderate creativity, mostly consistent)
+# - 0.7-1.0: Creative (insights-focused, less reproducible)
+```
+
+**API Lookback Configuration (Cost Control)**
+```bash
+# News APIs (NewsAPI, Finnhub, Benzinga) - Default: 7 days
+export ICE_NEWS_LOOKBACK_DAYS=7
+
+# Financial APIs (Yahoo Finance, SEC Edgar) - Default: 90 days
+export ICE_FINANCIAL_LOOKBACK_DAYS=90
+
+# Cost optimization examples:
+# export ICE_NEWS_LOOKBACK_DAYS=3        # 57% reduction in news API calls
+# export ICE_FINANCIAL_LOOKBACK_DAYS=30  # 66% reduction in financial API calls
+# Result: 60-70% total API call reduction
+```
+
+**Testing & Validation**
+```bash
+python src/ice_lightrag/test_basic.py && python test_api_key.py
+python tests/test_imap_email_pipeline_comprehensive.py  # IMAP tests (21 tests)
+jupyter notebook ice_query_workflow.ipynb  # Portfolio analysis (11 test datasets)
+```
+
+### 1.3 Critical Files Quick Reference
+
+| File | Purpose | See Also |
+|------|---------|----------|
+| `ice_simplified.py` | Main orchestrator (1,366 lines) | Section 3.2 |
+| `ice_building_workflow.ipynb` | Knowledge graph construction | Section 3.2 |
+| `ice_query_workflow.ipynb` | Investment analysis interface | Section 3.2 |
+| `ICE_PRD.md` | Complete product requirements | - |
+| `ICE_DEVELOPMENT_TODO.md` | Task tracking (140 tasks) | - |
+| `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` | UDMA guide (Option 5) | Section 2 |
+| `ICE_VALIDATION_FRAMEWORK.md` | PIVF (20 golden queries) | Section 3.3 |
+| `PROJECT_STRUCTURE.md` | Directory organization | - |
+
+> **📖 For complete file catalog**: See `PROJECT_STRUCTURE.md`
+
+### 1.4 Session Start Checklist
+
+**Choose your workflow based on task type**:
+
+| Task Type | Read These Files First |
+|-----------|------------------------|
+| 🐛 **Bug fixing** | `PROGRESS.md` → `CLAUDE_TROUBLESHOOTING.md` → Relevant code |
+| ✨ **New feature** | `ICE_PRD.md` → `CLAUDE_PATTERNS.md` → `ARCHITECTURE.md` |
+| 🔌 **Integration work** | `CLAUDE_INTEGRATIONS.md` → Production module docs |
+| 🏗️ **Architecture changes** | `ARCHITECTURE.md` → `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md` |
+| 🧪 **Testing/validation** | `ICE_VALIDATION_FRAMEWORK.md` → Test files |
+| 📂 **File navigation** | `PROJECT_STRUCTURE.md` |
+| 📊 **Understanding current state** | `PROGRESS.md` → `ICE_DEVELOPMENT_TODO.md` |
+
+**Every session**: Check `PROGRESS.md` for current work, blockers, and next actions.
+
+### 1.5 TodoWrite Mandatory Practice ⚠️
+
+**CRITICAL**: Every TodoWrite list MUST include these two todos as the FINAL items:
+
+```
+[ ] 📋 Review & update 8 core files + 2 notebooks if changes warrant synchronization
+    - Core files: ARCHITECTURE.md, PROGRESS.md, PROJECT_STRUCTURE.md, CLAUDE.md, README.md, PROJECT_CHANGELOG.md, ICE_DEVELOPMENT_TODO.md, ICE_PRD.md
+    - ARCHITECTURE.md: Update only on architecture changes (stable north star)
+    - PROGRESS.md: ALWAYS update with session state (active work, blockers, next 3-5 actions)
+    - Other 6 files: Update only on milestones
+    - Notebooks: ice_building_workflow.ipynb, ice_query_workflow.ipynb
+    - Skip only if: bug fixes, minor code changes, temporary/test files
+
+[ ] 🧠 Update Serena server memory if work warrants documentation
+    - Use mcp__serena__write_memory for: architecture decisions, implementation patterns, debugging solutions
+    - Memory names: Use descriptive names (e.g., 'week6_testing_patterns', 'email_integration_debugging')
+    - Document: Key decisions, file locations, workflows, solutions to complex problems
+    - Skip only if: Minor bug fixes, temporary code, work-in-progress, trivial changes
+```
+
+**Why**: Prevents documentation drift and preserves institutional knowledge across Claude Code sessions.
+
+---
+
+## 2. 📋 DEVELOPMENT CONTEXT
+
+### What is ICE?
+
+**Investment Context Engine (ICE)** - Modular AI system serving as cognitive backbone for boutique hedge funds (<$100M AUM), solving delayed signal capture, low insight reusability, inconsistent decision context, and manual triage bottlenecks.
+
+> **📖 For complete product vision and user personas**: See `ICE_PRD.md:1-100`
+> **📖 For detailed user personas**: See `project_information/user_research/ICE_USER_PERSONAS_DETAILED.md`
+
+### Current Architecture
+
+**UDMA (User-Directed Modular Architecture)** - Simple Orchestration + Production Modules
+
+> **📖 For complete data flow diagram**: See `README.md:38-69`
+> **📖 For complete UDMA implementation guide**: See `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md`
+> **📖 For architecture decision history (5 options analyzed)**: See `archive/strategic_analysis/README.md`
+
+### Design Philosophy
+
+**Strategic Positioning**: Professional-grade investment intelligence for boutique hedge funds at <$200/month through cost-conscious, relationship-focused architecture.
+
+**Core Principles**: (1) Quality within resource constraints (F1≥0.85, <$200/month), (2) Hidden relationships over surface facts (graph-first, 1-3 hops), (3) Fact-grounded with source attribution (100% traceability), (4) User-directed evolution (evidence-driven), (5) Simple orchestration + battle-tested modules (<2,000 lines orchestrator), (6) Cost-consciousness as design constraint (80% local LLM, semantic caching).
+
+> **📖 For detailed philosophy**: See `project_information/development_plans/Development Brainstorm Plans (md files)/Lean_ICE_Architecture.md`
+
+---
+
+## 3. 🛠️ CORE DEVELOPMENT WORKFLOWS
+
+### 3.1 Starting a New Development Session
+
+1. **Read current status**: Check `ICE_DEVELOPMENT_TODO.md` for current sprint tasks
+2. **Review recent changes**: Check `PROJECT_CHANGELOG.md` for latest updates
+3. **Understand context**: Read relevant section in `ICE_PRD.md` for requirements
+4. **Check file locations**: Use `PROJECT_STRUCTURE.md` to navigate codebase
+5. **Set environment**: `export OPENAI_API_KEY="sk-..."` and any other required API keys
+
+### 3.2 Common Development Tasks
+
+**Adding New Data Sources** - See `CLAUDE_PATTERNS.md` Pattern 1-2 for source attribution and confidence scoring
+
+**Modifying Orchestration** - Delegate to production modules (see `CLAUDE_PATTERNS.md` for code organization principles)
+
+**Notebook Development**:
+- Core data ingestion changes → Update `ice_building_workflow.ipynb`
+- Query processing modifications → Update `ice_query_workflow.ipynb`
+- **Process**: Modify production code first → Update notebook cells → Run end-to-end validation
+
+### 3.3 Testing and Validation
+
+**Three-tier approach**:
+1. **Unit Tests**: `python tests/test_email_graph_integration.py`
+2. **Integration Tests**: Run both notebooks end-to-end
+3. **PIVF Validation**: 20 golden queries covering 1-3 hop reasoning (see `ICE_VALIDATION_FRAMEWORK.md`)
+
+### 3.4 Temporal Enhancement Workflows
+
+**What**: Time-aware intelligence enabling 100% temporal query coverage through event_date vs created_at separation, freshness scoring, YoY/QoQ comparisons, and trend detection.
+
+**When to Use**:
+- Querying signals within specific date ranges
+- Analyzing metric evolution over time (Q1→Q2→Q3→Q4)
+- Comparing period-over-period performance (YoY, QoQ, CAGR)
+- Ranking signals by recency + confidence
+- Detecting statistical trends in fundamentals
+- Event-driven analysis (signals around earnings)
+
+#### Common Temporal Operations
+
+**Event-Driven Analysis**:
+```python
+from updated_architectures.implementation.signal_store import SignalStore
+
+store = SignalStore()
+
+# Get signals ±7 days around Q2 earnings announcement
+signals = store.get_signals_around_event(
+    ticker='NVDA',
+    event_date='2024-07-15',  # Q2 earnings date
+    days_before=7,
+    days_after=7
+)
+
+# Returns all rating changes, price targets in ±7 day window
+for sig in signals:
+    print(f"{sig['signal_type']}: {sig['signal_value']} on {sig['date']}")
+```
+
+**Year-over-Year Comparison**:
+```python
+# Compare Q2 2024 vs Q2 2023
+yoy = store.compare_yoy(
+    ticker='NVDA',
+    metric_name='Revenue',
+    year=2024,
+    quarter=2
+)
+
+print(f"Current: ${yoy['current_period']['value']/1e9:.1f}B")
+print(f"Previous: ${yoy['previous_period']['value']/1e9:.1f}B")
+print(f"Growth: {yoy['percent_change']:.1f}%")
+print(f"Note: {yoy.get('note', 'N/A')}")  # Sign change notes
+
+# Output:
+# Current: $30.0B
+# Previous: $26.0B
+# Growth: +15.4%
+```
+
+**Quarter-over-Quarter with Seasonality**:
+```python
+# Compare Q2 vs Q1 (sequential)
+qoq = store.compare_qoq(
+    ticker='TSLA',
+    metric_name='Revenue',
+    year=2024,
+    quarter=2
+)
+
+print(f"Q2 vs Q1: {qoq['percent_change']:.1f}%")
+if qoq.get('seasonality_note'):
+    print(f"Seasonality: {qoq['seasonality_note']}")
+```
+
+**CAGR Growth Rate**:
+```python
+# Calculate revenue CAGR from 2020 to 2024
+cagr = store.calculate_growth_rate(
+    ticker='NVDA',
+    metric_name='Revenue',
+    start_year=2020,
+    end_year=2024,
+    periods_per_year=4  # Quarterly data
+)
+
+if cagr.get('cagr') is not None:
+    print(f"4-Year CAGR: {cagr['cagr']:.1f}%")
+    print(f"Growth Classification: {cagr['growth_classification']}")
+else:
+    # Falls back when CAGR undefined (negative values)
+    print(f"Absolute Change: {cagr['absolute_change']}")
+    print(f"Note: {cagr['note']}")
+```
+
+**Recency-Aware Ranking**:
+```python
+# Balance freshness vs confidence (60/40 weight)
+ranked = store.get_latest_signals_ranked(
+    ticker='AAPL',
+    signal_types=['rating', 'price_target'],
+    limit=10,
+    freshness_weight=0.6  # Prioritize recency
+)
+
+for signal in ranked:
+    print(f"{signal['signal_value']:20s} | "
+          f"rank={signal['composite_rank']:.3f} | "
+          f"fresh={signal['freshness_score']:.3f} | "
+          f"conf={signal['confidence']:.3f}")
+
+# Composite rank formula: 0.6×freshness + 0.4×confidence
+# Recent medium-confidence signals can outrank old high-confidence ones
+```
+
+**Trend Detection** (Statistical Analysis):
+```python
+from src.ice_core.temporal_analyzer import TemporalAnalyzer
+
+analyzer = TemporalAnalyzer(store)
+
+# Detect revenue trend over 8 quarters
+trend = analyzer.detect_metric_trend(
+    ticker='NVDA',
+    metric_name='Revenue',
+    periods=8,
+    min_data_points=4
+)
+
+print(f"Trend: {trend['trend_direction']}")  # "strong_uptrend"
+print(f"Statistical Significance: p={trend['p_value']:.4f}")
+print(f"R-squared: {trend['r_squared']:.3f}")
+print(f"Slope: {trend['slope']:.2e}")
+
+# Trend classifications:
+# "strong_uptrend", "weak_uptrend", "stable", "weak_downtrend", "strong_downtrend"
+```
+
+**Time-Bounded Queries**:
+```python
+# Get all signals within date range (uses event_date, NOT created_at)
+events = store.get_events_in_date_range(
+    ticker='TSLA',
+    start_date='2024-07-01',
+    end_date='2024-07-31',
+    event_types=['earnings', 'dividend']
+)
+
+# Finds Q2 earnings announced July 15 even if ingested Aug 1
+```
+
+**Event Date Backfill** (Legacy Data Migration):
+```python
+# Populate event_date for legacy data
+result = store.backfill_event_dates(dry_run=True)  # Preview first
+print(f"Would update {result['financial_metrics']} rows")
+
+# Actually perform backfill
+result = store.backfill_event_dates(dry_run=False)
+print(f"Updated {result['financial_metrics']} financial_metrics")
+print(f"Updated {result['metrics']} metrics")
+```
+
+#### Temporal Architecture Files
+
+**Core Implementation**:
+- `src/ice_core/temporal_enhancer.py` (528 lines) - Graph enrichment with temporal metadata
+- `src/ice_core/temporal_analyzer.py` (350+ lines) - Statistical trend detection
+- `src/ice_core/period_utils.py` (200+ lines) - Period arithmetic utilities
+- `signal_store.py:1922-2960` (1,038 lines) - Temporal query methods
+
+**Configuration**:
+- `config.py` - Temporal parameters (half-life=30 days, lookback windows)
+
+**Testing**:
+```bash
+# Comprehensive temporal test suite (30+ tests, 95%+ coverage)
+python -m pytest tests/test_temporal_features_comprehensive.py -v
+
+# Expected: 30+ tests passing
+# Categories: freshness scoring, YoY/QoQ, CAGR, trends, ranking
+```
+
+#### Notebook Integration
+
+**Cells 70-78** in `ice_building_workflow.ipynb` demonstrate all temporal features:
+
+| Cell | Purpose | What it Tests |
+|------|---------|---------------|
+| 70 | Backfill event dates | Dry run → actual run → verification |
+| 71 | Configuration status | Display temporal parameters |
+| 72 | Schema verification | Check event_date columns exist |
+| 73 | Event date inference | Fiscal period → event_date mapping |
+| 74 | Event date query fix | Critical: July query finds July events |
+| 75 | Recency ranking | Composite scoring validation |
+| 76 | Visual comparison | Chronological vs recency-aware ranking |
+| 77 | Config override | Dynamic parameter adjustment |
+
+**Run Cells**:
+```python
+# In Jupyter notebook:
+# 1. Run Cell 70 if you need to backfill legacy data
+# 2. Run Cells 71-77 to validate all temporal features
+# 3. All should execute without errors (production-ready)
+```
+
+#### Freshness Scoring Reference
+
+**Formula**: `freshness_score = 0.5^(age_days/30)` [exponential decay, 30-day half-life]
+
+| Age | Score | Category |
+|-----|-------|----------|
+| 0 days | 1.00 | fresh |
+| 15 days | 0.71 | fresh |
+| 30 days | 0.50 | recent |
+| 60 days | 0.25 | aging |
+| 90 days | 0.13 | stale |
+| 180 days | 0.02 | very_stale |
+
+**Use Cases**:
+- **Fresh signals** (>0.7): High priority for immediate action
+- **Recent signals** (0.5-0.7): Still relevant for analysis
+- **Aging signals** (0.25-0.5): Context only, verify currency
+- **Stale signals** (<0.25): Historical reference only
+
+#### Common Pitfalls & Solutions
+
+**Pitfall 1: NULL Confidence Values**
+```python
+# ❌ Wrong: .get() with default doesn't work for None values
+confidence = signal.get('confidence', 0)  # Returns None if key exists with None value
+
+# ✅ Right: Use 'or' pattern for NULL handling
+confidence = signal.get('confidence') or 0.5
+```
+
+**Pitfall 2: Using created_at Instead of event_date**
+```python
+# ❌ Wrong: Queries based on ingestion time
+WHERE created_at BETWEEN '2024-07-01' AND '2024-07-31'
+# Misses: Q2 earnings announced July 15, ingested Aug 1
+
+# ✅ Right: Queries based on event occurrence
+WHERE event_date BETWEEN '2024-07-01' AND '2024-07-31'
+# Finds: Q2 earnings correctly (event_date = July 15)
+```
+
+**Pitfall 3: Ignoring Sign Changes in Percentages**
+```python
+# ❌ Wrong: Standard percentage formula fails on turnarounds
+percent_change = ((current - previous) / abs(previous)) * 100
+# Problem: Profit→loss gives misleading positive percentage
+
+# ✅ Right: Use compare_yoy/qoq which handles sign changes
+yoy = store.compare_yoy(ticker, metric, year, quarter)
+if yoy.get('note') == 'turnaround':
+    print(f"Sign change: {yoy['note']}")  # Clear indication
+```
+
+#### Related Documentation
+
+- **Architecture**: See `ARCHITECTURE.md` → "Temporal Architecture" section
+- **Product Requirements**: See `ICE_PRD.md` → Temporal intelligence requirements
+- **Test Suite**: `tests/test_temporal_features_comprehensive.py`
+- **Serena Memories**: 5 comprehensive temporal enhancement guides
+
+---
+
+## 4. 📐 DEVELOPMENT STANDARDS
+
+### 4.1 File Header Requirements
+
+**Every file must start with these 4 comment lines**:
+```python
+# Location: /path/to/file.py
+# Purpose: Clear description of what this file does
+# Why: Business purpose and role in ICE architecture
+# Relevant Files: file1.py, file2.py, file3.py
+```
+
+### 4.2 Comment Principles
+
+```python
+# DON'T: Obvious syntax comments
+x = x + 1  # Increment x
+
+# DO: Explain thought process and business logic
+# Confidence threshold set to 0.7 based on PIVF validation showing
+# accuracy >95% at this level while minimizing false positives
+confidence_threshold = 0.7
+```
+
+**NEVER delete explanatory comments** unless demonstrably wrong or obsolete.
+
+### 4.3 ICE-Specific Patterns
+
+**All 7 patterns with comprehensive examples**: See `CLAUDE_PATTERNS.md`
+1. Source Attribution - Every fact must trace to source
+2. Confidence Scoring - All entities/relationships include confidence
+3. Multi-hop Reasoning - Support 1-3 hop graph traversal
+4. MCP Compatibility - Format outputs as structured JSON
+5. SOURCE Markers - Document source attribution for statistics tracking
+6. Crawl4AI Hybrid URL Fetching - Smart routing for web scraping (6-tier classification)
+7. Two-Layer Entity Extraction - Validated entities with quality scores
+
+> **📖 For code examples and testing patterns**: See `CLAUDE_PATTERNS.md`
+
+### 4.4 Code Organization Principles
+
+1. **Modularity**: Build lightweight, maintainable components
+2. **Simplicity**: Favor straightforward solutions over complex architectures
+3. **Reusability**: Import from production modules, don't duplicate code
+4. **Traceability**: Every fact must have source attribution
+5. **Security**: Never expose API keys or credentials in code/commits
+
+### 4.5 Protected Files - NEVER Delete or Move
+
+- `CLAUDE.md` (this file)
+- `README.md`
+- `ICE_PRD.md`
+- `ICE_DEVELOPMENT_TODO.md`
+- `PROJECT_STRUCTURE.md`
+- `PROJECT_CHANGELOG.md`
+- `ice_building_workflow.ipynb`
+- `ice_query_workflow.ipynb`
+
+### 4.6 Protected Custom Bookmarks Comment - Strictly NEVER Delete or Move these navigation markers.
+
+  - # AQ1, # SW2, # DE3, # FR4, # GT5, # hy6
+  - Used for cmd+f navigation - treat as sacred landmarks
+
+
+**Before modifying**: Create timestamped backup in `archive/backups/`
+
+### 4.7 Architecture Change Protocol ⚠️
+
+**CRITICAL**: When implementing architecture changes, you MUST update `ARCHITECTURE.md` BEFORE completing your work.
+
+**What qualifies as architecture changes** (MUST update ARCHITECTURE.md):
+- ✅ **New design patterns**: quality-based selection, context-aware routing, resilience strategies
+- ✅ **Core design principles**: cost optimization, graceful degradation, data flow changes
+- ✅ **Major refactors**: Changes to system behavior, component responsibilities, integration patterns
+- ✅ **New invariants/contracts**: API contracts, data schemas, error handling policies
+- ✅ **Significant data flow changes**: New data sources, processing pipelines, storage architectures
+
+**What does NOT require ARCHITECTURE.md update** (document elsewhere):
+- ❌ Bug fixes (unless they reveal architectural issues requiring design changes)
+- ❌ Minor optimizations (performance tweaks, code cleanup)
+- ❌ Implementation details (goes in code comments, not architecture docs)
+- ❌ Temporary/experimental features (not production-ready)
+
+**Required Process**:
+1. ✅ Make code changes
+2. ✅ Update `ARCHITECTURE.md` with new section or modify existing section
+3. ✅ Update "Last Updated" date and summary at top of ARCHITECTURE.md
+4. ✅ Add cross-references to related files (code locations, Serena memories)
+5. ✅ Include ARCHITECTURE.md in commit/documentation update
+
+**Example Qualifying Changes**:
+- Multi-Source News Aggregation (Nov 22): New design pattern → Added full section to ARCHITECTURE.md
+- Temporal Enhancement (Nov 18): New data flow → Added temporal architecture section
+- Content-Addressable Deduplication (Nov 21): Core principle change → Updated deduplication section
+
+**Enforcement**: This is part of the mandatory TodoWrite checklist ("📋 Review & update 8 core files")
+
+---
+
+## 5. 🗂️ NAVIGATION QUICK LINKS
+
+**Core Docs**: `ICE_PRD.md`, `ICE_DEVELOPMENT_TODO.md`, `PROJECT_STRUCTURE.md`, `ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md`, `ICE_VALIDATION_FRAMEWORK.md`, `PROJECT_CHANGELOG.md`
+
+**Specialized Details**: Query modes (`md_files/QUERY_PATTERNS.md`), Data source prioritization (`ICE_ARCHITECTURE_IMPLEMENTATION_PLAN.md`), Development strategies (`PROJECT_STRUCTURE.md`), LightRAG workflows (`project_information/about_lightrag/`)
+
+---
+
+## 6. 🔧 TROUBLESHOOTING
+
+See `CLAUDE_TROUBLESHOOTING.md` for complete guide (10 sections, 50+ solutions, quick reference table).
+
+**Top 3 Quick Fixes**:
+1. API Key: `export OPENAI_API_KEY="sk-..." && python test_api_key.py`
+2. LightRAG: `cd src/ice_lightrag && python setup.py && cd ../..`
+3. Imports: `export PYTHONPATH="${PYTHONPATH}:."`
+
+---
+
+## 7. 📄 SPECIALIZED DOCUMENTATION
+
+**Load these on-demand** (each has "When to Load" in header):
+
+**CLAUDE_PATTERNS.md** (~400 lines)
+- **Use for**: Implementing features, writing code, pattern compliance
+- **Contains**: All 7 ICE patterns with code examples, testing guidance
+
+**CLAUDE_INTEGRATIONS.md** (~450 lines)
+- **Use for**: Docling/Crawl4AI work, document processing, integration configs
+- **Contains**: Switchable architecture guides, 6-tier URL classification, troubleshooting
+
+**CLAUDE_TROUBLESHOOTING.md** (~350 lines)
+- **Use for**: Debugging errors, performance issues, data quality problems
+- **Contains**: Quick debugging workflow, 50+ issue-solution pairs, validation commands
+
+---
+
+**Last Updated**: 2025-11-05
+**Backup**: `archive/backups/CLAUDE_20251105_pre_streamlining.md`
+**This Version**: Optimized for effectiveness - added session checklist, improved TodoWrite visibility, removed redundancy
+**Maintenance**: Update this file when major workflows, architecture, or standards change

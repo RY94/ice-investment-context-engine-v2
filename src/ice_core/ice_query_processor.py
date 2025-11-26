@@ -7,10 +7,19 @@ Relevant files: ice_lightrag/ice_rag.py, ice_graph_builder.py, ice_system_manage
 """
 
 import re
+import sys
 import logging
+from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any, Tuple, Set
 import networkx as nx
+
+# Add project root to path for config import
+project_root = Path(__file__).resolve().parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+from updated_architectures.implementation.config import get_confidence, get_confidence_weight
 
 # Import citation formatter for user-facing traceability display
 from src.ice_core.citation_formatter import CitationFormatter
@@ -49,7 +58,7 @@ class ICEQueryProcessor:
         # Query processing configuration
         self.max_context_documents = 10
         self.max_graph_hops = 3
-        self.min_confidence_threshold = 0.6
+        self.min_confidence_threshold = get_confidence('query_min_threshold')
         
         # Entity extraction patterns for investment queries
         self.query_patterns = self._build_query_patterns()
@@ -255,7 +264,7 @@ class ICEQueryProcessor:
             citation_display = CitationFormatter.format_citations(
                 answer=enhanced_response["formatted_response"],
                 enriched_sources=enriched_metadata["enriched_sources"],
-                style="inline",  # Default to inline, can be made configurable
+                style="footnote",  # Footnote shows timestamps for verifiability
                 max_inline=3  # Show top 3 sources, truncate rest
             )
 
@@ -786,8 +795,8 @@ class ICEQueryProcessor:
         Returns:
             Confidence score between 0 and 1
         """
-        base_confidence = 0.7  # Base confidence for LightRAG responses
-        
+        base_confidence = get_confidence('lightrag_base')  # Base confidence for LightRAG responses
+
         # Boost confidence if graph context available
         if graph_context:
             causal_paths = graph_context.get("causal_paths", [])
@@ -795,13 +804,15 @@ class ICEQueryProcessor:
                 # Average confidence of top causal paths
                 path_confidences = [path.get("confidence", 0) for path in causal_paths[:3]]
                 avg_path_confidence = sum(path_confidences) / len(path_confidences) if path_confidences else 0
-                base_confidence = 0.6 * base_confidence + 0.4 * avg_path_confidence
-            
+                base_weight = get_confidence_weight('base_weight')
+                path_weight = get_confidence_weight('path_weight')
+                base_confidence = base_weight * base_confidence + path_weight * avg_path_confidence
+
             # Boost for entity relationships
             if graph_context.get("entity_relationships"):
-                base_confidence += 0.05
+                base_confidence += get_confidence('boost_financial_term')
 
-        return min(0.95, base_confidence)  # Cap at 95%
+        return min(get_confidence('confidence_cap'), base_confidence)  # Cap at configured ceiling
 
     def _calculate_adaptive_confidence(self, sources: List[Dict], graph_context: Dict = None) -> Dict[str, Any]:
         """
@@ -841,7 +852,7 @@ class ICEQueryProcessor:
 
         # Scenario 1: Single source (most common for factual queries)
         if len(sources) == 1:
-            source_conf = sources[0].get('confidence', 0.7)
+            source_conf = sources[0].get('confidence', get_confidence('single_source'))
             source_name = sources[0].get('source', 'unknown')
             return {
                 'confidence': source_conf,
@@ -907,10 +918,10 @@ class ICEQueryProcessor:
         penalized_conf = base_conf * (1 - coef_var)
 
         return {
-            'confidence': max(0.5, penalized_conf),  # Floor at 0.5
+            'confidence': max(get_confidence('confidence_floor'), penalized_conf),  # Floor at configured minimum
             'confidence_type': 'variance_penalized',
             'explanation': f'Sources disagree ({coef_var:.1%} variance), confidence penalized',
-            'breakdown': {s['source']: s.get('confidence', 0.7) for s in sources}
+            'breakdown': {s['source']: s.get('confidence', get_confidence('chunk_default')) for s in sources}
         }
 
     def _apply_path_integrity(self, sources: List[Dict], graph_context: Dict) -> Dict[str, Any]:
@@ -926,14 +937,14 @@ class ICEQueryProcessor:
 
         # Get top path confidence
         top_path = causal_paths[0]
-        path_conf = top_path.get('confidence', 0.7)
+        path_conf = top_path.get('confidence', get_confidence('path_default'))
         num_hops = len(top_path.get('path', []))
 
         return {
             'confidence': path_conf,
             'confidence_type': 'path_integrity',
             'explanation': f'{num_hops}-hop reasoning chain, multiplicative confidence',
-            'breakdown': {s['source']: s.get('confidence', 0.7) for s in sources}
+            'breakdown': {s['source']: s.get('confidence', get_confidence('chunk_default')) for s in sources}
         }
 
     def _apply_weighted_average(self, sources: List[Dict]) -> Dict[str, Any]:
@@ -965,7 +976,7 @@ class ICEQueryProcessor:
 
         for source in sources:
             source_name = source.get('source', 'unknown').lower()
-            confidence = source.get('confidence', 0.7)
+            confidence = source.get('confidence', get_confidence('chunk_default'))
 
             # Match source name to weight (fuzzy matching)
             weight = source_weights.get(source_name, 0.1)
@@ -1023,7 +1034,7 @@ class ICEQueryProcessor:
 
         for source in sources:
             source_name = source.get('source', 'unknown').lower()
-            confidence = source.get('confidence', 0.7)
+            confidence = source.get('confidence', get_confidence('chunk_default'))
 
             # Add quality badge based on ICE source hierarchy
             quality_badge = self._get_quality_badge(source_name)
@@ -1101,7 +1112,7 @@ class ICEQueryProcessor:
         for chunk in chunks:
             # Extract source info (already parsed by context_parser)
             source_type = chunk.get('source_type', 'unknown')
-            confidence = chunk.get('confidence', 0.7)
+            confidence = chunk.get('confidence', get_confidence('chunk_default'))
 
             # Add quality badge based on ICE source hierarchy
             quality_badge = self._get_quality_badge(source_type)
@@ -1454,7 +1465,7 @@ class ICEQueryProcessor:
                 sources_with_values.append({
                     'source': source.get('source', 'unknown'),
                     'value': float(source['value']),
-                    'confidence': source.get('confidence', 0.7)
+                    'confidence': source.get('confidence', get_confidence('chunk_default'))
                 })
 
         # Need at least 2 values to detect conflict

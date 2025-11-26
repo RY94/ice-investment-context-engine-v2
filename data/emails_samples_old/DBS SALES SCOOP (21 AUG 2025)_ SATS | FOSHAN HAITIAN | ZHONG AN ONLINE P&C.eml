@@ -1,0 +1,3554 @@
+Return-Path: <jessicachia@dbs.com>
+Delivered-To: roy@agtpartners.com.sg
+Received: from web107.vodien.com
+	by web107.vodien.com with LMTP
+	id UJPENCZ6pmiVqwUAZ3xOiA
+	(envelope-from <jessicachia@dbs.com>)
+	for <roy@agtpartners.com.sg>; Thu, 21 Aug 2025 09:45:10 +0800
+Return-path: <jessicachia@dbs.com>
+Envelope-to: roy@agtpartners.com.sg
+Delivery-date: Thu, 21 Aug 2025 09:45:10 +0800
+Received: from mail7.dbs.com ([203.127.89.204]:60490)
+	by web107.vodien.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96.1)
+	(envelope-from <jessicachia@dbs.com>)
+	id 1uouMM-001gJs-09;
+	Thu, 21 Aug 2025 09:45:10 +0800
+Received: from pps.filterd (mail7.dbs.com [127.0.0.1])
+	by mail7.dbs.com (8.18.1.2/8.18.1.2) with ESMTP id 57KMaZ7B016429;
+	Thu, 21 Aug 2025 09:44:00 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dbs.com; h=content-type : date :
+ from : message-id : mime-version : subject : to; s=dbs-dkim-1;
+ bh=/p25On5nwEpfTX2qEtkwEpJsHKeBRSNJQUcu4itsNFU=;
+ b=NW0By29N81WUR1TOcHxsj1JS2zuX/UD7WEe+Grz5wpxNdOHCGgynSTh2o4Uxi26eKCE3
+ P0HGhEiG+MZs7s/py0ClJYi4Svvc++tFt+WCPvT9YWtfSh/PWnuRtMjB3PfKigWuaFzm
+ vG25TksmoRrrehz19Dpl2sL1otGZ8ELQBwkS1Ly/2jEIWQIcJL1gFxOfDe9xwrRU8m8l
+ +GYSEOnzxtLBZt7VXYR1KJnYBNamlYj184uW24oF9dAR+X5B23khhR7ssrRvb9VpOkFS
+ Kr++0NIg5uqkGRXLGnRTRPLqxViifs2yvS7rRDWNVO0UXQNnI7KUDPkfUfdLY/4XB2sY Pw== 
+Received: from p01gdlppapp1a (p01gdlppapp1a.sgp.dbs.com [10.67.8.223])
+	by mail7.dbs.com (PPS) with ESMTPS id 48my3wkq3j-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 21 Aug 2025 09:44:00 +0800
+Received: from p01gdlppapp1a (p01gdlppapp1a [127.0.0.1])
+	by p01gdlppapp1a.localdomain (Service) with ESMTP id E41F84114F7F;
+	Thu, 21 Aug 2025 09:43:58 +0800 (+08)
+Received: from w01gmailexop8a.reg1.1bank.dbs.com (unknown [10.66.47.171])
+	by p01gdlppapp1a.localdomain (Service) with ESMTPS id 5FC124114F76;
+	Thu, 21 Aug 2025 09:43:57 +0800 (+08)
+Received: from w01gmailexop2a.reg1.1bank.dbs.com (10.66.47.167) by
+ w01gmailexop8a.reg1.1bank.dbs.com (10.66.47.171) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.55; Thu, 21 Aug 2025 09:43:58 +0800
+Received: from smtp.dbs.com (10.70.44.116) by
+ w01gmailexop2a.reg1.1bank.dbs.com (10.66.47.167) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.55 via Frontend Transport; Thu, 21 Aug 2025 09:43:58 +0800
+Received: from TYDPR03CU002.outbound.protection.outlook.com (10.1.255.5) by
+ smtp.dbs.com (10.70.44.116) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.55; Thu, 21 Aug
+ 2025 09:43:57 +0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ls9PYgKZSErgtfYWvrVIwJGiU/uHwoAKC7SxBwGFuBv/0EahI2KBah/hWUxiRtjIZrCXnGi+hBMQ/76rP5El6S7CrEv3n74oozkOT/eJct4AjDhoA1zq3CQf14Qpgv7zTRugu7fa8uk7Wru1wHdmW0EPokqH/qiZWxyLcgNMYsLYxZQzg+qoTRELvlqJS/Jz3QoXpC9c6ttLseGlEvXGgENwJ+pyGicJiBKe687F548hTa3VIOaJ5ZW7bBCt/rGt3BN6cVtlmZGcTYz3nUdLH68kd8BrHsMEQb1e5/AiF4fboGU859NkSdzmX2t7sMiRwMLs6LQ4acp/SVLWTmL9fA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kKmxo1o2n+cdddHzdlbZtb0tmrD9++sixETRPHP9qJU=;
+ b=dItDXI0qLd2RLCOrbH+g/YOfaHtL97LKC2G2Oe7cOyE91rVAvwsF9VmhBuJW3kOeCYAtnsW4SLqvuda+UfkvynhA8+9nB5hglzqL1RlspBfnes3loTgVaikYTVyHUMEQNUIXPW97glCk32SR0FN37AIJiGdo65ATcxNDVa/im60/JhZp3vnKgTYZvtBtncf09YySBrmdF/DTt3PBzSNfkbl4UNVuLEccB6w5p5yslUEKeIXyhUXSOcJsGsSh221EuOeMoGtL1ukolKNRa1VuiTjAZyr6csvrQRe9vocqiX3GffC8lCktyLAnywYPiaBJeQqNy9LfV2vR8bKfzVboIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dbs.com; dmarc=pass action=none header.from=dbs.com; dkim=pass
+ header.d=dbs.com; arc=none
+Received: from SI6PR02MB7891.apcprd02.prod.outlook.com (2603:1096:4:24e::12)
+ by SEYPR02MB6699.apcprd02.prod.outlook.com (2603:1096:101:1a3::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9031.24; Thu, 21 Aug
+ 2025 01:43:52 +0000
+Received: from SI6PR02MB7891.apcprd02.prod.outlook.com
+ ([fe80::b07b:e3b1:6dc3:345e]) by SI6PR02MB7891.apcprd02.prod.outlook.com
+ ([fe80::b07b:e3b1:6dc3:345e%7]) with mapi id 15.20.9031.023; Thu, 21 Aug 2025
+ 01:43:52 +0000
+From: Jessica Hui May CHIA <jessicachia@dbs.com>
+Subject: DBS SALES SCOOP (21 AUG 2025): SATS | FOSHAN HAITIAN | ZHONG AN
+ ONLINE P&C
+Thread-Topic: DBS SALES SCOOP (21 AUG 2025): SATS | FOSHAN HAITIAN | ZHONG AN
+ ONLINE P&C
+Thread-Index: AdwSPPVaIfxqSNGAQlmDFsTHOJJmLg==
+Date: Thu, 21 Aug 2025 01:43:52 +0000
+Message-ID: <SI6PR02MB78915820066AED2CF9ED6E21A732A@SI6PR02MB7891.apcprd02.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SI6PR02MB7891:EE_|SEYPR02MB6699:EE_
+x-ms-office365-filtering-correlation-id: 27f0a8e8-b1c5-47e9-28cf-08dde0542ee7
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014|19092799006|8096899003|4053099003|38070700018|32042699012|27013499003;
+x-microsoft-antispam-message-info: =?us-ascii?Q?YJ4Rp4hO4wRQIBLA9WyQlvk+FL8c91/I5aScpOlha1dnc24ipTPWOgAD8+1x?=
+ =?us-ascii?Q?jXgGz8EAKtbPHaOQZjQLfI9rBJG0OdZsNesHV90K0f/B5igOylpQ5SQYMrBm?=
+ =?us-ascii?Q?iHzl3NS14jHSvAkrJeaSf9W7nCtYkpmjnpfRCOpqS+pCsLrxtYK+OgJFSUgm?=
+ =?us-ascii?Q?Uoz/F7A1HrTxEk2Rcc0ItcS2PgD6nFjj8kXRTpo3RfJcteWZFt3ZqCj6Nhwl?=
+ =?us-ascii?Q?1ylSz8UK4VqGhLvSFZpy0N8V8T9e8TsKZbpojWe3xVB+D8TNS35sxTiJs4fT?=
+ =?us-ascii?Q?6pmaa6FWC2dmVOv2F9lbhMPBThy2F/VdCH1qTblw+CTWFeCmNyinZngW5CfZ?=
+ =?us-ascii?Q?UtO7UGWLw22e9RoxhEogW6VYugP8m+8r41kJw4TT6VqoE3OytaPnQK0t4wds?=
+ =?us-ascii?Q?slcaH6PghrJtl+hio3azql10ckiJgKCSojkDsVgGbKfLoevB6vf/B3t/q+67?=
+ =?us-ascii?Q?0XqGNijQqnMBFVkGA4Q33lWXW1rkX9jLFcIfARISsyeBc07MnbiWX9NTgDRA?=
+ =?us-ascii?Q?eFmar/LOwhlCExHxkCIRzSkMAr9k9gpZU2ZJjqqOyFu3pyWwurg3oq9+DqkP?=
+ =?us-ascii?Q?rFMnEbbiVqUODhxHJ+q2g+OIj0CJEvBWG1itEjSa6IW1Vtnh9y+vH6RHW6Ov?=
+ =?us-ascii?Q?TnJXVaAru23Jep332/zS4N5G4r3mnKY0QziqB/9eXufUClg3rr+j2CMC3NO3?=
+ =?us-ascii?Q?Bo4bGmNBHJ3wLEHepfclKN/D8kDz0+PZ1CxKak0c6ZGt0vRifLDYKvMrq2xN?=
+ =?us-ascii?Q?FrnOMCaPDycjafoomrlHwajrYvFHwzjYzPNVxmp6fHugEMGX2ZXO5LlZ7P9Y?=
+ =?us-ascii?Q?UNK8KJ6W8fueXGcHFI+kRgC7pJEhXSH6DFYcCZPgxQ3eG2LFmJCtrh1xAkJI?=
+ =?us-ascii?Q?SAuN8CQnKcoQ53LgHjdXn6LpKnsFKIeMuMVAbp1xbw3P982+xJ/UKHVssMuI?=
+ =?us-ascii?Q?cudjxNj5Fkvlhitp6rXW+BP5fxsceV38NE3nJw/EHIDg4MGYmhZNs+0Sir60?=
+ =?us-ascii?Q?dnqcpd8YXJ3sNc1yGoIgC0YEAEaIztCA3mrrw817lDHHHWMUol/slvXK7cgm?=
+ =?us-ascii?Q?ABf/RbtpzD0vF94DeYWYx+vIbULxMjIf8RbISkXXMNtQpIpuhkOSiH0ADlc9?=
+ =?us-ascii?Q?L4D/NNduaXlrtHmd9ms2m4bgvNFwSMyg1KyoqEiI1V0V+iuPMkRpGmKLYleQ?=
+ =?us-ascii?Q?iMQr+I6bYx+lVUlHv0wR6/NEnLkYgknreklJ9wH7sSqdurSb3Q1b0klUYcV/?=
+ =?us-ascii?Q?xvONmNIJzoW4VemUeiSqnRJjKmyVhbnb5xd4E2Sm/thsgAtOR48gg2I5BxS9?=
+ =?us-ascii?Q?CCd5f7IIe6/oZD5brpewgsZ7QjESyBMK9HFCuSOKWhml45EvdtSRCBTL65My?=
+ =?us-ascii?Q?ClCZ6dp48i/TFlJKiLNOS6f/ovsWwEWYYwxEdUK4hBdwrs6JicPr+VtrvIn3?=
+ =?us-ascii?Q?os/inMIbRQfk6lkBx/igkO34UvaU5UOslIRUcgTbNcSkS3hSKMJ20w=3D=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SI6PR02MB7891.apcprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(19092799006)(8096899003)(4053099003)(38070700018)(32042699012)(27013499003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?h3Zd0jERtP3y/PIEU6FLti7DoUDNQiN1/RWEKOPPopyst5p86tQ6WJ81IXpl?=
+ =?us-ascii?Q?avel65le799YK3J2uT6l3gnaeUYQFsaZ8wLgpDuMXbTC/DP5UExbN7mfVLE4?=
+ =?us-ascii?Q?JzQ3KCrHkx03UdCKyC3UR/QK7xLDo9vBDfoARnXoxQh1BYg7lWvvQMpqI9jW?=
+ =?us-ascii?Q?d5vDRgEXCwT/jjbFLM7L+TsFUG+DzkcJD5NSEwHK4nFz10dlWhKiJ9xwJs13?=
+ =?us-ascii?Q?vZmUQdO4UhVG7Ez87hHU/gy316jCT0NqlPe/e9TJhNze6zo08IgCh9mZOzD0?=
+ =?us-ascii?Q?WSpLplkp548AVOslKD3AySSr6CUfP+pTyoTCXUojartC5HIo7fF2WVQjDLLu?=
+ =?us-ascii?Q?2axnVW6j/4fBK4LiyiEWaK6cJgEH73IvHmBcn9Fu5JlCXPAKjL8zJJlOWQ5w?=
+ =?us-ascii?Q?KoH6tkEzr1ReBaJfpMez1Kvl0+d1gQVFZ4r1y7i56JVxRuoYJZrOICgSXYuA?=
+ =?us-ascii?Q?f10s0zZ2FY0DRrbiYV9dHyz5+Wvd7xc64jQqTiUU88mTBL9u6wyS2n6og8Xr?=
+ =?us-ascii?Q?NsAmaKVIwIyM24DXR+4G1qb3qTyTUHVvTJh1fi+trNGttrzplT30yH4g2I5/?=
+ =?us-ascii?Q?KY0OX6lvNvVcnPdpRLz99mFVuAe9bVpKeR+Uf5b2sU58dKzANAaPkSDqs0QK?=
+ =?us-ascii?Q?G+aDZ8ONExISYERl/6kCKpYNcgzLMN+32Y5gf3azXfayzRmgtfw2aOrrvKI1?=
+ =?us-ascii?Q?Kw2uSMxsXQkuJ+nR/JYM/REA+bORgCscOldK8kbrRvLm2Kb0G/NOo7zmqH7e?=
+ =?us-ascii?Q?VP7G0eGc8l2NFnu+GH7gaQrpyoNkfGUZdfLRGtdVkj642yF7J06lDezW/zj0?=
+ =?us-ascii?Q?opmvDCtPQtfEcJzzFAxFZfBxZo4ndgP/hTANlEsFmVYGYh0lE1aFM0oBigci?=
+ =?us-ascii?Q?ulK35pFpcrYoFFTDI8cg6G68mbyDY7GsvbF10TtCOAX2k5VAgHa+hictaWVc?=
+ =?us-ascii?Q?lGrosdrcP7HZ+zdjCgxraHS5p3V6ig9btI2y984/XXsSwNevj50t0D55Y9V4?=
+ =?us-ascii?Q?rdbQJTQGrCPPU+/Ppcot4Osuik1JpaAIsoVUGOYZxRnI7ggBiwUTed7e9X2d?=
+ =?us-ascii?Q?sise+oEK6QHWgr5LaxarWPDsinDHHa9GQe5ZqCBYl5KsxVJceDzLpeKsHaXu?=
+ =?us-ascii?Q?D068HRyv9fXf2eT131fut7RrddQLIq3Z0kv3Y4rfLR4AP+n99AKKQyRgtJ0e?=
+ =?us-ascii?Q?9qhrrjQMGmAazX03XYsnMtAX+zMnHh+6TKovWA++NcLpsnvEeP3Q6wPnvjwf?=
+ =?us-ascii?Q?b5NzCsm0arLKs0qZ4eNmTOirX5RZTnCK9NNYuS51KhkE2Ab4I04SI9zU/DPH?=
+ =?us-ascii?Q?H2hM40FomBe4B956TSGLrToM+hZX97NCBwJ2ywrTBpZYFycAxfAhdpAMyoLQ?=
+ =?us-ascii?Q?xk8UYrBTPugM6B6uv4Cd9G1n8H2NBiAK1VJZHEcb2mjvVDk+uY6WSrcTUP4I?=
+ =?us-ascii?Q?+6WwdKDiGsS1YisQ6+dEbXJ8lald2hMf5msXRpmQBcz8IY7gnaH6OaV5npmK?=
+ =?us-ascii?Q?jPy8IRYUGrgGq3l/EvRmb7kgxVvc/X0o1JbtJcbYmZpgfVc6nMfjDMvABF4O?=
+ =?us-ascii?Q?Kphdc+veJ2YLJO73NFsKKtvW4futKGqz0HG6py0Z?=
+Content-Type: multipart/related;
+	boundary="_007_SI6PR02MB78915820066AED2CF9ED6E21A732ASI6PR02MB7891apcp_";
+	type="multipart/alternative"
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SI6PR02MB7891.apcprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27f0a8e8-b1c5-47e9-28cf-08dde0542ee7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2025 01:43:52.4946
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 278ad577-c008-4fc4-ad48-4467be94beb5
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SCHh7gr89akNalP0gclUk+tgDAx/Mj8VllkwI2IHdKbRfL6qP9KslHBV2arc8pvZAh4ozIODnorpctPZzn9lNA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR02MB6699
+To: Undisclosed recipients:;
+X-OriginatorOrg: DBS.com
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-08-20_06,2025-08-20_03,2025-03-28_01
+X-Spam-Status: No, score=1.1
+X-Spam-Score: 11
+X-Spam-Bar: +
+X-Spam-Flag: NO
+
+--_007_SI6PR02MB78915820066AED2CF9ED6E21A732ASI6PR02MB7891apcp_
+Content-Type: multipart/alternative;
+	boundary="_000_SI6PR02MB78915820066AED2CF9ED6E21A732ASI6PR02MB7891apcp_"
+
+--_000_SI6PR02MB78915820066AED2CF9ED6E21A732ASI6PR02MB7891apcp_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+[cid:image001.jpg@01DC1280.18799F90]
+
+21 August 2025
+
+DBSV Sales Note
+
+[cid:image002.jpg@01DC1280.18799F90]
+
+
+TOP IDEA
+SATS Ltd: Earnings beat on continued market share gains and frontloading
+[cid:image003.png@01DC1280.18799F90]<https://www.dbs.com/insightsdirect/com=
+pany/TR4295888033?pagesec=3Dwhatsnew&pagesecid=3D27434>
+
+
+  *   1QFY26 core PATMI rose 20% to SGD 70.5m, ahead of expectations
+
+
+  *   Revenue grew 9.9% yoy led by cargo and ground handling
+
+
+  *   Currently we have a BUY rating with TP of S$3.50; More updates to fol=
+low after the analyst briefing
+
+What we think: 1QFY26 core PATMI of SGD70.5mn (+20.0% y/y) exceeded expecta=
+tions, forming 27.5% of the street's full-year projection, supported by rob=
+ust air cargo volumes and an uplift in pricing. Group revenue climbed 9.9% =
+y/y to SGD1.5bn, primarily driven by a strong showing in SATS Gateway segme=
+nt, with cargo handling and ground handling revenue up 12.2% y/y to SGD780.=
+4mn and 9.2% y/y to SGD397.6mn respectively, underpinned by higher cargo to=
+nnage (+10.4% y/y - EMEAA +21.1% and APAC +6.6%, Americas +1.0%), and an in=
+crease in yields (ground: +6.5% y/y, cargo: +1.7% y/y). Both Gateway and Fo=
+od divisions saw an increase in operating margins, with Segment EBIT margin=
+s expanded 1.0ppt in Gateway and 0.8ppt in Food, helped by improved pricing=
+, a favourable mix shift toward aviation-related volumes, and operating sca=
+le. Free cash flow was -SGD4.5mn, reversing from +SGD45.0mn a year ago, due=
+ to temporary payment delays from customers, which have since normalised.
+
+SATS remains well-positioned to outperform despite softening cargo momentum=
+. We note that SATS' cargo volume growth continues to track ahead of the se=
+ctor, consistently maintaining a 5-8% positive delta to industry growth for=
+ the past seven quarters, as the group continues to not only clinch new cus=
+tomers (including the Cathay Group, Emirates, and Turkish Airlines in the m=
+ost recent quarter), but also expand wallet share among existing customers =
+by capitalising on its extensive network. While there continues to be consi=
+derable uncertainty regarding global trade and air cargo demand (the WTO ex=
+pects total merchandise trade volumes to shrink by 0.2%, while IATA has rev=
+ised its 2025 cargo volume growth estimate to +0.7% y/y, down from 6.0% pre=
+viously), SATS' track record suggests it should be able to sustain mid-sing=
+le-digit cargo tonnage growth despite the broader slowdown. Air travel dema=
+nd also remains resilient despite macroeconomic headwinds, with airline for=
+ward bookings indicating that it should remain firm over the next 1-2 quart=
+ers. Additionally, further deleveraging and refinancing of upcoming debt (c=
+.56% of debt maturing over the next twelve months) should also accelerate b=
+ottom-line growth. We have a Buy call with S$3.50 TP.
+
+
+
+Today's Events
+
+
+  *   3:00pm - JD Logistics (2618 HK)
+
+
+  *   4:00pm - Digital Assets Update 3Q25: Embracing tokenization and stabl=
+ecoins
+
+
+22 August 2025
+
+
+  *   9:30am - Tongcheng Travel (780 HK) (Virtual / Physical in HK)
+
+
+  *   10:15am - Midland Holdings (1200 HK) (Virtual / Physical in HK)
+
+
+  *   11:15am - RoboSense Technology (2498 HK)
+
+
+  *   4:00pm - Yeahka (9923 HK) (Physical in HK)
+
+
+
+
+Click here<https://www.dbs.com/insightsdirect/corporateaccess> to see all o=
+f our upcoming corporate and analyst access events!
+
+
+
+
+CONSUMER
+Foshan Haitian (3288 HK/603288 CH): Brewing the sauce of success
+[cid:image003.png@01DC1280.18799F90]<https://researchwise.dbsvresearch.com/=
+ResearchManager/DownloadResearch.aspx?E=3Dighjikgbcjj>
+
+
+  *   Leading condiment player in China to ride on the 7% industry CAGR thr=
+ough 2029F
+
+
+  *   Extensive sales channels and double-digit online growth to support ma=
+rket share gains
+
+
+  *   Favourable soybean prices and ongoing efficiency to drive >38% gross =
+margin by FY26F
+
+
+  *   Forecast revenue/earnings CAGRs of 8%/12% through FY26F; Fair value: =
+RMB45/HKD40
+
+
+What we think: Haitian is the leading condiments company in China, holding =
+significant market share in key product categories like soy sauce and oyste=
+r sauce. Haitian's Haday brand reached over 80% of China's household. The c=
+ompany has a strong focus on innovation, with a portfolio of over 1,450 SKU=
+s that includes traditional and health-focused products. Strong R&D, innova=
+tive packaging, and an extensive distribution network could further drive r=
+evenue growth. With continued market share gains, product innovation, and o=
+mni-channel expansion, Haitian is positioned for c.8% CAGR
+revenue growth through FY26F. Favourable raw material costs and product mix=
+ enhancement could drive a faster earnings CAGR of 12%.
+
+The Chinese condiments market is expected to grow at a CAGR of 7% through 2=
+029F, driven by rising incomes, healthier consumption trends, and growing d=
+emand from the foodservice industry. Haitian is also looking to expand inte=
+rnationally, targeting high-growth markets like Southeast Asia and Latin Am=
+erica. Potential share price drivers include the continuation of channel ex=
+pansion and margin improvements with the increase in global soybean supply,=
+ which support teen's earnings growth for FY25. Meanwhile, any future marke=
+t consolidations will further strengthen Haitian's position in the fragment=
+ed condiment market in China. Moreover, China's per-capita condiment consum=
+ption remains low relative to developed markets such as Japan and the US - =
+only one-third and one-fifth of their levels - highlighting significant lon=
+g-term growth potential with household incomes continue to rise.
+
+The stock currently trades at 29x forward P/E, nearly 1 SD below its histor=
+ical average valuation of 43x. We consider 33x 12-month forward P/E to be a=
+ fair valuation, c.0.5 SD below the historical average. This implies a fair=
+ value of RMB45 for the A-share, or HKD40 for the H-share after applying a =
+20% A-H discount.
+
+
+
+
+FINANCIALS
+ZhongAn Online P & C Insurance: 1H25 beat on strong underwriting & ZA Bank =
+profit turnaround
+[cid:image003.png@01DC1280.18799F90]<https://www.dbs.com/insightsdirect/com=
+pany/TR5044262919?source=3Dlanding&pagesec=3Dwhatsnew&pagesecid=3D27435>
+
+
+  *   1H25 net profit surged 11x y/y to RMB668mn, beating consensus by 35%
+
+
+  *   Premiums +9.7% y/y on strong health and auto; combined ratio improved=
+ 2.3ppts y/y to 95.6%
+
+
+  *   ZA Bank revenue rose 82.1% y/y to HKD457mn, with net profit of HKD49m=
+n vs. HKD109mn loss in 1H24
+
+
+  *   Reiterate BUY, TP HKD24
+
+
+What we think: ZhongAn delivered strong results in 1H 2025; results were dr=
+iven by robust domestic P&C underwriting and the first-ever half-year net p=
+rofit at ZA Bank. P&C underwriting profit rose 97% y/y to RMB681mn, as GWP =
+grew 9.3% y/y and COR improved 2.3ppt y/y to 95.6% (vs. consensus 96.6%).He=
+alth and auto premiums rose 38% and 34% y/y, respectively, reflecting bette=
+r product mix and continued digital strength. Investment yield was stable a=
+t 3.3%, though still soft versus peers.
+
+Management guided full-year premiums to rise double digits vs 1H's +9.3% y/=
+y, which implies accelerated 2H premium growth. Combined ratio is tracking =
+well with a continued improvement trend vs last year. As such we expect P&C=
+ underwriting to remain solid in 2H, with near mid-teens premium growth and=
+ stable COR vs 2H24. We maintain our forecasts but note upside risk to cons=
+ensus earnings given the strong 1H. Maintain our target price of HKD24 at 1=
+.1x 12-month forward P/B with a BUY recommendation, underpinned by continue=
+d P&C underwriting improvement and fintech monetisation. ZhongAn is trading=
+ at 1.1x 12mth forward P/B - a discount to traditional insurer PICC P&C's (=
+2328 HK, HOLD) 1.3x despite stronger digital growth prospects and improving=
+ profitability.
+
+
+
+
+[cid:image004.jpg@01DC1280.18799F90]
+
+
+GLOBAL
+
+*         Fed minutes show majority of FOMC saw inflation as greater risk -=
+ BT<https://www.businesstimes.com.sg/international/fed-minutes-show-majorit=
+y-fomc-saw-inflation-greater-risk>
+
+*         Trump calls on Fed governor Cook to resign - BT<https://www.busin=
+esstimes.com.sg/international/trump-calls-fed-governor-cook-resign>
+
+*         US budget deficit forecast US$1 trillion higher over next decade,=
+ watchdog says - BT<https://www.businesstimes.com.sg/international/us-budge=
+t-deficit-forecast-us1-trillion-higher-over-next-decade-watchdog-says>
+
+*         Trump embarks on US$104 million bond-buying spree while in office=
+ - BT<https://www.businesstimes.com.sg/international/trump-embarks-us104-mi=
+llion-bond-buying-spree-while-office>
+
+
+HK/CHINA
+
+
+  *   Pop Mart International Group Ltd (9992 HK): A global culture icon acc=
+elerating expansion - ID<https://www.dbs.com/insightsdirect/company/TR50792=
+08968?pagesec=3Dwhatsnew&pagesecid=3D27429>
+
+
+  *   China Real Estate: China Property Weekly Digest - Slow project launch=
+es - ID<https://www.dbs.com/insightsdirect/industry/IN8dda5aca210664b354368=
+c96b05439e1?source=3Dlanding&pagesec=3Dwhatsnew&pagesecid=3D27419>
+
+
+  *   ZTO Express (Cayman) Inc (2057 HK / ZTO US) <Results First Take>: Fac=
+ing Headwinds, but Confident in Long-Term Growth - ID<https://www.dbs.com/i=
+nsightsdirect/company/TR5052135281?source=3Dlanding&pagesec=3Dwhatsnew&page=
+secid=3D27420>
+
+
+  *   Futu Holdings Ltd (FUTU US) <Earnings First Take>: 2Q25 results beat =
+ - ID<https://www.dbs.com/insightsdirect/company/TR5067491293?source=3Dland=
+ing&pagesec=3Dwhatsnew&pagesecid=3D27424>
+
+
+  *   ANTA Sports Products Ltd (2020 HK): A Read-through on Amer Sports' 2Q=
+25 (Beat) - ID<https://www.dbs.com/insightsdirect/company/TR5000431356?sour=
+ce=3Dlanding&pagesec=3Dwhatsnew&pagesecid=3D27426>
+
+
+  *   Champion Real Estate Investment Trust (2778 HK): Result Analysis: Ren=
+tal earnings drag more than offset interest cost savings  - ID<https://www.=
+dbs.com/insightsdirect/company/TR4295871918?source=3Dlanding&pagesec=3Dwhat=
+snew&pagesecid=3D27428>
+
+
+  *   Kerry Properties Ltd (683 HK): Interim Results First Take - ID<https:=
+//www.dbs.com/insightsdirect/company/TR4295871073?source=3Dlanding&pagesec=
+=3Dwhatsnew&pagesecid=3D27430>
+
+
+  *   Xiaomi Corp (1810 HK): AloT gross margin resilience, robust EV ramp u=
+nderpins 2H momentum - ID<https://www.dbs.com/insightsdirect/company/TR5040=
+952859?source=3Dlanding&pagesec=3Dwhatsnew&pagesecid=3D27432>
+
+
+  *   GDS Holdings Ltd (9698 HK / GDS US) <Earnings First Take>: 2Q25 resul=
+t sligt beat, DayOne growth above expections - ID<https://www.dbs.com/insig=
+htsdirect/company/TR5036393356?source=3Dlanding&pagesec=3Dwhatsnew&pageseci=
+d=3D27437>
+
+
+  *   Hong Kong's stock rally still has room to run on 'reasonable' valuati=
+ons, Templeton says - SCMP<https://www.scmp.com/business/banking-finance/ar=
+ticle/3322518/hong-kongs-stock-rally-still-has-room-run-reasonable-valuatio=
+ns-templeton-says>
+
+
+  *   Record yuan loan to Australian miner makes good sense - SCMP<https://=
+www.scmp.com/opinion/comment/article/3322499/record-yuan-loan-australian-mi=
+ner-makes-good-sense>
+
+
+  *   AIA's Hong Kong Sales Lift Profitability as Dividend Rises - BB<https=
+://blinks.bloomberg.com/news/stories/T1BCGDGOT0JO>
+
+
+  *   Pop Mart Shares Hit Record as CEO Announces New Mini Labubu - BB<http=
+s://blinks.bloomberg.com/news/stories/T1A8GDGOT0JK>
+
+
+  *   HKEX Set to Ride on Renewed Global Appetite for China - BB<https://bl=
+inks.bloomberg.com/news/stories/T1AA3JGP9VCW>
+
+
+ASEAN
+
+
+  *   Sasseur REIT (SASSR SP) New captain onboard - ID<https://researchwise=
+.dbsvresearch.com/ResearchManager/DownloadResearch.aspx?E=3Dighihkhab>
+
+
+  *   Bank Rakyat Indonesia (BBRI IJ) The elusive recovery - ID<https://res=
+earchwise.dbsvresearch.com/ResearchManager/DownloadResearch.aspx?E=3Digaehk=
+ghfhg>
+
+
+  *   LH Hotel Leasehold REIT (LHHOTEL TB) Recovery on HOLD - ID<https://ww=
+w.dbs.com/insightsdirect/company/TR5048024637?pagesec=3Dwhatsnew&pagesecid=
+=3D27433>
+
+
+  *   Singapore-focused listed companies are having their turn in the spotl=
+ight - BT<https://www.businesstimes.com.sg/companies-markets/singapore-focu=
+sed-listed-companies-are-having-their-turn-spotlight>
+
+
+  *   Grab system glitch pushes Singapore ride-hailing fares to S$1,000 - B=
+T<https://www.businesstimes.com.sg/companies-markets/transport-logistics/gr=
+ab-system-glitch-pushes-singapore-ride-hailing-fares-s1000>
+
+
+  *   Bank Indonesia surprises market with rate cut to back Prabowo's growt=
+h goal - BT<https://www.businesstimes.com.sg/international/asean/bank-indon=
+esia-surprises-market-rate-cut-back-prabowos-growth-goal>
+
+
+  *   Proposals sought to develop Changi East Urban District next to T5 - B=
+T<https://www.businesstimes.com.sg/companies-markets/proposals-sought-devel=
+op-changi-east-urban-district-next-t5>
+
+
+  *   Thai data centre capacity may triple on surging demand for AI - BT<ht=
+tps://www.businesstimes.com.sg/international/asean/thai-data-centre-capacit=
+y-may-triple-surging-demand-ai>
+
+
+  *   Thai Central Bank Says More Easing Only If Outlook Worsens - BB<https=
+://blinks.bloomberg.com/news/stories/T1A0E5GOT0JK>
+
+
+  *   Thailand, US to Discuss Local Content Rules Next Week: Pichai - BB<ht=
+tps://blinks.bloomberg.com/news/stories/T1ABG9GOYMTE>
+
+
+  *   Malaysia's Gamuda, SD Guthrie to Develop Solar Power Assets - BB<http=
+s://blinks.bloomberg.com/news/stories/T1A3XEGOYMTC>
+
+
+  *   PLDT Says Fintech Arm Maya Has Aspirations to Go Public - BB<https://=
+blinks.bloomberg.com/news/stories/T19VI1GOYMU6>
+
+
+
+
+DBSV FLOW SHOW
+Top Buy & Top Sell
+As of the last trading day, stocks traded on DBSV desk by value
+
+
+
+Top Buys
+
+Top Sells
+
+Singapore
+
+
+
+
+
+1
+
+UOB
+
+CLAR
+
+2
+
+YZJFH
+
+OCBC
+
+3
+
+CSE
+
+FCT
+
+Hong Kong
+
+
+
+
+
+1
+
+JD (9618)
+
+Wanguo Gold (3939)
+
+2
+
+VOBILE (3738)
+
+Hua Hong Semi (1347)
+
+3
+
+Pop Mart (9992)
+
+JL Mag (6680)
+
+Indonesia
+
+
+
+
+
+1
+
+SGRO
+
+PANI
+
+2
+
+TOWR
+
+CDIA
+
+3
+
+PTRO
+
+CTRA
+
+Thailand
+
+
+
+
+
+1
+
+AEONTS
+
+KTB
+
+2
+
+BDMS
+
+PTTEP
+
+3
+
+PTTEP
+
+KTB
+
+
+
+
+CONFIDENTIAL NOTE:
+The information contained in this email is intended only for the use of the=
+ individual or entity named above and may contain information that is privi=
+leged, confidential and exempt from disclosure under applicable law. If the=
+ reader of this message is not the intended recipient, you are hereby notif=
+ied that any dissemination, distribution or copying of this communication i=
+s strictly prohibited. If you have received this message in error, please i=
+mmediately notify the sender and delete the mail. Thank you.
+
+--_000_SI6PR02MB78915820066AED2CF9ED6E21A732ASI6PR02MB7891apcp_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+<meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered medium)">
+<!--[if !mso]><style>v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style><![endif]--><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Aptos;}
+@font-face
+	{font-family:"\@DengXian";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Tiempo;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;
+	mso-ligatures:standardcontextual;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Aptos",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 72.0pt 72.0pt 72.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+/* List Definitions */
+@list l0
+	{mso-list-id:129052931;
+	mso-list-type:hybrid;
+	mso-list-template-ids:522515104 1208549377 1208549379 1208549381 120854937=
+7 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l0:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l0:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l0:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l0:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l0:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l0:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l0:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l0:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l1
+	{mso-list-id:185023899;
+	mso-list-type:hybrid;
+	mso-list-template-ids:490916276 1699120146 183261838 1270659254 -173629780=
+2 -332656256 -1041958742 1278001250 49054042 -591771602;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:18.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l1:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:-;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:18.0pt;
+	text-indent:-18.0pt;
+	font-family:"Arial",sans-serif;
+	mso-bidi-font-family:"Times New Roman";}
+@list l1:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:90.0pt;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l1:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:126.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l1:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:162.0pt;
+	text-indent:-18.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l1:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:198.0pt;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l1:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:234.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l1:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:270.0pt;
+	text-indent:-18.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l1:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:306.0pt;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l2
+	{mso-list-id:302003352;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-950920234 1208549377 1208549379 1208549381 12085493=
+77 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:18.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l2:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:54.0pt;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l2:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:90.0pt;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l2:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:126.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l2:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:162.0pt;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l2:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:198.0pt;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l2:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:234.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l2:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:270.0pt;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l2:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:306.0pt;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l3
+	{mso-list-id:700668595;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-320558180 -914305984 1274305584 388394830 173660217=
+6 -2097776914 -135868540 -1902590088 -146642026 -518373260;}
+@list l3:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:18.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l3:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:54.0pt;
+	text-indent:-18.0pt;
+	font-family:"Cambria Math",serif;}
+@list l3:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:90.0pt;
+	text-indent:-18.0pt;
+	font-family:Tiempo;}
+@list l3:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:126.0pt;
+	text-indent:-18.0pt;
+	font-family:Tiempo;}
+@list l3:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:162.0pt;
+	text-indent:-18.0pt;
+	font-family:"Cambria Math",serif;}
+@list l3:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:198.0pt;
+	text-indent:-18.0pt;
+	font-family:Tiempo;}
+@list l3:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:234.0pt;
+	text-indent:-18.0pt;
+	font-family:Tiempo;}
+@list l3:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:270.0pt;
+	text-indent:-18.0pt;
+	font-family:"Cambria Math",serif;}
+@list l3:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:306.0pt;
+	text-indent:-18.0pt;
+	font-family:Tiempo;}
+@list l4
+	{mso-list-id:825785498;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1880847834 2100067358 -130242068 1277308518 1564003=
+178 763893652 -143723446 1826393192 398104158 1081489960;}
+@list l4:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\00B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:18.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;
+	color:windowtext;
+	mso-ansi-language:EN-SG;}
+@list l4:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:54.0pt;
+	text-indent:-18.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l4:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:90.0pt;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l4:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:126.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l4:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:162.0pt;
+	text-indent:-18.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l4:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:198.0pt;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l4:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:234.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l4:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:270.0pt;
+	text-indent:-18.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l4:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:306.0pt;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l5
+	{mso-list-id:1585335957;
+	mso-list-type:hybrid;
+	mso-list-template-ids:60073684 -1345537250 -264986466 1015589680 -10924496=
+76 708085150 2007115364 522993956 -1756190814 1912906402;}
+@list l5:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\00B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:18.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;
+	color:windowtext;}
+@list l5:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:54.0pt;
+	text-indent:-18.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l5:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:90.0pt;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l5:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:126.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l5:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:162.0pt;
+	text-indent:-18.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l5:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:198.0pt;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l5:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:234.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l5:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:270.0pt;
+	text-indent:-18.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l5:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:306.0pt;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l6
+	{mso-list-id:1627734662;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1150882514 1123294294 1208549379 1208549381 1208549=
+377 1208549379 1208549381 1208549377 1208549379 1208549381;}
+@list l6:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\00B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:18.0pt;
+	text-indent:-18.0pt;
+	font-family:Symbol;
+	color:windowtext;}
+@list l6:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l6:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l6:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l6:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l6:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l6:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l6:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l6:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-SG" link=3D"#467886" vlink=3D"#96607D" style=3D"word-wrap:=
+break-word">
+<div class=3D"WordSection1">
+<div align=3D"center">
+<table class=3D"MsoNormalTable" border=3D"0" cellspacing=3D"0" cellpadding=
+=3D"0" width=3D"606" style=3D"width:454.75pt;border-collapse:collapse">
+<tbody>
+<tr style=3D"height:21.75pt">
+<td width=3D"425" colspan=3D"2" rowspan=3D"2" valign=3D"top" style=3D"width=
+:318.7pt;padding:0cm 5.4pt 0cm 5.4pt;height:21.75pt">
+<p class=3D"MsoNormal" style=3D"line-height:115%"><span style=3D"font-size:=
+11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-ligatu=
+res:none"><img width=3D"173" height=3D"57" style=3D"width:1.802in;height:.5=
+937in" id=3D"Picture_x0020_1801335828" src=3D"cid:image001.jpg@01DC1280.187=
+99F90"></span><span style=3D"font-size:10.0pt;line-height:115%;font-family:=
+&quot;Arial&quot;,sans-serif;mso-ligatures:none"><o:p></o:p></span></p>
+</td>
+<td width=3D"181" valign=3D"top" style=3D"width:136.05pt;padding:0cm 5.4pt =
+0cm 5.4pt;height:21.75pt">
+<p class=3D"MsoNormal" align=3D"right" style=3D"text-align:right;line-heigh=
+t:115%"><span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;=
+Arial&quot;,sans-serif;color:#C00000;mso-ligatures:none">21 August 2025
+<o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:21.75pt">
+<td width=3D"181" valign=3D"top" style=3D"width:136.05pt;padding:0cm 5.4pt =
+0cm 5.4pt;height:21.75pt">
+<p class=3D"MsoNormal" align=3D"right" style=3D"text-align:right;line-heigh=
+t:115%"><b><span style=3D"font-size:14.0pt;line-height:115%;font-family:&qu=
+ot;Arial&quot;,sans-serif;mso-ligatures:none">DBSV Sales Note</span></b><b>=
+<span style=3D"font-size:14.0pt;line-height:115%;font-family:Tiempo;mso-lig=
+atures:none"><o:p></o:p></span></b></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"606" colspan=3D"3" valign=3D"top" style=3D"width:454.75pt;padd=
+ing:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"line-height:115%"><span style=3D"font-size:=
+11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-ligatu=
+res:none"><img width=3D"592" height=3D"27" style=3D"width:6.1666in;height:.=
+2812in" id=3D"Picture_x0020_1824658217" src=3D"cid:image002.jpg@01DC1280.18=
+799F90"></span><span style=3D"font-size:10.0pt;line-height:115%;font-family=
+:Tiempo;mso-ligatures:none"><o:p></o:p></span></p>
+<p class=3D"MsoNormal" align=3D"center" style=3D"text-align:center;line-hei=
+ght:115%"><span style=3D"font-size:11.0pt;line-height:115%;font-family:&quo=
+t;Arial&quot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:49.15pt">
+<td width=3D"425" colspan=3D"2" valign=3D"top" style=3D"width:318.7pt;paddi=
+ng:0cm 5.4pt 0cm 5.4pt;height:49.15pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><b><i=
+><span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&q=
+uot;,sans-serif;mso-ligatures:none">TOP IDEA<o:p></o:p></span></i></b></p>
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><b><s=
+pan style=3D"font-size:16.0pt;line-height:115%;font-family:&quot;Arial&quot=
+;,sans-serif;color:#C00000;mso-ligatures:none">SATS Ltd: Earnings beat on c=
+ontinued market share gains and frontloading<o:p></o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><a hr=
+ef=3D"https://www.dbs.com/insightsdirect/company/TR4295888033?pagesec=3Dwha=
+tsnew&amp;pagesecid=3D27434"><span style=3D"font-size:11.0pt;line-height:11=
+5%;font-family:&quot;Arial&quot;,sans-serif;color:windowtext;mso-ligatures:=
+none;text-decoration:none"><img border=3D"0" width=3D"77" height=3D"26" sty=
+le=3D"width:.802in;height:.2708in" id=3D"Picture_x0020_1586409635" src=3D"c=
+id:image003.png@01DC1280.18799F90"></span></a><span style=3D"font-size:10.0=
+pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-ligatures:=
+none"><o:p></o:p></span></p>
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-right:16.8pt;margin-left:-18.0pt;ms=
+o-add-space:auto;text-align:justify;text-justify:inter-ideograph;line-heigh=
+t:115%;mso-list:l4 level1 lfo1">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">1QFY26 core PATMI rose 20% to SGD 70.5m,=
+ ahead of expectations<o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"mso-margin-top-alt:0cm;margin-right:16.8pt;=
+margin-bottom:0cm;margin-left:18.0pt;margin-bottom:.0001pt;mso-add-space:au=
+to;text-align:justify;text-justify:inter-ideograph;line-height:115%">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-right:16.8pt;margin-left:-18.0pt;ms=
+o-add-space:auto;text-align:justify;text-justify:inter-ideograph;line-heigh=
+t:115%;mso-list:l4 level1 lfo1">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">Revenue grew 9.9% yoy led by cargo and g=
+round handling<o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;text-align:justify;text=
+-justify:inter-ideograph;line-height:115%">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-right:16.8pt;margin-left:-18.0pt;te=
+xt-align:justify;text-justify:inter-ideograph;line-height:115%;mso-list:l4 =
+level1 lfo1">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">Currently we have a BUY rating with TP o=
+f S$3.50; More updates to follow after the analyst briefing<o:p></o:p></spa=
+n></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;text-align:justify;text=
+-justify:inter-ideograph;line-height:115%">
+<b><span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial=
+&quot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;text-align:justify;text=
+-justify:inter-ideograph;line-height:115%">
+<b><span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial=
+&quot;,sans-serif;mso-ligatures:none">What we think:
+</span></b><span style=3D"font-size:10.0pt;line-height:115%;font-family:&qu=
+ot;Arial&quot;,sans-serif;mso-ligatures:none">1QFY26 core PATMI of SGD70.5m=
+n (&#43;20.0% y/y) exceeded expectations, forming 27.5% of the street&#8217=
+;s full-year projection, supported by robust air cargo
+ volumes and an uplift in pricing. Group revenue climbed 9.9% y/y to SGD1.5=
+bn, primarily driven by a strong showing in SATS Gateway segment, with carg=
+o handling and ground handling revenue up 12.2% y/y to SGD780.4mn and 9.2% =
+y/y to SGD397.6mn respectively,
+ underpinned by higher cargo tonnage (&#43;10.4% y/y - EMEAA &#43;21.1% and=
+ APAC &#43;6.6%, Americas &#43;1.0%), and an increase in yields (ground: &#=
+43;6.5% y/y, cargo: &#43;1.7% y/y). Both Gateway and Food divisions saw an =
+increase in operating margins, with Segment EBIT margins
+ expanded 1.0ppt in Gateway and 0.8ppt in Food, helped by improved pricing,=
+ a favourable mix shift toward aviation-related volumes, and operating scal=
+e. Free cash flow was &#8211;SGD4.5mn, reversing from &#43;SGD45.0mn a year=
+ ago, due to temporary payment delays from
+ customers, which have since normalised.<o:p></o:p></span></p>
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;text-align:justify;text=
+-justify:inter-ideograph;line-height:115%">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;text-align:justify;text=
+-justify:inter-ideograph;line-height:115%">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">SATS remains well-positioned to outperfo=
+rm despite softening cargo momentum. We note that SATS' cargo volume growth=
+ continues to track ahead of the sector, consistently
+ maintaining a 5&#8211;8% positive delta to industry growth for the past se=
+ven quarters, as the group continues to not only clinch new customers (incl=
+uding the Cathay Group, Emirates, and Turkish Airlines in the most recent q=
+uarter), but also expand wallet share
+ among existing customers by capitalising on its extensive network. While t=
+here continues to be considerable uncertainty regarding global trade and ai=
+r cargo demand (the WTO expects total merchandise trade volumes to shrink b=
+y 0.2%, while IATA has revised its
+ 2025 cargo volume growth estimate to &#43;0.7% y/y, down from 6.0% previou=
+sly), SATS&#8217; track record suggests it should be able to sustain mid-si=
+ngle-digit cargo tonnage growth despite the broader slowdown. Air travel de=
+mand also remains resilient despite macroeconomic
+ headwinds, with airline forward bookings indicating that it should remain =
+firm over the next 1&#8211;2 quarters. Additionally, further deleveraging a=
+nd refinancing of upcoming debt (c.56% of debt maturing over the next twelv=
+e months) should also accelerate bottom-line
+ growth. We have a Buy call with S$3.50 TP.</span><span style=3D"font-size:=
+11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-ligatu=
+res:none"><o:p></o:p></span></p>
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;text-align:justify;text=
+-justify:inter-ideograph;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+<td width=3D"181" valign=3D"top" style=3D"width:136.05pt;padding:0cm 5.4pt =
+0cm 5.4pt;height:49.15pt">
+<p class=3D"MsoNormal" style=3D"line-height:115%"><b><span style=3D"font-si=
+ze:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;color:#=
+C00000;mso-ligatures:none"><o:p>&nbsp;</o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><b><span style=3D"font-si=
+ze:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;color:#=
+C00000;mso-ligatures:none">Today&#8217;s Events
+<o:p></o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><span style=3D"font-size:=
+6.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;color:#C000=
+00;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;mso=
+-list:l1 level1 lfo2">
+<b><span style=3D"font-size:11.0pt;font-family:&quot;Arial&quot;,sans-serif=
+;mso-ligatures:none">3:00pm
+</span></b><span style=3D"font-size:11.0pt;font-family:&quot;Arial&quot;,sa=
+ns-serif;mso-ligatures:none">&#8211; JD Logistics (2618 HK)</span><span sty=
+le=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-ligatur=
+es:none"><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto"><spa=
+n style=3D"font-size:6.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-lig=
+atures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"color:black;margin-left:-18.0pt;mso-add-sp=
+ace:auto;line-height:115%;mso-list:l1 level1 lfo2">
+<b><span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial=
+&quot;,sans-serif;color:windowtext;mso-ligatures:none">4:00pm
+</span></b><span style=3D"font-size:11.0pt;line-height:115%;font-family:&qu=
+ot;Arial&quot;,sans-serif;color:windowtext;mso-ligatures:none">&#8211; Digi=
+tal Assets Update 3Q25: Embracing tokenization and stablecoins
+</span><span style=3D"font-size:10.0pt;line-height:115%;font-family:Tiempo;=
+mso-ligatures:none"><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal"><b><span style=3D"font-size:11.0pt;font-family:&quot=
+;Arial&quot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></b></p=
+>
+<p class=3D"MsoNormal"><b><span style=3D"font-size:11.0pt;font-family:&quot=
+;Arial&quot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></b></p=
+>
+<p class=3D"MsoNormal"><b><span style=3D"font-size:11.0pt;font-family:&quot=
+;Arial&quot;,sans-serif;color:#C00000;mso-ligatures:none">22 August 2025<o:=
+p></o:p></span></b></p>
+<p class=3D"MsoNormal"><b><span style=3D"font-size:6.0pt;font-family:&quot;=
+Arial&quot;,sans-serif;color:#C00000;mso-ligatures:none"><o:p>&nbsp;</o:p><=
+/span></b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;mso=
+-list:l1 level1 lfo2">
+<b><span style=3D"font-size:11.0pt;font-family:&quot;Arial&quot;,sans-serif=
+;mso-ligatures:none">9:30am
+</span></b><span style=3D"font-size:11.0pt;font-family:&quot;Arial&quot;,sa=
+ns-serif;mso-ligatures:none">&#8211; Tongcheng Travel (780 HK)
+<span style=3D"color:#C00000">(Virtual / Physical in HK)</span></span><span=
+ style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-lig=
+atures:none"><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto"><spa=
+n style=3D"font-size:6.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-lig=
+atures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;mso=
+-list:l1 level1 lfo2">
+<b><span style=3D"font-size:11.0pt;font-family:&quot;Arial&quot;,sans-serif=
+;mso-ligatures:none">10:15am
+</span></b><span style=3D"font-size:11.0pt;font-family:&quot;Arial&quot;,sa=
+ns-serif;mso-ligatures:none">&#8211; Midland Holdings (1200 HK)
+<span style=3D"color:#C00000">(Virtual / Physical in HK)</span></span><span=
+ style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-lig=
+atures:none"><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto"><spa=
+n style=3D"font-size:6.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-lig=
+atures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;mso=
+-list:l1 level1 lfo2">
+<b><span style=3D"font-size:11.0pt;font-family:&quot;Arial&quot;,sans-serif=
+;mso-ligatures:none">11:15am
+</span></b><span style=3D"font-size:11.0pt;font-family:&quot;Arial&quot;,sa=
+ns-serif;mso-ligatures:none">&#8211; RoboSense Technology (2498 HK)</span><=
+span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso=
+-ligatures:none"><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal"><span style=3D"font-size:6.0pt;font-family:&quot;Ari=
+al&quot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;mso=
+-list:l1 level1 lfo2">
+<b><span style=3D"font-size:11.0pt;font-family:&quot;Arial&quot;,sans-serif=
+;mso-ligatures:none">4:00pm
+</span></b><span style=3D"font-size:11.0pt;font-family:&quot;Arial&quot;,sa=
+ns-serif;mso-ligatures:none">&#8211; Yeahka (9923 HK)
+<span style=3D"color:#C00000">(Physical in HK)</span></span><span style=3D"=
+font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-ligatures:non=
+e"><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><span style=3D"font-size:=
+11.0pt;line-height:115%;font-family:Tiempo;color:black;mso-ligatures:none">=
+<o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><span style=3D"font-size:=
+11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;color:blac=
+k;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><span style=3D"font-size:=
+11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;color:blac=
+k;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><span style=3D"font-size:=
+11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;color:blac=
+k;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal" style=3D"margin-left:5.15pt;line-height:115%"><span =
+style=3D"font-size:11.0pt;line-height:115%;font-family:Tiempo;mso-ligatures=
+:none"><a href=3D"https://www.dbs.com/insightsdirect/corporateaccess"><span=
+ style=3D"font-family:&quot;Arial&quot;,sans-serif;color:#C00000">Click
+ here</span></a></span><span style=3D"font-size:11.0pt;line-height:115%;fon=
+t-family:&quot;Arial&quot;,sans-serif;color:black;mso-ligatures:none"> to s=
+ee all of our upcoming corporate and analyst access events!&nbsp;</span><sp=
+an style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;=
+,sans-serif;mso-ligatures:none"><o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:12.45pt">
+<td width=3D"606" colspan=3D"3" valign=3D"top" style=3D"width:454.75pt;padd=
+ing:0cm 5.4pt 0cm 5.4pt;height:12.45pt">
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt;line-height:115%"><span =
+style=3D"font-size:11.0pt;line-height:115%;font-family:Tiempo;mso-ligatures=
+:none"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt;line-height:115%"><span =
+style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sa=
+ns-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"238" valign=3D"top" style=3D"width:178.45pt;padding:0cm 5.4pt =
+0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"line-height:115%"><b><span style=3D"font-si=
+ze:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-lig=
+atures:none">CONSUMER<o:p></o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><b><span style=3D"font-si=
+ze:16.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;color:#=
+C00000;mso-ligatures:none">Foshan Haitian (3288 HK/603288 CH): Brewing the =
+sauce of success<o:p></o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><a href=3D"https://resear=
+chwise.dbsvresearch.com/ResearchManager/DownloadResearch.aspx?E=3Dighjikgbc=
+jj"><span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Aria=
+l&quot;,sans-serif;color:windowtext;mso-ligatures:none;text-decoration:none=
+"><img border=3D"0" width=3D"77" height=3D"26" style=3D"width:.802in;height=
+:.2708in" id=3D"Picture_x0020_1998577390" src=3D"cid:image003.png@01DC1280.=
+18799F90"></span></a><span style=3D"font-size:10.0pt;line-height:115%;font-=
+family:&quot;Arial&quot;,sans-serif;mso-ligatures:none"><o:p></o:p></span><=
+/p>
+</td>
+<td width=3D"368" colspan=3D"2" valign=3D"top" style=3D"width:276.3pt;paddi=
+ng:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;lin=
+e-height:115%;mso-list:l3 level1 lfo3">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">Leading condiment player in China to rid=
+e on the 7% industry CAGR through 2029F
+<o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;line-=
+height:115%">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;lin=
+e-height:115%;mso-list:l3 level1 lfo3">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">Extensive sales channels and double-digi=
+t online growth to support market share gains<o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt;mso-add-space:auto"><spa=
+n style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-li=
+gatures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;lin=
+e-height:115%;mso-list:l3 level1 lfo3">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">Favourable soybean prices and ongoing ef=
+ficiency to drive &gt;38% gross margin by FY26F
+<o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt;mso-add-space:auto"><spa=
+n style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-li=
+gatures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;lin=
+e-height:115%;mso-list:l3 level1 lfo3">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">Forecast revenue/earnings CAGRs of 8%/12=
+% through FY26F; Fair value: RMB45/HKD40</span><span style=3D"font-size:11.=
+0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-ligatures=
+:none"><o:p></o:p></span></li></ul>
+</td>
+</tr>
+<tr style=3D"height:12.45pt">
+<td width=3D"606" colspan=3D"3" valign=3D"top" style=3D"width:454.75pt;padd=
+ing:0cm 5.4pt 0cm 5.4pt;height:12.45pt">
+<p class=3D"MsoNormal" style=3D"line-height:115%"><b><span style=3D"font-si=
+ze:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-lig=
+atures:none"><o:p>&nbsp;</o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph;line-height:115%">
+<b><span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial=
+&quot;,sans-serif;mso-ligatures:none">What we think:</span></b><span style=
+=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-se=
+rif;mso-ligatures:none"> Haitian is the leading condiments
+ company in China, holding significant market share in key product categori=
+es like soy sauce and oyster sauce. Haitian&#8217;s Haday brand reached ove=
+r 80% of China&#8217;s household. The company has a strong focus on innovat=
+ion, with a portfolio of over 1,450 SKUs that
+ includes traditional and health-focused products. Strong R&amp;D, innovati=
+ve packaging, and an extensive distribution network could further drive rev=
+enue growth. With continued market share gains, product innovation, and omn=
+i-channel expansion, Haitian is positioned
+ for c.8% CAGR <o:p></o:p></span></p>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph;line-height:115%">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">revenue growth through FY26F. Favourable=
+ raw material costs and product mix enhancement could drive a faster earnin=
+gs CAGR of 12%.<o:p></o:p></span></p>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph;line-height:115%">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph;line-height:115%">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">The Chinese condiments market is expecte=
+d to grow at a CAGR of 7% through 2029F, driven by rising incomes, healthie=
+r consumption trends, and growing demand from
+ the foodservice industry. Haitian is also looking to expand internationall=
+y, targeting high-growth markets like Southeast Asia and Latin America. Pot=
+ential share price drivers include the continuation of channel expansion an=
+d margin improvements with the increase
+ in global soybean supply, which support teen&#8217;s earnings growth for F=
+Y25. Meanwhile, any future market consolidations will further strengthen Ha=
+itian&#8217;s position in the fragmented condiment market in China. Moreove=
+r, China&#8217;s per-capita condiment consumption
+ remains low relative to developed markets such as Japan and the US - only =
+one-third and one-fifth of their levels - highlighting significant long-ter=
+m growth potential with household incomes continue to rise.<o:p></o:p></spa=
+n></p>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph;line-height:115%">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph;line-height:115%">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">The stock currently trades at 29x forwar=
+d P/E, nearly 1 SD below its historical average valuation of 43x. We consid=
+er 33x 12-month forward P/E to be a fair valuation,
+ c.0.5 SD below the historical average. This implies a fair value of RMB45 =
+for the A-share, or HKD40 for the H-share after applying a 20% A&#8211;H di=
+scount.<o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:12.45pt">
+<td width=3D"606" colspan=3D"3" valign=3D"top" style=3D"width:454.75pt;padd=
+ing:0cm 5.4pt 0cm 5.4pt;height:12.45pt">
+<p class=3D"MsoNormal" style=3D"line-height:115%"><span style=3D"font-size:=
+11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-ligatu=
+res:none"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><span style=3D"font-size:=
+11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-ligatu=
+res:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"238" valign=3D"top" style=3D"width:178.45pt;padding:0cm 5.4pt =
+0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"line-height:115%"><b><span style=3D"font-si=
+ze:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-lig=
+atures:none">FINANCIALS<o:p></o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><b><span style=3D"font-si=
+ze:16.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;color:#=
+C00000;mso-ligatures:none">ZhongAn Online P &amp; C Insurance: 1H25 beat on=
+ strong underwriting &amp; ZA Bank profit turnaround<o:p></o:p></span></b><=
+/p>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><a href=3D"https://www.db=
+s.com/insightsdirect/company/TR5044262919?source=3Dlanding&amp;pagesec=3Dwh=
+atsnew&amp;pagesecid=3D27435"><span style=3D"font-size:11.0pt;line-height:1=
+15%;font-family:&quot;Arial&quot;,sans-serif;color:windowtext;mso-ligatures=
+:none;text-decoration:none"><img border=3D"0" width=3D"77" height=3D"26" st=
+yle=3D"width:.802in;height:.2708in" id=3D"Picture_x0020_1743700101" src=3D"=
+cid:image003.png@01DC1280.18799F90"></span></a><span style=3D"font-size:10.=
+0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-ligatures=
+:none"><o:p></o:p></span></p>
+</td>
+<td width=3D"368" colspan=3D"2" valign=3D"top" style=3D"width:276.3pt;paddi=
+ng:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;lin=
+e-height:115%;mso-list:l3 level1 lfo3">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">1H25 net profit surged 11x y/y to RMB668=
+mn, beating consensus by 35%<o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;line-=
+height:115%">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;lin=
+e-height:115%;mso-list:l3 level1 lfo3">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">Premiums &#43;9.7% y/y on strong health =
+and auto; combined ratio improved 2.3ppts y/y to 95.6%
+<o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt"><span style=3D"font-siz=
+e:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-ligatures:none"><o:p>=
+&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;lin=
+e-height:115%;mso-list:l3 level1 lfo3">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">ZA Bank revenue rose 82.1% y/y to HKD457=
+mn, with net profit of HKD49mn vs. HKD109mn loss in 1H24<o:p></o:p></span><=
+/li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt"><span style=3D"font-siz=
+e:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-ligatures:none"><o:p>=
+&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;lin=
+e-height:115%;mso-list:l3 level1 lfo3">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">Reiterate BUY, TP HKD24</span><span styl=
+e=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none">
+<o:p></o:p></span></li></ul>
+</td>
+</tr>
+<tr style=3D"height:12.45pt">
+<td width=3D"606" colspan=3D"3" valign=3D"top" style=3D"width:454.75pt;padd=
+ing:0cm 5.4pt 0cm 5.4pt;height:12.45pt">
+<p class=3D"MsoNormal" style=3D"line-height:115%"><b><span style=3D"font-si=
+ze:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-lig=
+atures:none"><o:p>&nbsp;</o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph;line-height:115%">
+<b><span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial=
+&quot;,sans-serif;mso-ligatures:none">What we think:</span></b><span style=
+=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-se=
+rif;mso-ligatures:none"> ZhongAn delivered strong results
+ in 1H 2025; results were driven by robust domestic P&amp;C underwriting an=
+d the first-ever half-year net profit at ZA Bank. P&amp;C underwriting prof=
+it rose 97% y/y to RMB681mn, as GWP grew 9.3% y/y and COR improved 2.3ppt y=
+/y to 95.6% (vs. consensus 96.6%).Health
+ and auto premiums rose 38% and 34% y/y, respectively, reflecting better pr=
+oduct mix and continued digital strength. Investment yield was stable at 3.=
+3%, though still soft versus peers.<o:p></o:p></span></p>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph;line-height:115%">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph;line-height:115%">
+<span style=3D"font-size:10.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">Management guided full-year premiums to =
+rise double digits vs 1H&#8217;s &#43;9.3% y/y, which implies accelerated 2=
+H premium growth. Combined ratio is tracking well with
+ a continued improvement trend vs last year. As such we expect P&amp;C unde=
+rwriting to remain solid in 2H, with near mid-teens premium growth and stab=
+le COR vs 2H24. We maintain our forecasts but note upside risk to consensus=
+ earnings given the strong 1H. Maintain
+ our target price of HKD24 at 1.1x 12-month forward P/B with a BUY recommen=
+dation, underpinned by continued P&amp;C underwriting improvement and finte=
+ch monetisation. ZhongAn is trading at 1.1x 12mth forward P/B - a discount =
+to traditional insurer PICC P&amp;C&#8217;s (2328
+ HK, HOLD) 1.3x despite stronger digital growth prospects and improving pro=
+fitability.<o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:12.45pt">
+<td width=3D"606" colspan=3D"3" valign=3D"top" style=3D"width:454.75pt;padd=
+ing:0cm 5.4pt 0cm 5.4pt;height:12.45pt">
+<p class=3D"MsoNormal" style=3D"line-height:115%"><b><span style=3D"font-si=
+ze:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-lig=
+atures:none"><o:p>&nbsp;</o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><b><span style=3D"font-si=
+ze:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-lig=
+atures:none"><o:p>&nbsp;</o:p></span></b></p>
+</td>
+</tr>
+<tr style=3D"height:12.45pt">
+<td width=3D"606" colspan=3D"3" valign=3D"top" style=3D"width:454.75pt;padd=
+ing:0cm 5.4pt 0cm 5.4pt;height:12.45pt">
+<p class=3D"MsoNormal" style=3D"line-height:115%"><span style=3D"font-size:=
+11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-ligatu=
+res:none"><img border=3D"0" width=3D"592" height=3D"27" style=3D"width:6.16=
+66in;height:.2812in" id=3D"Picture_x0020_1087421064" src=3D"cid:image004.jp=
+g@01DC1280.18799F90"><o:p></o:p></span></p>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><span style=3D"font-size:=
+11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-ligatu=
+res:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:12.45pt">
+<td width=3D"606" colspan=3D"3" valign=3D"top" style=3D"width:454.75pt;padd=
+ing:0cm 5.4pt 0cm 5.4pt;height:12.45pt">
+<p class=3D"MsoNormal"><b><i><span style=3D"font-size:10.0pt;font-family:&q=
+uot;Arial&quot;,sans-serif;mso-ligatures:none">GLOBAL</span></i></b><span s=
+tyle=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-ligat=
+ures:none"><o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Ar=
+ial&quot;,sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&n=
+bsp;</o:p></span></p>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;text-=
+align:justify;text-justify:inter-ideograph;text-indent:-18.0pt;mso-list:l0 =
+level1 lfo4">
+<![if !supportLists]><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-fa=
+mily:Symbol;color:black;mso-ligatures:none"><span style=3D"mso-list:Ignore"=
+>&middot;<span style=3D"font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=3D"EN-US" style=3D"font-size:10.0=
+pt;font-family:&quot;Arial&quot;,sans-serif;color:black;mso-ligatures:none"=
+>Fed minutes show majority of FOMC saw inflation as greater risk &#8211;
+</span><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&quot;Ari=
+al&quot;,sans-serif;color:#C00000;mso-ligatures:none"><a href=3D"https://ww=
+w.businesstimes.com.sg/international/fed-minutes-show-majority-fomc-saw-inf=
+lation-greater-risk"><span style=3D"color:#C00000">BT</span></a>
+</span><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&quot;Ari=
+al&quot;,sans-serif;color:black;mso-ligatures:none"><o:p></o:p></span></p>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph"><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&quot;Aria=
+l&quot;,sans-serif;color:black;mso-ligatures:none"><o:p>&nbsp;</o:p></span>=
+</p>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;text-=
+align:justify;text-justify:inter-ideograph;text-indent:-18.0pt;mso-list:l0 =
+level1 lfo4">
+<![if !supportLists]><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-fa=
+mily:Symbol;color:black;mso-ligatures:none"><span style=3D"mso-list:Ignore"=
+>&middot;<span style=3D"font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=3D"EN-US" style=3D"font-size:10.0=
+pt;font-family:&quot;Arial&quot;,sans-serif;color:black;mso-ligatures:none"=
+>Trump calls on Fed governor Cook to resign &#8211;
+</span><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&quot;Ari=
+al&quot;,sans-serif;color:#C00000;mso-ligatures:none"><a href=3D"https://ww=
+w.businesstimes.com.sg/international/trump-calls-fed-governor-cook-resign">=
+<span style=3D"color:#C00000">BT</span></a>
+</span><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&quot;Ari=
+al&quot;,sans-serif;color:black;mso-ligatures:none"><o:p></o:p></span></p>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph"><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&quot;Aria=
+l&quot;,sans-serif;color:black;mso-ligatures:none"><o:p>&nbsp;</o:p></span>=
+</p>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;text-=
+align:justify;text-justify:inter-ideograph;text-indent:-18.0pt;mso-list:l0 =
+level1 lfo4">
+<![if !supportLists]><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-fa=
+mily:Symbol;color:black;mso-ligatures:none"><span style=3D"mso-list:Ignore"=
+>&middot;<span style=3D"font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=3D"EN-US" style=3D"font-size:10.0=
+pt;font-family:&quot;Arial&quot;,sans-serif;color:black;mso-ligatures:none"=
+>US budget deficit forecast US$1 trillion higher over next decade, watchdog=
+ says &#8211;
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><a href=3D"https://www.businesstimes.com.sg/intern=
+ational/us-budget-deficit-forecast-us1-trillion-higher-over-next-decade-wat=
+chdog-says"><span lang=3D"EN-US" style=3D"color:#C00000">BT</span></a><span=
+ style=3D"color:#C00000">
+</span></span><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&q=
+uot;Arial&quot;,sans-serif;color:black;mso-ligatures:none"><o:p></o:p></spa=
+n></p>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph"><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&quot;Aria=
+l&quot;,sans-serif;color:black;mso-ligatures:none"><o:p>&nbsp;</o:p></span>=
+</p>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;text-=
+align:justify;text-justify:inter-ideograph;text-indent:-18.0pt;mso-list:l0 =
+level1 lfo4">
+<![if !supportLists]><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-fa=
+mily:Symbol;color:black;mso-ligatures:none"><span style=3D"mso-list:Ignore"=
+>&middot;<span style=3D"font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=3D"EN-US" style=3D"font-size:10.0=
+pt;font-family:&quot;Arial&quot;,sans-serif;color:black;mso-ligatures:none"=
+>Trump embarks on US$104 million bond-buying spree while in office &#8211;
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><a href=3D"https://www.businesstimes.com.sg/intern=
+ational/trump-embarks-us104-million-bond-buying-spree-while-office"><span l=
+ang=3D"EN-US" style=3D"color:#C00000">BT</span></a><span style=3D"color:#C0=
+0000">
+</span></span><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&q=
+uot;Arial&quot;,sans-serif;color:black;mso-ligatures:none"><o:p></o:p></spa=
+n></p>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;text-=
+align:justify;text-justify:inter-ideograph">
+<b><i><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&quot;Aria=
+l&quot;,sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbs=
+p;</o:p></span></i></b></p>
+<p class=3D"MsoNormal"><b><i><span style=3D"font-size:10.0pt;font-family:&q=
+uot;Arial&quot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></i>=
+</b></p>
+<p class=3D"MsoNormal"><b><i><span style=3D"font-size:10.0pt;font-family:&q=
+uot;Arial&quot;,sans-serif;mso-ligatures:none">HK/CHINA</span></i></b><b><i=
+><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;m=
+so-ligatures:none;mso-fareast-language:ZH-TW"><o:p></o:p></span></i></b></p=
+>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Ar=
+ial&quot;,sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&n=
+bsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l5 level1 lfo5">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none;mso-fareast-language:ZH-TW">Pop Mart International Group L=
+td (9992 HK): A global culture icon accelerating expansion &#8211;
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><a href=3D"https://www.dbs.com/insightsdirect/comp=
+any/TR5079208968?pagesec=3Dwhatsnew&amp;pagesecid=3D27429"><span style=3D"c=
+olor:#C00000;mso-fareast-language:ZH-TW">ID</span></a></span><b><i><span st=
+yle=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-ligatu=
+res:none;mso-fareast-language:ZH-TW"><o:p></o:p></span></i></b></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;text-=
+align:justify;text-justify:inter-ideograph">
+<b><i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-se=
+rif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span>=
+</i></b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l5 level1 lfo5">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none;mso-fareast-language:ZH-TW">China Real Estate: China Prope=
+rty Weekly Digest &#8211; Slow project launches<b><span style=3D"color:#447=
+1C4">
+</span></b>&#8211; </span><span style=3D"font-size:10.0pt;font-family:&quot=
+;Arial&quot;,sans-serif;mso-ligatures:none"><a href=3D"https://www.dbs.com/=
+insightsdirect/industry/IN8dda5aca210664b354368c96b05439e1?source=3Dlanding=
+&amp;pagesec=3Dwhatsnew&amp;pagesecid=3D27419"><span style=3D"color:#C00000=
+;mso-fareast-language:ZH-TW">ID</span></a></span><b><span style=3D"font-siz=
+e:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-ligatures:none;mso-fa=
+reast-language:ZH-TW"><o:p></o:p></span></b></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;text-=
+align:justify;text-justify:inter-ideograph">
+<b><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif=
+;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span></b=
+></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l5 level1 lfo5">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none;mso-fareast-language:ZH-TW">ZTO Express (Cayman) Inc (2057=
+ HK / ZTO US) &lt;Results First Take&gt;: Facing Headwinds, but Confident i=
+n Long-Term Growth<b><span style=3D"color:#4471C4">
+</span></b>&#8211; </span><span style=3D"font-size:10.0pt;font-family:&quot=
+;Arial&quot;,sans-serif;mso-ligatures:none"><a href=3D"https://www.dbs.com/=
+insightsdirect/company/TR5052135281?source=3Dlanding&amp;pagesec=3Dwhatsnew=
+&amp;pagesecid=3D27420"><span style=3D"color:#C00000;mso-fareast-language:Z=
+H-TW">ID</span></a></span><b><i><span style=3D"font-size:10.0pt;font-family=
+:&quot;Arial&quot;,sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW=
+"><o:p></o:p></span></i></b></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;text-=
+align:justify;text-justify:inter-ideograph">
+<b><i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-se=
+rif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span>=
+</i></b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l5 level1 lfo5">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none;mso-fareast-language:ZH-TW">Futu Holdings Ltd (FUTU US) &l=
+t;Earnings First Take&gt;: 2Q25 results beat
+<b><span style=3D"color:#4471C4">&nbsp;</span></b>&#8211; </span><span styl=
+e=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-ligature=
+s:none"><a href=3D"https://www.dbs.com/insightsdirect/company/TR5067491293?=
+source=3Dlanding&amp;pagesec=3Dwhatsnew&amp;pagesecid=3D27424"><span style=
+=3D"color:#C00000;mso-fareast-language:ZH-TW">ID</span></a></span><b><i><sp=
+an style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-l=
+igatures:none;mso-fareast-language:ZH-TW"><o:p></o:p></span></i></b></li></=
+ul>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;text-=
+align:justify;text-justify:inter-ideograph">
+<b><i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-se=
+rif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span>=
+</i></b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l5 level1 lfo5">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none;mso-fareast-language:ZH-TW">ANTA Sports Products Ltd (2020=
+ HK): A Read-through on Amer Sports&#8217; 2Q25 (Beat)<b><span style=3D"col=
+or:#4471C4">
+</span></b>&#8211; </span><span style=3D"font-size:10.0pt;font-family:&quot=
+;Arial&quot;,sans-serif;mso-ligatures:none"><a href=3D"https://www.dbs.com/=
+insightsdirect/company/TR5000431356?source=3Dlanding&amp;pagesec=3Dwhatsnew=
+&amp;pagesecid=3D27426"><span style=3D"color:#C00000;mso-fareast-language:Z=
+H-TW">ID</span></a></span><b><i><span style=3D"font-size:10.0pt;font-family=
+:&quot;Arial&quot;,sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW=
+"><o:p></o:p></span></i></b></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt;mso-add-space:auto"><b><=
+i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;=
+mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span></i>=
+</b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l5 level1 lfo5">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none;mso-fareast-language:ZH-TW">Champion Real Estate Investmen=
+t Trust (2778 HK): Result Analysis: Rental earnings drag more than offset i=
+nterest cost savings &nbsp;&#8211;
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><a href=3D"https://www.dbs.com/insightsdirect/comp=
+any/TR4295871918?source=3Dlanding&amp;pagesec=3Dwhatsnew&amp;pagesecid=3D27=
+428"><span style=3D"color:#C00000;mso-fareast-language:ZH-TW">ID</span></a>=
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;color:#C00000;mso-ligatures:none;mso-fareast-language:ZH-TW">
+</span><b><i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,=
+sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p></o:p></span=
+></i></b></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt;mso-add-space:auto"><b><=
+i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;=
+mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span></i>=
+</b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l5 level1 lfo5">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none;mso-fareast-language:ZH-TW">Kerry Properties Ltd (683 HK):=
+ Interim Results First Take &#8211;
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><a href=3D"https://www.dbs.com/insightsdirect/comp=
+any/TR4295871073?source=3Dlanding&amp;pagesec=3Dwhatsnew&amp;pagesecid=3D27=
+430"><span style=3D"color:#C00000;mso-fareast-language:ZH-TW">ID</span></a>=
+</span><b><i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,=
+sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p></o:p></span=
+></i></b></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt;mso-add-space:auto"><b><=
+i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;=
+mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span></i>=
+</b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l5 level1 lfo5">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none;mso-fareast-language:ZH-TW">Xiaomi Corp (1810 HK): AloT gr=
+oss margin resilience, robust EV ramp underpins 2H momentum -
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><a href=3D"https://www.dbs.com/insightsdirect/comp=
+any/TR5040952859?source=3Dlanding&amp;pagesec=3Dwhatsnew&amp;pagesecid=3D27=
+432"><span style=3D"color:#C00000;mso-fareast-language:ZH-TW">ID</span></a>=
+</span><b><i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,=
+sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p></o:p></span=
+></i></b></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt;mso-add-space:auto"><b><=
+i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;=
+mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span></i>=
+</b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l5 level1 lfo5">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none;mso-fareast-language:ZH-TW">GDS Holdings Ltd (9698 HK / GD=
+S US) &lt;Earnings First Take&gt;: 2Q25 result sligt beat, DayOne growth ab=
+ove expections -
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><a href=3D"https://www.dbs.com/insightsdirect/comp=
+any/TR5036393356?source=3Dlanding&amp;pagesec=3Dwhatsnew&amp;pagesecid=3D27=
+437"><span style=3D"color:#C00000;mso-fareast-language:ZH-TW">ID</span></a>=
+</span><b><i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,=
+sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p></o:p></span=
+></i></b></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt;mso-add-space:auto"><spa=
+n style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;color:=
+black;border:none windowtext 1.0pt;padding:0cm;mso-ligatures:none"><o:p>&nb=
+sp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l5 level1 lfo5">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;co=
+lor:black;border:none windowtext 1.0pt;padding:0cm;mso-ligatures:none">Hong=
+ Kong&#8217;s stock rally still has room to run on &#8216;reasonable&#8217;=
+ valuations, Templeton says -
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><a href=3D"https://www.scmp.com/business/banking-f=
+inance/article/3322518/hong-kongs-stock-rally-still-has-room-run-reasonable=
+-valuations-templeton-says"><span style=3D"color:#C00000;border:none window=
+text 1.0pt;padding:0cm">SCMP</span></a></span><b><i><span style=3D"font-siz=
+e:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-ligatures:none;mso-fa=
+reast-language:ZH-TW"><o:p></o:p></span></i></b></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt;mso-add-space:auto"><spa=
+n style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;color:=
+black;border:none windowtext 1.0pt;padding:0cm;mso-ligatures:none"><o:p>&nb=
+sp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l5 level1 lfo5">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;co=
+lor:black;border:none windowtext 1.0pt;padding:0cm;mso-ligatures:none">Reco=
+rd yuan loan to Australian miner makes good sense -
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><a href=3D"https://www.scmp.com/opinion/comment/ar=
+ticle/3322499/record-yuan-loan-australian-miner-makes-good-sense"><span sty=
+le=3D"color:#C00000;border:none windowtext 1.0pt;padding:0cm">SCMP</span></=
+a>
+</span><b><i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,=
+sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p></o:p></span=
+></i></b></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt;mso-add-space:auto"><b><=
+i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;=
+mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span></i>=
+</b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l5 level1 lfo5">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none">AIA&#8217;s Hong Kong Sales Lift Profitability as Dividen=
+d Rises -
+<a href=3D"https://blinks.bloomberg.com/news/stories/T1BCGDGOT0JO"><span st=
+yle=3D"color:#C00000">BB</span></a>
+</span><b><i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,=
+sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p></o:p></span=
+></i></b></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt;mso-add-space:auto"><b><=
+i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;=
+mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span></i>=
+</b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l5 level1 lfo5">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none">Pop Mart Shares Hit Record as CEO Announces New Mini Labu=
+bu -
+<a href=3D"https://blinks.bloomberg.com/news/stories/T1A8GDGOT0JK"><span st=
+yle=3D"color:#C00000">BB</span></a></span><i><span style=3D"font-size:10.0p=
+t;font-family:&quot;Arial&quot;,sans-serif;mso-ligatures:none;mso-fareast-l=
+anguage:ZH-TW"><o:p></o:p></span></i></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:36.0pt;mso-add-space:auto"><i><=
+span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso=
+-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span></i></p=
+>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"color:black;margin-left:-18.0pt;mso-add-sp=
+ace:auto;text-align:justify;text-justify:inter-ideograph;mso-list:l2 level1=
+ lfo6">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;co=
+lor:windowtext;mso-ligatures:none">HKEX Set to Ride on Renewed Global Appet=
+ite for China -
+<a href=3D"https://blinks.bloomberg.com/news/stories/T1AA3JGP9VCW"><span st=
+yle=3D"color:#C00000">BB</span></a></span><span style=3D"font-size:10.0pt;f=
+ont-family:&quot;Arial&quot;,sans-serif;mso-ligatures:none;mso-fareast-lang=
+uage:ZH-TW"><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;text-=
+align:justify;text-justify:inter-ideograph">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;co=
+lor:black;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p><=
+/span></p>
+<p class=3D"MsoNormal"><b><span style=3D"font-size:10.0pt;font-family:&quot=
+;Arial&quot;,sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p=
+>&nbsp;</o:p></span></b></p>
+<p class=3D"MsoNormal"><b><i><span style=3D"font-size:10.0pt;font-family:&q=
+uot;Arial&quot;,sans-serif;mso-ligatures:none">ASEAN</span></i></b><b><i><s=
+pan style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;mso-=
+ligatures:none;mso-fareast-language:ZH-TW"><o:p></o:p></span></i></b></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Ar=
+ial&quot;,sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&n=
+bsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;mso=
+-list:l6 level1 lfo7">
+<span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&quot;Arial&quot=
+;,sans-serif;color:black;mso-ligatures:none">Sasseur REIT (SASSR SP) New ca=
+ptain onboard &#8211;
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><a href=3D"https://researchwise.dbsvresearch.com/R=
+esearchManager/DownloadResearch.aspx?E=3Dighihkhab"><span lang=3D"EN-US" st=
+yle=3D"color:#C00000">ID</span></a><span style=3D"color:black">
+</span><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-=
+family:&quot;Arial&quot;,sans-serif;color:black;mso-ligatures:none"><o:p>&n=
+bsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;mso=
+-list:l6 level1 lfo7">
+<span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&quot;Arial&quot=
+;,sans-serif;color:black;mso-ligatures:none">Bank Rakyat Indonesia (BBRI IJ=
+) The elusive recovery</span><span lang=3D"EN-US" style=3D"font-size:10.0pt=
+;font-family:&quot;Arial&quot;,sans-serif;color:#4472C4;mso-ligatures:none"=
+>
+</span><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&quot;Ari=
+al&quot;,sans-serif;color:black;mso-ligatures:none">&#8211;</span><span lan=
+g=3D"EN-US" style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-se=
+rif;color:#C00000;mso-ligatures:none">
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><a href=3D"https://researchwise.dbsvresearch.com/R=
+esearchManager/DownloadResearch.aspx?E=3Digaehkghfhg"><span lang=3D"EN-US" =
+style=3D"color:#C00000">ID</span></a><span style=3D"color:#C00000">
+</span><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-=
+family:&quot;Arial&quot;,sans-serif;color:black;mso-ligatures:none"><o:p>&n=
+bsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;mso=
+-list:l6 level1 lfo7">
+<span lang=3D"EN-US" style=3D"font-size:10.0pt;font-family:&quot;Arial&quot=
+;,sans-serif;color:black;mso-ligatures:none">LH Hotel Leasehold REIT (LHHOT=
+EL TB) Recovery on HOLD &#8211;</span><span lang=3D"EN-US" style=3D"font-si=
+ze:10.0pt;font-family:&quot;Arial&quot;,sans-serif;color:#C00000;mso-ligatu=
+res:none">
+<a href=3D"https://www.dbs.com/insightsdirect/company/TR5048024637?pagesec=
+=3Dwhatsnew&amp;pagesecid=3D27433">
+<span style=3D"color:#C00000">ID</span></a></span><span lang=3D"EN-US" styl=
+e=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;color:black;=
+mso-ligatures:none">
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;text-=
+align:justify;text-justify:inter-ideograph">
+<b><i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-se=
+rif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span>=
+</i></b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"color:black;margin-left:-18.0pt;mso-add-sp=
+ace:auto;text-align:justify;text-justify:inter-ideograph;mso-list:l6 level1=
+ lfo7">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none">Singapore-focused listed companies are having their turn =
+in the spotlight &#8211;
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;color:#C00000;mso-ligatures:none"><a href=3D"https://www.businesstimes=
+.com.sg/companies-markets/singapore-focused-listed-companies-are-having-the=
+ir-turn-spotlight"><span style=3D"color:#C00000">BT</span></a>
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph"><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-se=
+rif;color:black;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"color:black;margin-left:-18.0pt;mso-add-sp=
+ace:auto;text-align:justify;text-justify:inter-ideograph;mso-list:l6 level1=
+ lfo7">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none">Grab system glitch pushes Singapore ride-hailing fares to=
+ S$1,000 &#8211;
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;color:windowtext;mso-ligatures:none"><a href=3D"https://www.businessti=
+mes.com.sg/companies-markets/transport-logistics/grab-system-glitch-pushes-=
+singapore-ride-hailing-fares-s1000"><span style=3D"color:#C00000">BT</span>=
+</a></span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sa=
+ns-serif;mso-ligatures:none">
+<o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;text-=
+align:justify;text-justify:inter-ideograph">
+<b><i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-se=
+rif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span>=
+</i></b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l6 level1 lfo7">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none;mso-fareast-language:ZH-TW">Bank Indonesia surprises marke=
+t with rate cut to back Prabowo&#8217;s growth goal -
+<span style=3D"color:#C00000"><a href=3D"https://www.businesstimes.com.sg/i=
+nternational/asean/bank-indonesia-surprises-market-rate-cut-back-prabowos-g=
+rowth-goal"><span style=3D"color:#C00000">BT</span></a></span><b><i><o:p></=
+o:p></i></b></span></li></ul>
+<p class=3D"MsoNormal" style=3D"margin-left:18.0pt;mso-add-space:auto;text-=
+align:justify;text-justify:inter-ideograph">
+<b><i><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-se=
+rif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&nbsp;</o:p></span>=
+</i></b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"margin-left:-18.0pt;mso-add-space:auto;tex=
+t-align:justify;text-justify:inter-ideograph;mso-list:l6 level1 lfo7">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none;mso-fareast-language:ZH-TW">Proposals sought to develop Ch=
+angi East Urban District next to T5 -
+<span style=3D"color:#C00000"><a href=3D"https://www.businesstimes.com.sg/c=
+ompanies-markets/proposals-sought-develop-changi-east-urban-district-next-t=
+5"><span style=3D"color:#C00000">BT</span></a>
+</span><b><i><o:p></o:p></i></b></span></li></ul>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Ar=
+ial&quot;,sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p>&n=
+bsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"color:black;margin-left:-18.0pt;mso-add-sp=
+ace:auto;text-align:justify;text-justify:inter-ideograph;mso-list:l6 level1=
+ lfo7">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none">Thai data centre capacity may triple on surging demand fo=
+r AI &#8211;
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;color:#C00000;mso-ligatures:none"><a href=3D"https://www.businesstimes=
+.com.sg/international/asean/thai-data-centre-capacity-may-triple-surging-de=
+mand-ai"><span style=3D"color:#C00000">BT</span></a>
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph"><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-se=
+rif;color:black;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"color:black;margin-left:-18.0pt;mso-add-sp=
+ace:auto;text-align:justify;text-justify:inter-ideograph;mso-list:l6 level1=
+ lfo7">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none">Thai Central Bank Says More Easing Only If Outlook Worsen=
+s &#8211;
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;color:#C00000;mso-ligatures:none"><a href=3D"https://blinks.bloomberg.=
+com/news/stories/T1A0E5GOT0JK"><span style=3D"color:#C00000">BB</span></a>
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal"><b><span style=3D"font-size:10.0pt;font-family:&quot=
+;Arial&quot;,sans-serif;mso-ligatures:none;mso-fareast-language:ZH-TW"><o:p=
+>&nbsp;</o:p></span></b></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"color:black;margin-left:-18.0pt;mso-add-sp=
+ace:auto;text-align:justify;text-justify:inter-ideograph;mso-list:l6 level1=
+ lfo7">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none">Thailand, US to Discuss Local Content Rules Next Week: Pi=
+chai &#8211;
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;color:#C00000;mso-ligatures:none"><a href=3D"https://blinks.bloomberg.=
+com/news/stories/T1ABG9GOYMTE"><span style=3D"color:#C00000">BB</span></a>
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph"><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-se=
+rif;color:black;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"color:black;margin-left:-18.0pt;mso-add-sp=
+ace:auto;text-align:justify;text-justify:inter-ideograph;mso-list:l6 level1=
+ lfo7">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none">Malaysia&#8217;s Gamuda, SD Guthrie to Develop Solar Powe=
+r Assets &#8211;
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;color:windowtext;mso-ligatures:none"><a href=3D"https://blinks.bloombe=
+rg.com/news/stories/T1A3XEGOYMTC"><span style=3D"color:#C00000">BB</span></=
+a></span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans=
+-serif;color:#C00000;mso-ligatures:none">
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><o:p></o:p></span></li></ul>
+<p class=3D"MsoNormal" style=3D"text-align:justify;text-justify:inter-ideog=
+raph"><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-se=
+rif;color:black;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+<ul style=3D"margin-top:0cm" type=3D"disc">
+<li class=3D"MsoNormal" style=3D"color:black;margin-left:-18.0pt;mso-add-sp=
+ace:auto;text-align:justify;text-justify:inter-ideograph;mso-list:l6 level1=
+ lfo7">
+<span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-serif;ms=
+o-ligatures:none">PLDT Says Fintech Arm Maya Has Aspirations to Go Public &=
+#8211;
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;color:windowtext;mso-ligatures:none"><a href=3D"https://blinks.bloombe=
+rg.com/news/stories/T19VI1GOYMU6"><span style=3D"color:#C00000">BB</span></=
+a></span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans=
+-serif;color:#C00000;mso-ligatures:none">
+</span><span style=3D"font-size:10.0pt;font-family:&quot;Arial&quot;,sans-s=
+erif;mso-ligatures:none"><o:p></o:p></span></li></ul>
+</td>
+</tr>
+<tr style=3D"height:12.45pt">
+<td width=3D"606" colspan=3D"3" valign=3D"top" style=3D"width:454.75pt;padd=
+ing:0cm 5.4pt 0cm 5.4pt;height:12.45pt">
+<p class=3D"MsoNormal" style=3D"line-height:115%"><span style=3D"font-size:=
+11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-ligatu=
+res:none"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal" style=3D"line-height:115%"><span style=3D"font-size:=
+11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-ligatu=
+res:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:318.75pt">
+<td width=3D"606" colspan=3D"3" valign=3D"top" style=3D"width:454.75pt;padd=
+ing:0cm 5.4pt 0cm 5.4pt;height:318.75pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><b><s=
+pan style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot=
+;,sans-serif;mso-ligatures:none">DBSV FLOW SHOW<o:p></o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><b><s=
+pan style=3D"font-size:16.0pt;line-height:115%;font-family:&quot;Arial&quot=
+;,sans-serif;color:#C00000;mso-ligatures:none">Top Buy &amp; Top Sell</span=
+></b><b><span style=3D"font-size:14.0pt;line-height:115%;font-family:&quot;=
+Arial&quot;,sans-serif;color:#C00000;mso-ligatures:none">
+<o:p></o:p></span></b></p>
+<table class=3D"MsoNormalTable" border=3D"0" cellspacing=3D"0" cellpadding=
+=3D"0" style=3D"border-collapse:collapse">
+<tbody>
+<tr style=3D"height:15.0pt">
+<td width=3D"591" colspan=3D"3" valign=3D"top" style=3D"width:443.45pt;bord=
+er:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none">As of the last trading day, stocks traded on =
+DBSV desk by value</span><span style=3D"font-size:10.0pt;line-height:115%;f=
+ont-family:&quot;Arial&quot;,sans-serif;mso-ligatures:none"><o:p></o:p></sp=
+an></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><b><s=
+pan style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot=
+;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></b></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<b><span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial=
+&quot;,sans-serif;mso-ligatures:none">Top Buys<o:p></o:p></span></b></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<b><span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial=
+&quot;,sans-serif;mso-ligatures:none">Top Sells<o:p></o:p></span></b></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><b><s=
+pan style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot=
+;,sans-serif;mso-ligatures:none">Singapore<o:p></o:p></span></b></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none">1<o:p></o:p></span></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">UOB<o:p></o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">CLAR<o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none">2<o:p></o:p></span></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">YZJFH<o:p></o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">OCBC<o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none">3<o:p></o:p></span></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">CSE<o:p></o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">FCT<o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><b><s=
+pan style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot=
+;,sans-serif;mso-ligatures:none">Hong Kong<o:p></o:p></span></b></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none">1<o:p></o:p></span></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">JD (9618)<o:p></o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">Wanguo Gold (3939)<o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none">2<o:p></o:p></span></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">VOBILE (3738)<o:p></o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">Hua Hong Semi (1347)<o:p></o:p></span></=
+p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none">3<o:p></o:p></span></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">Pop Mart (9992)<o:p></o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">JL Mag (6680)<o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><b><s=
+pan style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot=
+;,sans-serif;mso-ligatures:none">Indonesia<o:p></o:p></span></b></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none">1<o:p></o:p></span></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">SGRO<o:p></o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">PANI<o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none">2<o:p></o:p></span></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">TOWR<o:p></o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">CDIA<o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none">3<o:p></o:p></span></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">PTRO<o:p></o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">CTRA<o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><b><s=
+pan style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot=
+;,sans-serif;mso-ligatures:none">Thailand</span></b><span style=3D"font-siz=
+e:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,sans-serif;mso-liga=
+tures:none"><o:p></o:p></span></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none"><o:p>&nbsp;</o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none">1<b><o:p></o:p></b></span></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">AEONTS<o:p></o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">KTB<o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none">2<o:p></o:p></span></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">BDMS<o:p></o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">PTTEP<o:p></o:p></span></p>
+</td>
+</tr>
+<tr style=3D"height:15.0pt">
+<td width=3D"138" valign=3D"top" style=3D"width:103.4pt;border:solid window=
+text 1.0pt;border-top:none;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" style=3D"margin-right:16.8pt;line-height:115%"><span=
+ style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&quot;,s=
+ans-serif;mso-ligatures:none">3<o:p></o:p></span></p>
+</td>
+<td width=3D"229" valign=3D"top" style=3D"width:171.45pt;border-top:none;bo=
+rder-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid wind=
+owtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">PTTEP<o:p></o:p></span></p>
+</td>
+<td width=3D"225" valign=3D"top" style=3D"width:168.6pt;border-top:none;bor=
+der-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windo=
+wtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:15.0pt">
+<p class=3D"MsoNormal" align=3D"center" style=3D"margin-right:16.8pt;text-a=
+lign:center;line-height:115%">
+<span style=3D"font-size:11.0pt;line-height:115%;font-family:&quot;Arial&qu=
+ot;,sans-serif;mso-ligatures:none">KTB<o:p></o:p></span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr height=3D"0">
+<td width=3D"238" style=3D"border:none"></td>
+<td width=3D"187" style=3D"border:none"></td>
+<td width=3D"181" style=3D"border:none"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt"><o:p>&nbsp;</o:p></=
+span></p>
+</div>
+<h3>CONFIDENTIAL NOTE:</h3>
+The information contained in this email is intended only for the use of the=
+ individual or entity named above and may contain information that is privi=
+leged, confidential and exempt from disclosure under applicable law. If the=
+ reader of this message is not the
+ intended recipient, you are hereby notified that any dissemination, distri=
+bution or copying of this communication is strictly prohibited. If you have=
+ received this message in error, please immediately notify the sender and d=
+elete the mail. Thank you.
+</body>
+</html>
+
+--_000_SI6PR02MB78915820066AED2CF9ED6E21A732ASI6PR02MB7891apcp_--
+
+--_007_SI6PR02MB78915820066AED2CF9ED6E21A732ASI6PR02MB7891apcp_
+Content-Type: image/jpeg; name="image001.jpg"
+Content-Description: image001.jpg
+Content-Disposition: inline; filename="image001.jpg"; size=11162;
+	creation-date="Thu, 21 Aug 2025 01:43:51 GMT";
+	modification-date="Thu, 21 Aug 2025 01:43:51 GMT"
+Content-ID: <image001.jpg@01DC1280.18799F90>
+Content-Transfer-Encoding: base64
+
+/9j/4AAQSkZJRgABAQEA3ADcAAD/2wBDAAIBAQEBAQIBAQECAgICAgQDAgICAgUEBAMEBgUGBgYF
+BgYGBwkIBgcJBwYGCAsICQoKCgoKBggLDAsKDAkKCgr/2wBDAQICAgICAgUDAwUKBwYHCgoKCgoK
+CgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgr/wAARCACEAY0DASIA
+AhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQA
+AAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3
+ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWm
+p6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEA
+AwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSEx
+BhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElK
+U1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3
+uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD+f+ii
+igAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAX+D8
+a+g/2NyRaaiR/eX+VfPn8H419B/sb/8AHnqP++v8q+e4o/5E8/l+Z+veBv8AycnBer/JnuFFFFfj
+P2T/AE6CiiikAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAHwXRRRX9EH+M4UUUUAFFF
+FABRRRyegoAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAF/g/GvoP9jf/
+AI89R/31/lXz5/B+NfQf7G//AB56j/vr/KvnuKP+RPP5fmfr3gb/AMnJwXq/yZ7hRRRX4z9k/wBO
+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
+
+--_007_SI6PR02MB78915820066AED2CF9ED6E21A732ASI6PR02MB7891apcp_
+Content-Type: image/jpeg; name="image002.jpg"
+Content-Description: image002.jpg
+Content-Disposition: inline; filename="image002.jpg"; size=11842;
+	creation-date="Thu, 21 Aug 2025 01:43:51 GMT";
+	modification-date="Thu, 21 Aug 2025 01:43:51 GMT"
+Content-ID: <image002.jpg@01DC1280.18799F90>
+Content-Transfer-Encoding: base64
+
+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
+
+--_007_SI6PR02MB78915820066AED2CF9ED6E21A732ASI6PR02MB7891apcp_
+Content-Type: image/png; name="image003.png"
+Content-Description: image003.png
+Content-Disposition: inline; filename="image003.png"; size=3345;
+	creation-date="Thu, 21 Aug 2025 01:43:51 GMT";
+	modification-date="Thu, 21 Aug 2025 01:43:51 GMT"
+Content-ID: <image003.png@01DC1280.18799F90>
+Content-Transfer-Encoding: base64
+
+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
+
+--_007_SI6PR02MB78915820066AED2CF9ED6E21A732ASI6PR02MB7891apcp_
+Content-Type: image/jpeg; name="image004.jpg"
+Content-Description: image004.jpg
+Content-Disposition: inline; filename="image004.jpg"; size=13021;
+	creation-date="Thu, 21 Aug 2025 01:43:51 GMT";
+	modification-date="Thu, 21 Aug 2025 01:43:52 GMT"
+Content-ID: <image004.jpg@01DC1280.18799F90>
+Content-Transfer-Encoding: base64
+
+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
+PYQ34IQsiJ7mPw0r0TUa0Vitulbk4X//2Q==
+
+--_007_SI6PR02MB78915820066AED2CF9ED6E21A732ASI6PR02MB7891apcp_--

@@ -25,9 +25,11 @@ import os
 import sys
 import json
 import logging
+import hashlib
+import re
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Union
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Add project root to path for imports
 project_root = Path(__file__).parents[2]
@@ -40,15 +42,35 @@ from ice_data_ingestion.secure_config import get_secure_config
 # Import production DataIngester with email pipeline (Phase 2.6.1)
 from updated_architectures.implementation.data_ingestion import DataIngester as ProductionDataIngester
 
-# Import ICEConfig with docling toggles
-from updated_architectures.implementation.config import ICEConfig
+# Import ICEConfig with docling toggles and confidence centralization (Phase 2.8)
+from updated_architectures.implementation.config import (
+    ICEConfig,
+    SOURCE_CONFIDENCE_MULTIPLIERS,
+    get_confidence,
+    get_source_confidence
+)
 
 # Import ingestion manifest for deduplication
 from src.ice_core.ingestion_manifest import IngestionManifest
 
+# Import relationship extractor for cross-company intelligence (Refinement #3)
+from src.ice_core.relationship_extractor import RelationshipExtractor
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+
+# Custom exceptions for batch processing
+class BatchProcessingError(Exception):
+    """Raised when batch processing exceeds failure threshold"""
+    def __init__(self, message: str, failed_count: int, total_count: int, threshold: float):
+        self.message = message
+        self.failed_count = failed_count
+        self.total_count = total_count
+        self.threshold = threshold
+        self.failure_rate = failed_count / total_count if total_count > 0 else 0
+        super().__init__(self.message)
 
 
 class ICECore:
@@ -80,6 +102,33 @@ class ICECore:
             self._system_manager = ICESystemManager(working_dir=self.config.working_dir)
             self._initialized = True
             logger.info("✅ ICESystemManager initialized successfully")
+
+            # Refinement #3: Initialize relationship extractor for multi-hop intelligence
+            if self.config.relationship_extraction_enabled:
+                self.relationship_extractor = RelationshipExtractor()
+                self.relationship_cache = {}  # content_hash -> relationships
+
+                # Source confidence multipliers (centralized in config.py, Phase 2.8)
+                self.SOURCE_CONFIDENCE = SOURCE_CONFIDENCE_MULTIPLIERS
+                logger.info("✅ Relationship extractor initialized for cross-company intelligence")
+            else:
+                self.relationship_extractor = None
+                logger.info("Relationship extraction disabled")
+
+            # Phase 2.7B Option 1: Initialize event extractor for event detection
+            if self.config.event_extraction_enabled:
+                try:
+                    from src.ice_core.event_extractor import EventExtractor
+                    self.event_extractor = EventExtractor()
+                    self.event_cache = {}  # content_hash -> formatted events (separate from relationships)
+                    logger.info("✅ Event extractor initialized (15 event types)")
+                except Exception as e:
+                    logger.warning(f"Event extractor disabled: {e}")
+                    self.event_extractor = None
+                    self.event_cache = {}
+            else:
+                self.event_extractor = None
+                self.event_cache = {}
 
             # Note: System status check is lazy-loaded, happens on first use
             # This allows graceful degradation if some components aren't available
@@ -184,32 +233,122 @@ class ICECore:
 
         return "Untitled"
 
-    def _print_document_progress(self, doc_index: int, total_docs: int, doc_content: str, symbol: str = ""):
+    def _print_document_progress(self, doc_index: int, total_docs: int, doc_dict: Dict[str, Any], symbol: str = ""):
         """
         Print visually distinct progress for each document being processed
 
         Args:
             doc_index: Current document index (1-based)
             total_docs: Total number of documents
-            doc_content: Document content string
+            doc_dict: Full document dictionary with content, file_path, source fields
             symbol: Ticker symbol being processed
         """
-        # Extract source type from content
+        # 4-Tier Source Detection (Robust metadata-first approach)
+        # Tier 1: file_path field (most reliable, O(1))
+        # Tier 2: source field (secondary metadata)
+        # Tier 3: content patterns (fallback for edge cases)
+        # Tier 4: legacy checks (backwards compatibility)
+
         source_type = "Unknown"
         source_icon = "📄"
 
-        if "[SOURCE_EMAIL:" in doc_content:
-            source_type = "Email"
-            source_icon = "📧"
-        elif "SEC EDGAR Filing" in doc_content or "[SOURCE_SEC" in doc_content:
+        # TIER 1: Check file_path field (most reliable identifier)
+        file_path = doc_dict.get('file_path', '') or ''  # Handle None
+        if 'sec_edgar:' in file_path or 'sec:' in file_path:
             source_type = "SEC Filing"
             source_icon = "📑"
-        elif "News Article:" in doc_content or "[SOURCE_NEWS" in doc_content:
+        elif 'email:' in file_path:
+            source_type = "Email"
+            source_icon = "📧"
+        elif 'newsapi:' in file_path or 'news:' in file_path:
             source_type = "News"
             source_icon = "📰"
-        elif "Company Profile:" in doc_content or "Company Overview:" in doc_content or "Company Details:" in doc_content:
+        elif 'finnhub:' in file_path:
+            source_type = "News (Finnhub)"
+            source_icon = "📰"
+        elif 'marketaux:' in file_path:
+            source_type = "News (MarketAux)"
+            source_icon = "📰"
+        elif 'benzinga:' in file_path:
+            source_type = "News (Benzinga)"
+            source_icon = "📰"
+        elif 'yahoo:' in file_path:
+            # Detect specific Yahoo Finance category from file_path suffix
+            if '_market_' in file_path:
+                source_type = "Yahoo Finance (Market)"
+                source_icon = "📈"
+            elif '_analyst_' in file_path:
+                source_type = "Yahoo Finance (Analyst)"
+                source_icon = "📊"
+            elif '_holdings_' in file_path:
+                source_type = "Yahoo Finance (Holdings)"
+                source_icon = "🏦"
+            elif '_financials_' in file_path:
+                source_type = "Yahoo Finance (Financials)"
+                source_icon = "📑"
+            elif '_earnings_' in file_path:
+                source_type = "Yahoo Finance (Earnings)"
+                source_icon = "💰"
+            else:
+                source_type = "Yahoo Finance"
+                source_icon = "📈"
+        elif 'fmp:' in file_path or 'alpha_vantage:' in file_path or 'polygon:' in file_path:
             source_type = "Financial API"
             source_icon = "💹"
+        elif 'exa_' in file_path:
+            source_type = "Research"
+            source_icon = "🔬"
+
+        # TIER 2: Check source field (secondary metadata)
+        elif doc_dict.get('source') == 'sec_edgar':
+            source_type = "SEC Filing"
+            source_icon = "📑"
+        elif doc_dict.get('source') == 'email':
+            source_type = "Email"
+            source_icon = "📧"
+        elif doc_dict.get('source') in ['newsapi', 'benzinga', 'finnhub', 'marketaux', 'news']:
+            source_type = "News"
+            source_icon = "📰"
+        elif doc_dict.get('source') == 'yahoo_finance':
+            source_type = "Yahoo Finance"
+            source_icon = "📈"
+        elif doc_dict.get('source') in ['fmp', 'alpha_vantage', 'polygon']:
+            source_type = "Financial API"
+            source_icon = "💹"
+        elif doc_dict.get('source') in ['exa_company', 'exa_competitors']:
+            source_type = "Research"
+            source_icon = "🔬"
+
+        # TIER 3: Check content patterns (fallback for edge cases)
+        else:
+            content = doc_dict.get('content', '')
+            if "SEC Form" in content or "Form 4" in content or "Form 144" in content or "# 144:" in content:
+                source_type = "SEC Filing"
+                source_icon = "📑"
+            elif "[SOURCE_EMAIL:" in content:
+                source_type = "Email"
+                source_icon = "📧"
+            elif "News Article:" in content or "[SOURCE_NEWS" in content:
+                source_type = "News"
+                source_icon = "📰"
+            elif "Company Profile:" in content or "Company Overview:" in content or "Company Details:" in content:
+                source_type = "Financial API"
+                source_icon = "💹"
+
+            # TIER 4: Legacy checks (backwards compatibility)
+            elif "SEC EDGAR Filing" in content or "[SOURCE_SEC" in content:
+                source_type = "SEC Filing"
+                source_icon = "📑"
+
+        # Log error if source is Unknown (indicates bug in metadata pipeline)
+        if source_type == "Unknown":
+            content_preview = doc_dict.get('content', '')[:100]
+            logger.error(f"❌ BUG: Document missing source attribution. "
+                        f"file_path={file_path}, source={doc_dict.get('source')}, "
+                        f"content={content_preview}")
+
+        # Extract content for title extraction
+        doc_content = doc_dict.get('content', '')
 
         # Extract title using helper method
         title = self._extract_document_title(doc_content, source_type)
@@ -225,15 +364,21 @@ class ICECore:
             print(f"┃ Title: {title:<{box_width - 11}}┃")
         print(f"{'┗' + '━' * (box_width - 2) + '┛'}")
 
-    def add_documents_batch(self, documents: List[Union[str, Dict[str, str]]]) -> Dict[str, Any]:
+    def add_documents_batch(self, documents: List[Union[str, Dict[str, str]]],
+                          max_failure_rate: float = 0.10) -> Dict[str, Any]:
         """
-        Batch document processing via ICESystemManager
+        Batch document processing via ICESystemManager with failure threshold
 
         Args:
             documents: List of document strings OR {"content": str, "type": str} dictionaries
+            max_failure_rate: Maximum acceptable failure rate (default: 0.10 = 10%)
+                            Batch processing stops if failure rate exceeds this threshold
 
         Returns:
             Batch processing results with graceful degradation
+
+        Raises:
+            BatchProcessingError: When failure rate exceeds max_failure_rate
         """
         if not self.is_ready():
             status = self.get_system_status()
@@ -254,15 +399,49 @@ class ICECore:
                 try:
                     # Handle both string documents and dict documents
                     if isinstance(doc, str):
-                        content = doc
-                        doc_type = 'financial'
-                        symbol = ''
-                        file_path = None  # No file_path for plain strings
+                        # CRITICAL: Plain string documents violate 100% source attribution requirement
+                        # Reject instead of logging to enforce data quality
+                        raise ValueError(
+                            f"Document {i+1} rejected: plain string format has no source attribution. "
+                            f"All documents must be dicts with 'file_path' or 'source' field for traceability."
+                        )
                     else:
                         content = doc.get('content', '')
                         doc_type = doc.get('type', 'financial')
                         symbol = doc.get('symbol', '')
                         file_path = doc.get('file_path', None)  # Extract file_path for traceability
+
+                        # CRITICAL: Source attribution is REQUIRED by architecture (ARCHITECTURE.md:106-109)
+                        if not file_path:
+                            source = doc.get('source', 'unknown')
+
+                            # Defensive fallback: Use source field if available
+                            if source and source != 'unknown':
+                                file_path = f"{source}:doc_{i}"
+                                logger.warning(f"⚠️ Document {i+1} missing file_path, using fallback: {file_path}")
+                            else:
+                                # No file_path AND no valid source = reject document
+                                raise ValueError(
+                                    f"Document {i+1} rejected: missing both 'file_path' and 'source'. "
+                                    f"100% source attribution required (ARCHITECTURE.md:106-109). "
+                                    f"type={doc_type}, symbol={symbol}"
+                                )
+
+                    # Refinement #3: Enhance document with cross-company relationships
+                    # Extract ALL 7 relationship types (RELATED_TO, HOLDS, EMPLOYED_BY, etc.)
+                    # Source confidence weighting: SEC 1.0x, news 0.75x, email 0.70x
+                    # Enables multi-hop intelligence (e.g., TSMC → NVDA → Hyperscalers → REITs)
+                    if self.config.relationship_extraction_enabled and self.relationship_extractor:
+                        doc = self._enhance_with_relationships(doc)
+                        content = doc.get('content', content)  # Get enhanced content
+
+                    # Phase 2.7B Option 1: Enhance document with event detection
+                    # Extract 15 event types (earnings, M&A, management, scandals, etc.)
+                    # Pattern-based extraction with confidence filtering (default: 0.8 threshold)
+                    # Events stored in separate cache to avoid collision with relationships
+                    if self.config.event_extraction_enabled and self.event_extractor:
+                        doc = self._enhance_with_events(doc)
+                        content = doc.get('content', content)  # Get enhanced content
 
                     # Progress indicator: REMOVED to fix duplicate display bug
                     # Progress is now shown at ingestion level (ingest_historical_data)
@@ -288,11 +467,36 @@ class ICECore:
                             'error': result.get('message', 'Unknown error')
                         })
 
+                        # Check failure threshold after adding to errors
+                        failure_rate = len(errors) / total_docs
+                        if failure_rate > max_failure_rate:
+                            logger.error(f"🔴 Batch processing stopped: failure rate {failure_rate:.2%} exceeds threshold {max_failure_rate:.2%}")
+                            raise BatchProcessingError(
+                                f"Batch processing failure rate ({failure_rate:.2%}) exceeded threshold ({max_failure_rate:.2%})",
+                                failed_count=len(errors),
+                                total_count=total_docs,
+                                threshold=max_failure_rate
+                            )
+
+                except BatchProcessingError:
+                    # Re-raise BatchProcessingError to stop the batch
+                    raise
                 except Exception as e:
                     errors.append({
                         'index': i,
                         'error': str(e)
                     })
+
+                    # Check failure threshold after exception
+                    failure_rate = len(errors) / total_docs
+                    if failure_rate > max_failure_rate:
+                        logger.error(f"🔴 Batch processing stopped: failure rate {failure_rate:.2%} exceeds threshold {max_failure_rate:.2%}")
+                        raise BatchProcessingError(
+                            f"Batch processing failure rate ({failure_rate:.2%}) exceeded threshold ({max_failure_rate:.2%})",
+                            failed_count=len(errors),
+                            total_count=total_docs,
+                            threshold=max_failure_rate
+                        )
 
             logger.info(f"Batch processing completed: {len(results)} successful, {len(errors)} failed")
 
@@ -305,13 +509,28 @@ class ICECore:
                 'errors': errors
             }
 
+        except BatchProcessingError as e:
+            # Batch stopped due to failure threshold - provide detailed error info
+            logger.error(f"Batch processing exceeded failure threshold: {e}")
+            return {
+                "status": "error",
+                "message": str(e),
+                "error_type": "failure_threshold_exceeded",
+                "failed_count": e.failed_count,
+                "total_count": e.total_count,
+                "failure_rate": e.failure_rate,
+                "threshold": e.threshold,
+                "successful": len(results),
+                "results": results,
+                "errors": errors
+            }
         except Exception as e:
             logger.error(f"Batch processing failed: {e}")
             return {"status": "error", "message": str(e)}
 
     def query(self, question: str, mode: str = 'hybrid') -> Dict[str, Any]:
         """
-        Query the knowledge base via ICESystemManager
+        Query the knowledge base via ICESystemManager with temporal enhancement routing.
 
         Args:
             question: Investment question to analyze
@@ -319,6 +538,11 @@ class ICECore:
 
         Returns:
             Query results with answer and metadata, includes graceful degradation
+
+        Note:
+            If parent ICESimplified instance is available, routes through query_with_router()
+            which provides temporal enhancement (freshness scoring, date filtering, composite ranking).
+            Otherwise falls back to basic LightRAG query.
         """
         if not self.is_ready():
             status = self.get_system_status()
@@ -329,10 +553,18 @@ class ICECore:
             }
 
         try:
-            # Delegate to ICESystemManager which uses query_ice() method
+            # Route through temporal-enhanced query layer if parent is available
+            # This enables freshness scoring, date filtering, and composite ranking
+            if hasattr(self, '_parent') and self._parent and hasattr(self._parent, 'query_with_router'):
+                logger.info(f"Routing query through temporal enhancement layer")
+                result = self._parent.query_with_router(question, mode=mode)
+                logger.info(f"Temporal query completed: {len(question)} chars, mode: {mode}")
+                return result
+
+            # Fallback to basic LightRAG query (no temporal features)
             # Week 2: ICEQueryProcessor is Week 3+ feature, disable for now
             result = self._system_manager.query_ice(question, mode=mode, use_graph_context=False)
-            logger.info(f"Query completed: {len(question)} chars, mode: {mode}")
+            logger.info(f"Query completed (basic): {len(question)} chars, mode: {mode}")
             return result
         except Exception as e:
             logger.error(f"Query failed: {e}")
@@ -496,6 +728,358 @@ class ICECore:
                 'total_documents': len(documents)
             }
 
+    # ========== REFINEMENT #3: RELATIONSHIP EXTRACTION METHODS (ICECore) ==========
+
+    def _enhance_with_relationships(self, doc: Dict) -> Dict:
+        """
+        Extract ALL relationships from ANY document and enhance content.
+
+        Applies universal relationship extraction with source-based confidence weighting.
+        Relationships appended to document content for LightRAG natural parsing.
+
+        Args:
+            doc: Document dict with 'content', 'file_path', 'source' fields
+
+        Returns:
+            Enhanced document with relationships appended to content
+        """
+        if not self.relationship_extractor:
+            return doc  # Extraction disabled
+
+        # Graceful handling: If doc is string, return unchanged
+        if isinstance(doc, str):
+            return doc
+
+        # Graceful handling: If doc is not a dict, return unchanged
+        if not isinstance(doc, dict):
+            return doc
+
+        try:
+            # Content-based caching for deduplication
+            content = doc.get('content', '')
+            if not content:
+                return doc
+
+            content_hash = hashlib.sha256(content.encode()).hexdigest()
+
+            # Check cache first
+            if content_hash in self.relationship_cache:
+                relationships = self.relationship_cache[content_hash]
+            else:
+                # Extract entities (or use fallback)
+                entities = self._ensure_entities(doc)
+
+                # Extract ALL 7 relationship types
+                # FIXED: Add document_id for provenance tracking (was missing)
+                relationships = self.relationship_extractor.extract_relationships(
+                    text=content,
+                    entities=entities,
+                    document_id=doc.get('file_path', 'unknown')
+                )
+
+                # Apply source confidence weighting
+                source_type = self._detect_source_type(doc)
+                confidence_multiplier = self.SOURCE_CONFIDENCE.get(source_type, 0.5)
+
+                # Apply confidence weighting + quantification boost
+                for rel in relationships:
+                    base_confidence = getattr(rel, 'confidence', 0.5)
+                    rel.confidence = base_confidence * confidence_multiplier
+
+                    # Boost confidence for quantified relationships (+0.15)
+                    if self._is_quantified(rel):
+                        rel.confidence = min(1.0, rel.confidence + 0.15)
+
+                # Filter by threshold
+                threshold = self.config.relationship_confidence_threshold
+                relationships = [r for r in relationships if r.confidence >= threshold]
+
+                # Limit relationships per document
+                max_rels = self.config.max_relationships_per_doc
+                relationships = relationships[:max_rels]
+
+                # Cache (FIFO eviction if full)
+                if len(self.relationship_cache) >= self.config.relationship_cache_size:
+                    # Remove oldest entry
+                    self.relationship_cache.pop(next(iter(self.relationship_cache)))
+                self.relationship_cache[content_hash] = relationships
+
+            # Format and append relationships to content
+            if relationships:
+                formatted_rels = self._format_relationships(relationships)
+                doc['content'] = content + "\n\n" + formatted_rels
+
+            return doc
+
+        except Exception as e:
+            logger.warning(f"Relationship extraction failed: {e}, returning original document")
+            return doc  # Graceful degradation
+
+    def _ensure_entities(self, doc: Dict) -> List[Dict[str, Any]]:
+        """
+        Get entities from document or extract basic ones as fallback.
+
+        Args:
+            doc: Document dict
+
+        Returns:
+            List of entity dicts with 'text' and 'type' keys (required by RelationshipExtractor)
+        """
+        entities = doc.get('entities', [])
+
+        # Normalize entities to dict format if provided as strings
+        if entities:
+            if isinstance(entities[0], str):
+                # Convert ['NVDA', 'AMD'] → [{'text': 'NVDA', 'type': 'COMPANY'}, ...]
+                return [{'text': e, 'type': 'COMPANY'} for e in entities]
+            else:
+                # Already dict format
+                return entities
+
+        # Fallback: Extract basic entities using regex
+        content = doc.get('content', '')
+
+        # Pattern 1: Ticker symbols (2-5 uppercase letters)
+        tickers = re.findall(r'\b[A-Z]{2,5}\b', content)
+
+        # Pattern 2: Company names (Capitalized Words, 2-4 words)
+        company_names = re.findall(r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3}\b', content)
+
+        # Combine and deduplicate
+        entities_list = list(set(tickers + company_names))[:50]
+
+        # Convert to dict format required by RelationshipExtractor
+        return [{'text': e, 'type': 'COMPANY'} for e in entities_list]
+
+    def _detect_source_type(self, doc: Dict) -> str:
+        """
+        Detect document source for confidence weighting.
+
+        Args:
+            doc: Document dict with 'file_path' or 'source' fields
+
+        Returns:
+            Source type string (e.g., 'sec_edgar', 'newsapi', 'email')
+        """
+        file_path = doc.get('file_path', '').lower()
+        source = doc.get('source', '').lower()
+
+        # Pattern matching on file_path
+        if 'sec_edgar' in file_path or 'sec_' in file_path:
+            return 'sec_edgar'
+        elif 'sec_facts' in file_path or 'xbrl' in file_path:
+            return 'sec_facts'
+        elif 'newsapi' in file_path:
+            return 'newsapi'
+        elif 'finnhub' in file_path:
+            return 'finnhub'
+        elif 'marketaux' in file_path:
+            return 'marketaux'
+        elif 'benzinga' in file_path:
+            return 'benzinga'
+        elif 'yahoo' in file_path:
+            return 'yahoo'
+        elif 'email' in file_path:
+            return 'email'
+        elif 'exa' in file_path:
+            return 'exa'
+
+        # Fallback to source field
+        if 'sec' in source:
+            return 'sec_edgar'
+        elif 'news' in source:
+            return 'newsapi'
+        elif 'email' in source:
+            return 'email'
+        elif 'yahoo' in source:
+            return 'yahoo'
+
+        return 'unknown'
+
+    def _is_quantified(self, relationship) -> bool:
+        """
+        Check if relationship has quantification (percentages, amounts).
+
+        FIXED: Check relationship.attributes dict (not object attributes).
+        Relationship dataclass stores quantification in attributes: Dict[str, Any].
+
+        Args:
+            relationship: Relationship object
+
+        Returns:
+            True if quantified (has percentage, amount, value, count, revenue in attributes)
+        """
+        if hasattr(relationship, 'attributes') and isinstance(relationship.attributes, dict):
+            attrs = relationship.attributes
+            return any(k in attrs and attrs[k] is not None
+                       for k in ['percentage', 'amount', 'value', 'count', 'revenue'])
+        return False
+
+    def _format_relationships(self, relationships) -> str:
+        """
+        Format relationships for LightRAG natural parsing.
+
+        Args:
+            relationships: List of relationship objects
+
+        Returns:
+            Formatted string preserving directionality and confidence
+        """
+        formatted_lines = []
+        formatted_lines.append("Cross-Company Relationships:")
+
+        for rel in relationships:
+            # FIXED: Use correct Relationship dataclass attributes
+            # (source, target, context) not (source_entity, target_entity, description)
+            source = getattr(rel, 'source', '')
+            target = getattr(rel, 'target', '')
+            rel_type = getattr(rel, 'relationship_type', 'RELATED_TO')
+            confidence = getattr(rel, 'confidence', 0.5)
+            context = getattr(rel, 'context', '')
+
+            # Format: "source RELATIONSHIP_TYPE target (confidence: X.XX) [context]"
+            line = f"- {source} {rel_type} {target} (confidence: {confidence:.2f})"
+            if context:
+                line += f" [{context}]"
+
+            formatted_lines.append(line)
+
+        return "\n".join(formatted_lines)
+
+    def _enhance_with_events(self, doc: Dict) -> Dict:
+        """
+        Extract and append events to document content (Phase 2.7B Option 1).
+        Follows same pattern as _enhance_with_relationships().
+
+        Args:
+            doc: Document dictionary with content, ticker, file_path
+
+        Returns:
+            Enhanced document with events appended to content
+        """
+        try:
+            content = doc.get('content', '')
+            if not content or len(content) < 50:
+                return doc  # Skip very short documents
+
+            # Content-based caching (separate key prefix from relationships)
+            import hashlib
+            content_hash = f"event_{hashlib.sha256(content.encode()).hexdigest()}"
+
+            if content_hash in self.event_cache:
+                # Cache hit - instant return
+                doc['content'] = content + self.event_cache[content_hash]
+                return doc
+
+            # Extract events (EventExtractor is self-contained, no entities needed)
+            events = self.event_extractor.extract_events(
+                document=content,
+                ticker=doc.get('ticker'),
+                document_date=None,  # Let extractor parse dates from content
+                source_id=doc.get('file_path', 'unknown')
+            )
+
+            # Filter by confidence threshold
+            high_conf_events = [
+                e for e in events
+                if e.confidence >= self.config.event_confidence_threshold
+            ]
+
+            # Limit to prevent noise
+            high_conf_events = high_conf_events[:self.config.max_events_per_doc]
+
+            if not high_conf_events:
+                return doc  # No events to add
+
+            # Phase 2.7B Option 5: Persist events to Signal Store for fast calendar queries
+            # This enables "When is next earnings?" queries via SQL (<100ms)
+            try:
+                # Get signal_store via parent reference (ICECore has _parent pointing to ICESimplified)
+                signal_store = None
+                if hasattr(self, '_parent') and hasattr(self._parent, 'ingester'):
+                    signal_store = getattr(self._parent.ingester, 'signal_store', None)
+                elif hasattr(self, 'ingester'):
+                    signal_store = getattr(self.ingester, 'signal_store', None)
+
+                if signal_store:
+                    from datetime import datetime as dt
+                    event_dicts = []
+                    for event in high_conf_events:
+                        # Map EventNode to calendar_events schema
+                        event_dicts.append({
+                            'ticker': event.ticker,
+                            'event_type': event.type.value if hasattr(event.type, 'value') else str(event.type),
+                            'event_date': event.date.strftime('%Y-%m-%d') if event.date else dt.now().strftime('%Y-%m-%d'),
+                            'event_value': event.magnitude,  # Map magnitude to event_value
+                            'is_future': 1 if event.date and event.date > dt.now() else 0,
+                            'source_document_id': event.source_document_id or doc.get('file_path', 'unknown')
+                        })
+                    if event_dicts:
+                        inserted = signal_store.insert_calendar_events_batch(event_dicts)
+                        logger.debug(f"[Option5] Persisted {inserted} events to Signal Store calendar_events")
+            except Exception as e:
+                logger.debug(f"[Option5] Signal Store event persistence failed (non-fatal): {e}")
+
+            # Format for LightRAG
+            formatted_events = self._format_events(high_conf_events)
+
+            # Cache formatted result
+            self.event_cache[content_hash] = formatted_events
+            doc['content'] = content + formatted_events
+
+            # FIFO cache eviction
+            if len(self.event_cache) > self.config.event_cache_size:
+                self.event_cache.pop(next(iter(self.event_cache)))
+
+            return doc
+
+        except Exception as e:
+            logger.debug(f"Event extraction failed: {e}")
+            return doc  # Graceful degradation - return original document
+
+    def _format_events(self, events: List) -> str:
+        """
+        Format events for LightRAG natural parsing.
+        Follows same pattern as _format_relationships().
+
+        Args:
+            events: List of EventNode objects
+
+        Returns:
+            Formatted string with event details
+        """
+        if not events:
+            return ""
+
+        formatted_lines = ["\n\nKey Events:"]
+
+        for event in events:
+            # Build event line with available attributes
+            # FIXED: Use event.type (not event.event_type) - EventNode dataclass attr
+            line = f"- {event.type.value}"
+
+            # Add ticker if available
+            if hasattr(event, 'ticker') and event.ticker:
+                line += f" ({event.ticker})"
+
+            # Add confidence score
+            if hasattr(event, 'confidence'):
+                line += f" [conf: {event.confidence:.2f}]"
+
+            # Add impact if available
+            if hasattr(event, 'impact') and event.impact:
+                line += f" [impact: {event.impact}]"
+
+            # Add description if available
+            if hasattr(event, 'description') and event.description:
+                # Truncate long descriptions
+                desc = str(event.description)[:100]
+                line += f" - {desc}"
+
+            formatted_lines.append(line)
+
+        return "\n".join(formatted_lines)
+
 
 class DataIngester:
     """
@@ -512,91 +1096,6 @@ class DataIngester:
 
         logger.info(f"Data Ingester initialized with {len(self.available_services)} API services")
 
-    def fetch_company_news(self, symbol: str, limit: int = 5) -> List[str]:
-        """
-        Fetch company news from available APIs - return raw text documents
-
-        Args:
-            symbol: Stock ticker symbol
-            limit: Maximum number of articles
-
-        Returns:
-            List of news article texts (no preprocessing)
-        """
-        documents = []
-
-        # Try NewsAPI if available
-        if self.config.is_api_available('newsapi'):
-            try:
-                import requests
-                url = "https://newsapi.org/v2/everything"
-                params = {
-                    'q': symbol,
-                    'apiKey': self.config.api_keys['newsapi'],
-                    'pageSize': limit,
-                    'sortBy': 'relevancy'
-                }
-
-                response = requests.get(url, params=params, timeout=self.config.timeout)
-                data = response.json()
-
-                for article in data.get('articles', []):
-                    content = f"""
-{article.get('title', '')}
-
-{article.get('description', '')}
-
-{article.get('content', '')}
-
-Source: {article.get('source', {}).get('name', 'Unknown')}
-Published: {article.get('publishedAt', 'Unknown')}
-URL: {article.get('url', '')}
-"""
-                    documents.append(content.strip())
-
-                logger.info(f"Fetched {len(documents)} news articles for {symbol} from NewsAPI")
-
-            except Exception as e:
-                logger.warning(f"NewsAPI fetch failed for {symbol}: {e}")
-
-        # Try Finnhub if available and we need more articles
-        if self.config.is_api_available('finnhub') and len(documents) < limit:
-            try:
-                import requests
-                from datetime import timedelta
-
-                end_date = datetime.now()
-                start_date = end_date - timedelta(days=30)
-
-                url = "https://finnhub.io/api/v1/company-news"
-                params = {
-                    'symbol': symbol,
-                    'from': start_date.strftime('%Y-%m-%d'),
-                    'to': end_date.strftime('%Y-%m-%d'),
-                    'token': self.config.api_keys['finnhub']
-                }
-
-                response = requests.get(url, params=params, timeout=self.config.timeout)
-                data = response.json()
-
-                for article in data[:limit - len(documents)]:
-                    content = f"""
-{article.get('headline', '')}
-
-{article.get('summary', '')}
-
-Source: {article.get('source', 'Finnhub')}
-Published: {datetime.fromtimestamp(article.get('datetime', 0)).isoformat()}
-URL: {article.get('url', '')}
-"""
-                    documents.append(content.strip())
-
-                logger.info(f"Fetched {len(data[:limit - len(documents)])} additional articles for {symbol} from Finnhub")
-
-            except Exception as e:
-                logger.warning(f"Finnhub fetch failed for {symbol}: {e}")
-
-        return documents[:limit]
 
     def fetch_company_financials(self, symbol: str) -> List[str]:
         """
@@ -851,9 +1350,17 @@ class ICESimplified:
 
         # Initialize components
         self.core = ICECore(self.config)
+        # Add parent reference for temporal query routing
+        self.core._parent = self
+
+        # Initialize ingestion manifest FIRST for incremental updates
+        manifest_dir = Path(self.config.working_dir) / 'storage'
+        self.manifest = IngestionManifest(manifest_dir)
+        logger.info(f"✅ Ingestion manifest initialized ({len(self.manifest.manifest['documents'])} documents tracked)")
+
         # Use production DataIngester with email pipeline (Phase 2.6.1)
-        # Pass config for docling feature flags (USE_DOCLING_SEC, USE_DOCLING_EMAIL, etc.)
-        self.ingester = ProductionDataIngester(config=self.config)
+        # Pass config for docling feature flags + manifest for persistent content deduplication
+        self.ingester = ProductionDataIngester(config=self.config, manifest=self.manifest)
         self.query_engine = QueryEngine(self.core)
 
         # Phase 2: Initialize query router for dual-layer architecture
@@ -866,10 +1373,32 @@ class ICESimplified:
             self.query_router = None
             logger.info("Signal Store disabled, using LightRAG only")
 
-        # Initialize ingestion manifest for incremental updates
-        manifest_dir = Path(self.config.working_dir) / 'storage'
-        self.manifest = IngestionManifest(manifest_dir)
-        logger.info(f"✅ Ingestion manifest initialized ({len(self.manifest.manifest['documents'])} documents tracked)")
+        # Refinement #3: Initialize relationship extractor for multi-hop intelligence
+        if self.config.relationship_extraction_enabled:
+            self.relationship_extractor = RelationshipExtractor()
+            self.relationship_cache = {}  # content_hash -> relationships
+
+            # Source confidence multipliers (centralized in config.py, Phase 2.8)
+            self.SOURCE_CONFIDENCE = SOURCE_CONFIDENCE_MULTIPLIERS
+            logger.info("✅ Relationship extractor initialized for cross-company intelligence")
+        else:
+            self.relationship_extractor = None
+            logger.info("Relationship extraction disabled")
+
+        # Phase 2.7B Option 1: Initialize event extractor for event detection
+        if self.config.event_extraction_enabled:
+            try:
+                from src.ice_core.event_extractor import EventExtractor
+                self.event_extractor = EventExtractor()
+                self.event_cache = {}  # content_hash -> formatted events (separate from relationships)
+                logger.info("✅ Event extractor initialized (15 event types)")
+            except Exception as e:
+                logger.warning(f"Event extractor disabled: {e}")
+                self.event_extractor = None
+                self.event_cache = {}
+        else:
+            self.event_extractor = None
+            self.event_cache = {}
 
         logger.info("✅ ICE Simplified system initialized successfully")
 
@@ -902,6 +1431,367 @@ class ICESimplified:
                 logger.warning(f"Component errors: {status.get('errors')}")
         except Exception as e:
             logger.warning(f"Failed to log system health: {e}")
+
+    # ========== REFINEMENT #3: RELATIONSHIP EXTRACTION METHODS ==========
+
+    def _enhance_with_relationships(self, doc: Dict) -> Dict:
+        """
+        Extract ALL relationships from ANY document and enhance content.
+
+        Applies universal relationship extraction with source-based confidence weighting.
+        Relationships appended to document content for LightRAG natural parsing.
+
+        Args:
+            doc: Document dict with 'content', 'file_path', 'source' fields
+
+        Returns:
+            Enhanced document with relationships appended to content
+        """
+        if not self.relationship_extractor:
+            return doc  # Extraction disabled
+
+        # Graceful handling: If doc is string, return unchanged
+        if isinstance(doc, str):
+            return doc
+
+        # Graceful handling: If doc is not a dict, return unchanged
+        if not isinstance(doc, dict):
+            return doc
+
+        try:
+            # Content-based caching for deduplication
+            content = doc.get('content', '')
+            if not content:
+                return doc
+
+            content_hash = hashlib.sha256(content.encode()).hexdigest()
+
+            if content_hash in self.relationship_cache:
+                relationships = self.relationship_cache[content_hash]
+            else:
+                # Get or extract entities
+                entities = self._ensure_entities(doc)
+
+                # Extract using ALL 7 relationship types
+                relationships = self.relationship_extractor.extract_relationships(
+                    text=content,
+                    entities=entities,
+                    doc_id=doc.get('file_path', 'unknown')
+                )
+
+                # Limit cache size
+                if len(self.relationship_cache) >= self.config.relationship_cache_size:
+                    # Remove oldest entry (simple FIFO)
+                    self.relationship_cache.pop(next(iter(self.relationship_cache)))
+
+                self.relationship_cache[content_hash] = relationships
+
+            if not relationships:
+                return doc
+
+            # Apply source confidence multiplier
+            source_type = self._detect_source_type(doc)
+            confidence_mult = self.SOURCE_CONFIDENCE.get(source_type, 0.5)
+
+            for rel in relationships:
+                rel.confidence *= confidence_mult
+
+                # Boost for quantified relationships
+                if self._is_quantified(rel):
+                    rel.confidence = min(1.0, rel.confidence + 0.15)
+
+            # Filter by threshold
+            filtered = [r for r in relationships
+                       if r.confidence >= self.config.relationship_confidence_threshold]
+
+            # Limit per-document relationships
+            if len(filtered) > self.config.max_relationships_per_doc:
+                # Keep highest confidence relationships
+                filtered = sorted(filtered, key=lambda r: r.confidence, reverse=True)
+                filtered = filtered[:self.config.max_relationships_per_doc]
+
+            # Enhance document
+            if filtered:
+                rel_text = self._format_relationships(filtered)
+                doc['content'] = f"{content}\n\n[EXTRACTED RELATIONSHIPS]\n{rel_text}"
+                logger.debug(f"Enhanced doc with {len(filtered)} relationships")
+
+            return doc
+
+        except Exception as e:
+            logger.warning(f"Relationship extraction failed: {e}")
+            return doc  # Return original on failure
+
+    def _ensure_entities(self, doc: Dict) -> List[Dict[str, Any]]:
+        """
+        Get entities from document or extract basic ones as fallback.
+
+        Returns:
+            List of entity dicts with 'text' and 'type' keys (required by RelationshipExtractor)
+        """
+        entities = doc.get('entities', [])
+
+        # Normalize entities to dict format if provided as strings
+        if entities:
+            if isinstance(entities[0], str):
+                # Convert ['NVDA', 'AMD'] → [{'text': 'NVDA', 'type': 'COMPANY'}, ...]
+                return [{'text': e, 'type': 'COMPANY'} for e in entities]
+            else:
+                # Already dict format
+                return entities
+
+        # Basic entity extraction fallback (company names and tickers)
+        content = doc.get('content', '')
+
+        # Ticker pattern: 2-5 uppercase letters
+        ticker_pattern = r'\b[A-Z]{2,5}\b'
+        tickers = re.findall(ticker_pattern, content)
+
+        # Common company suffixes
+        company_pattern = r'\b(\w+(?:\s+\w+){0,2})\s+(?:Inc|Corp|Ltd|LLC|Company|Group|Holdings|Technologies|Systems)\b'
+        companies = re.findall(company_pattern, content)
+
+        entities_list = list(set(tickers + companies))[:50]  # Limit to prevent explosion
+
+        # Convert to dict format required by RelationshipExtractor
+        return [{'text': e, 'type': 'COMPANY'} for e in entities_list]
+
+    def _detect_source_type(self, doc: Dict) -> str:
+        """Detect document source for confidence weighting"""
+        file_path = doc.get('file_path', '').lower()
+        source = doc.get('source', '').lower()
+
+        # Pattern matching for source detection
+        if 'sec_edgar' in file_path or 'sec' in source:
+            return 'sec_edgar'
+        elif 'sec_facts' in file_path:
+            return 'sec_facts'
+        elif 'newsapi' in file_path or 'newsapi' in source:
+            return 'newsapi'
+        elif 'finnhub' in file_path or 'finnhub' in source:
+            return 'finnhub'
+        elif 'marketaux' in file_path or 'marketaux' in source:
+            return 'marketaux'
+        elif 'benzinga' in file_path or 'benzinga' in source:
+            return 'benzinga'
+        elif 'yahoo' in file_path or 'yahoo' in source:
+            return 'yahoo'
+        elif 'email' in file_path or '.eml' in file_path:
+            return 'email'
+        elif 'exa' in file_path or 'exa' in source:
+            return 'exa'
+
+        return 'unknown'
+
+    def _is_quantified(self, relationship) -> bool:
+        """Check if relationship has quantification (higher confidence)"""
+        if hasattr(relationship, 'attributes') and relationship.attributes:
+            attrs = relationship.attributes
+            return any(k in attrs for k in ['percentage', 'amount', 'value', 'count', 'revenue'])
+        return False
+
+    def _format_relationships(self, relationships) -> str:
+        """Format relationships for LightRAG natural parsing"""
+        lines = []
+        for rel in relationships:
+            # Preserve directionality for multi-hop traversal
+            line = f"{rel.source} {rel.relationship_type} {rel.target}"
+            line += f" (confidence: {rel.confidence:.2f})"
+
+            # Add attributes if present
+            if hasattr(rel, 'attributes') and rel.attributes:
+                attrs_str = ', '.join(f"{k}={v}" for k, v in rel.attributes.items())
+                line += f" [{attrs_str}]"
+
+            lines.append(line)
+
+        return '\n'.join(lines)
+
+    # ========== END RELATIONSHIP EXTRACTION METHODS ==========
+
+    # ========== EVENT EXTRACTION METHODS (Phase 2.7B Option 1) ==========
+
+    def _enhance_with_events(self, doc: Dict) -> Dict:
+        """
+        Extract and append events to document content (Phase 2.7B Option 1).
+        Follows same pattern as _enhance_with_relationships().
+
+        Args:
+            doc: Document dictionary with content, ticker, file_path
+
+        Returns:
+            Enhanced document with events appended to content
+        """
+        try:
+            content = doc.get('content', '')
+            if not content or len(content) < 50:
+                return doc  # Skip very short documents
+
+            # Content-based caching (separate key prefix from relationships)
+            import hashlib
+            content_hash = f"event_{hashlib.sha256(content.encode()).hexdigest()}"
+
+            if content_hash in self.event_cache:
+                # Cache hit - instant return
+                doc['content'] = content + self.event_cache[content_hash]
+                return doc
+
+            # Extract events (EventExtractor is self-contained, no entities needed)
+            events = self.event_extractor.extract_events(
+                document=content,
+                ticker=doc.get('ticker'),
+                document_date=None,  # Let extractor parse dates from content
+                source_id=doc.get('file_path', 'unknown')
+            )
+
+            # Filter by confidence threshold
+            high_conf_events = [
+                e for e in events
+                if e.confidence >= self.config.event_confidence_threshold
+            ]
+
+            # Limit to prevent noise
+            high_conf_events = high_conf_events[:self.config.max_events_per_doc]
+
+            if not high_conf_events:
+                return doc  # No events to add
+
+            # Phase 2.7B Option 5: Persist events to Signal Store for fast calendar queries
+            # This enables "When is next earnings?" queries via SQL (<100ms)
+            try:
+                # Get signal_store via parent reference (ICECore has _parent pointing to ICESimplified)
+                signal_store = None
+                if hasattr(self, '_parent') and hasattr(self._parent, 'ingester'):
+                    signal_store = getattr(self._parent.ingester, 'signal_store', None)
+                elif hasattr(self, 'ingester'):
+                    signal_store = getattr(self.ingester, 'signal_store', None)
+
+                if signal_store:
+                    from datetime import datetime as dt
+                    event_dicts = []
+                    for event in high_conf_events:
+                        # Map EventNode to calendar_events schema
+                        event_dicts.append({
+                            'ticker': event.ticker,
+                            'event_type': event.type.value if hasattr(event.type, 'value') else str(event.type),
+                            'event_date': event.date.strftime('%Y-%m-%d') if event.date else dt.now().strftime('%Y-%m-%d'),
+                            'event_value': event.magnitude,  # Map magnitude to event_value
+                            'is_future': 1 if event.date and event.date > dt.now() else 0,
+                            'source_document_id': event.source_document_id or doc.get('file_path', 'unknown')
+                        })
+                    if event_dicts:
+                        inserted = signal_store.insert_calendar_events_batch(event_dicts)
+                        logger.debug(f"[Option5] Persisted {inserted} events to Signal Store calendar_events")
+            except Exception as e:
+                logger.debug(f"[Option5] Signal Store event persistence failed (non-fatal): {e}")
+
+            # Format for LightRAG
+            formatted_events = self._format_events(high_conf_events)
+
+            # Cache formatted result
+            self.event_cache[content_hash] = formatted_events
+            doc['content'] = content + formatted_events
+
+            # FIFO cache eviction
+            if len(self.event_cache) > self.config.event_cache_size:
+                self.event_cache.pop(next(iter(self.event_cache)))
+
+            return doc
+
+        except Exception as e:
+            logger.debug(f"Event extraction failed: {e}")
+            return doc  # Graceful degradation - return original document
+
+    def _format_events(self, events: List) -> str:
+        """
+        Format events for LightRAG natural parsing.
+        Follows same pattern as _format_relationships().
+
+        Args:
+            events: List of EventNode objects
+
+        Returns:
+            Formatted string with event details
+        """
+        if not events:
+            return ""
+
+        formatted_lines = ["\n\nKey Events:"]
+
+        for event in events:
+            # Build event line with available attributes
+            # FIXED: Use event.type (not event.event_type) - EventNode dataclass attr
+            line = f"- {event.type.value}"
+
+            # Add ticker if available
+            if hasattr(event, 'ticker') and event.ticker:
+                line += f" ({event.ticker})"
+
+            # Add confidence score
+            if hasattr(event, 'confidence'):
+                line += f" [conf: {event.confidence:.2f}]"
+
+            # Add impact if available
+            if hasattr(event, 'impact') and event.impact:
+                line += f" [impact: {event.impact}]"
+
+            # Add description if available
+            if hasattr(event, 'description') and event.description:
+                # Truncate long descriptions
+                desc = str(event.description)[:100]
+                line += f" - {desc}"
+
+            formatted_lines.append(line)
+
+        return "\n".join(formatted_lines)
+
+    # ========== END EVENT EXTRACTION METHODS ==========
+
+    def filter_new_documents(self, documents: List[Dict], source_type: str, ticker: str = None) -> List[Dict]:
+        """
+        Universal content deduplication filter for all document sources.
+
+        Uses manifest content hashing to prevent duplicate document ingestion.
+        Works uniformly across all APIs regardless of date handling.
+
+        Args:
+            documents: List of document dicts with 'content' field
+            source_type: Source type ('api_news', 'api_financial', 'email', etc.)
+            ticker: Optional ticker symbol for metadata
+
+        Returns:
+            Filtered list containing only new (not previously seen) documents
+        """
+        import hashlib
+
+        new_docs = []
+        for doc in documents:
+            content = doc.get('content', '')
+            if not content:
+                continue
+
+            # Check if content already exists in manifest
+            if not self.manifest.is_content_duplicate(content):
+                # Generate stable document ID from content hash
+                content_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()[:12]
+                doc_id = f"{source_type}_{ticker or 'unknown'}_{content_hash}"
+
+                # Add to manifest to track
+                self.manifest.add_document(doc_id, content, {
+                    'source_type': source_type,
+                    'ticker': ticker,
+                    'source': doc.get('source'),
+                    'ingested_at': datetime.now(timezone.utc).isoformat()
+                })
+
+                new_docs.append(doc)
+            else:
+                logger.debug(f"Skipping duplicate content for {ticker or 'unknown'} from {source_type}")
+
+        if len(new_docs) < len(documents):
+            logger.info(f"Filtered {len(documents) - len(new_docs)} duplicate documents from {source_type}")
+
+        return new_docs
 
     def _aggregate_investment_signals(self, entities: List[Dict]) -> Dict[str, Any]:
         """
@@ -1047,8 +1937,13 @@ class ICESimplified:
                 # This prevents duplicate email fetching
                 logger.info(f"💰 {symbol}: Fetching data from APIs...")
                 financial_docs = self.ingester.fetch_company_financials(symbol, limit=news_limit)  # Returns List[Dict]
-                news_docs = self.ingester.fetch_company_news(symbol, news_limit)  # Returns List[Dict]
+                news_docs = self.ingester.fetch_company_news(symbol, limit=news_limit, context='portfolio')  # Returns List[Dict] with smart source prioritization
                 sec_docs = self.ingester.fetch_sec_filings(symbol, limit=sec_limit)  # Returns List[Dict]
+
+                # SEC Company Facts API: Free XBRL financial metrics (Revenue, NetIncome, Assets, EPS, Cash)
+                sec_facts_docs = []
+                if self.config.sec_facts_enabled:
+                    sec_facts_docs = self.ingester.fetch_sec_company_facts(symbol)  # Returns List[Dict]
 
                 # Build document list with SOURCE markers for post-processing statistics
                 # Phase 1: Enhanced SOURCE markers with timestamps (retrieval time)
@@ -1057,17 +1952,40 @@ class ICESimplified:
                 doc_list = []
                 for doc_dict in financial_docs:
                     content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
-                    doc_list.append({'content': content_with_marker})
+                    doc_list.append({
+                        'content': content_with_marker,
+                        'file_path': doc_dict.get('file_path'),  # PRESERVE file_path for source attribution
+                        'type': 'financial'
+                    })
 
                 for doc_dict in news_docs:
                     content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
-                    doc_list.append({'content': content_with_marker})
+                    doc_list.append({
+                        'content': content_with_marker,
+                        'file_path': doc_dict.get('file_path'),  # PRESERVE file_path for source attribution
+                        'type': 'news'
+                    })
 
                 for doc_dict in sec_docs:
                     content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
-                    doc_list.append({'content': content_with_marker})
+                    doc_list.append({
+                        'content': content_with_marker,
+                        'file_path': doc_dict.get('file_path'),  # PRESERVE file_path for source attribution
+                        'type': 'regulatory'
+                    })
+
+                for doc_dict in sec_facts_docs:
+                    content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
+                    doc_list.append({
+                        'content': content_with_marker,
+                        'file_path': doc_dict.get('file_path'),  # PRESERVE file_path for source attribution
+                        'type': 'financial'  # Financial metrics type
+                    })
 
                 if doc_list:
+                    # Apply universal content deduplication before adding to graph
+                    doc_list = self.filter_new_documents(doc_list, source_type='api', ticker=symbol)
+
                     # Add ticker-specific documents to knowledge base
                     batch_result = self.core.add_documents_batch(doc_list)
 
@@ -1161,20 +2079,212 @@ class ICESimplified:
         logger.info(f"Portfolio analysis completed: {successful_risks}/{len(holdings)} risk analyses successful")
         return analysis
 
-    def query_rating(self, ticker: str) -> Dict[str, Any]:
+    def calculate_composite_score(
+        self,
+        confidence: float = 0.5,
+        freshness: float = 0.5,
+        relevance: float = 1.0,
+        weights: Optional[Dict[str, float]] = None
+    ) -> float:
         """
-        Query latest analyst rating for a ticker using dual-layer architecture.
+        Calculate composite score combining confidence, freshness, and relevance.
+
+        Args:
+            confidence: Confidence score (0-1) from entity extraction/source quality
+            freshness: Temporal freshness score (0-1) from exponential decay
+            relevance: Query relevance score (0-1) from semantic matching
+            weights: Optional custom weights (default: balanced approach)
+                    {'confidence': 0.3, 'freshness': 0.3, 'relevance': 0.4}
+
+        Returns:
+            Composite score (0-1) for ranking results
+
+        Formula:
+            composite = w_c * confidence + w_f * freshness + w_r * relevance
+
+        Example:
+            >>> score = ice.calculate_composite_score(0.87, 0.25, 0.9)
+            >>> print(f"Composite score: {score:.2f}")  # 0.62
+        """
+        # Default balanced weights with slight preference for relevance
+        if weights is None:
+            weights = {
+                'confidence': 0.3,  # Source quality and extraction confidence
+                'freshness': 0.3,   # Temporal recency (exponential decay)
+                'relevance': 0.4    # Query-result matching
+            }
+
+        # Normalize weights to sum to 1.0
+        total_weight = sum(weights.values())
+        if total_weight > 0:
+            weights = {k: v/total_weight for k, v in weights.items()}
+
+        # Calculate weighted composite score
+        composite = (
+            weights.get('confidence', 0.3) * confidence +
+            weights.get('freshness', 0.3) * freshness +
+            weights.get('relevance', 0.4) * relevance
+        )
+
+        # Ensure score is in valid range [0, 1]
+        return max(0.0, min(1.0, composite))
+
+    def estimate_relevance_score(
+        self,
+        query: str,
+        result_text: str,
+        ticker: Optional[str] = None
+    ) -> float:
+        """
+        Estimate relevance score between query and result text.
+
+        Simple keyword-based relevance scoring with potential for enhancement.
+        Future versions could use embeddings or LLM-based similarity.
+
+        Args:
+            query: User's query string
+            result_text: Text content from search result
+            ticker: Optional ticker symbol for ticker-specific queries
+
+        Returns:
+            Relevance score (0-1) based on keyword matching and context
+
+        Algorithm:
+            1. Extract key terms from query (normalized)
+            2. Count term occurrences in result (case-insensitive)
+            3. Apply position weighting (earlier = higher relevance)
+            4. Bonus for ticker symbol matches
+        """
+        import re
+
+        # Normalize texts for comparison
+        query_lower = query.lower()
+        result_lower = result_text.lower() if result_text else ""
+
+        if not result_lower:
+            return 0.0
+
+        # Extract key terms from query (remove common words)
+        stop_words = {'the', 'a', 'an', 'is', 'are', 'what', 'which', 'how', 'why',
+                      'when', 'where', 'for', 'of', 'in', 'on', 'at', 'to', 'from'}
+
+        # Tokenize query
+        query_terms = re.findall(r'\b[a-z]+\b', query_lower)
+        key_terms = [term for term in query_terms if term not in stop_words and len(term) > 2]
+
+        if not key_terms:
+            # If no key terms, check for any overlap
+            return 0.5 if any(word in result_lower for word in query_lower.split()) else 0.2
+
+        # Count term occurrences in result
+        term_scores = []
+        result_length = len(result_lower)
+
+        for term in key_terms:
+            # Find all occurrences
+            occurrences = [m.start() for m in re.finditer(r'\b' + re.escape(term) + r'\b', result_lower)]
+
+            if occurrences:
+                # Calculate term score with position weighting
+                # Earlier occurrences get higher weight
+                position_scores = [1.0 - (pos / result_length) for pos in occurrences]
+                term_score = min(1.0, sum(position_scores) / 3)  # Cap contribution per term
+                term_scores.append(term_score)
+            else:
+                term_scores.append(0.0)
+
+        # Calculate base relevance
+        if term_scores:
+            base_relevance = sum(term_scores) / len(key_terms)
+        else:
+            base_relevance = 0.2
+
+        # Ticker bonus: if ticker mentioned in query and found in result
+        ticker_bonus = 0.0
+        if ticker:
+            ticker_lower = ticker.lower()
+            if ticker_lower in query_lower and ticker_lower in result_lower:
+                ticker_bonus = 0.2
+
+        # Combined relevance score
+        relevance = min(1.0, base_relevance + ticker_bonus)
+
+        # Apply minimum threshold
+        return max(0.1, relevance)
+
+    def rank_results_by_composite_score(
+        self,
+        results: List[Dict[str, Any]],
+        weights: Optional[Dict[str, float]] = None,
+        min_score: float = 0.0
+    ) -> List[Dict[str, Any]]:
+        """
+        Rank and filter results by composite score.
+
+        Args:
+            results: List of result dicts with confidence, freshness, relevance scores
+            weights: Optional custom weights for composite scoring
+            min_score: Minimum composite score threshold (default: 0.0)
+
+        Returns:
+            Sorted list of results with composite_score added, filtered by min_score
+
+        Example:
+            >>> results = [
+            ...     {'ticker': 'NVDA', 'confidence': 0.9, 'freshness_score': 0.5, 'relevance': 0.8},
+            ...     {'ticker': 'AMD', 'confidence': 0.7, 'freshness_score': 0.9, 'relevance': 0.6}
+            ... ]
+            >>> ranked = ice.rank_results_by_composite_score(results, min_score=0.5)
+        """
+        scored_results = []
+
+        for result in results:
+            # Extract scores with defaults
+            confidence = result.get('confidence', 0.5)
+            freshness = result.get('freshness_score', 0.5)
+            relevance = result.get('relevance', 1.0)  # Default high if not specified
+
+            # Calculate composite score
+            composite_score = self.calculate_composite_score(
+                confidence, freshness, relevance, weights
+            )
+
+            # Skip results below threshold
+            if composite_score < min_score:
+                continue
+
+            # Add composite score to result
+            result_copy = result.copy()
+            result_copy['composite_score'] = composite_score
+            scored_results.append(result_copy)
+
+        # Sort by composite score (descending)
+        scored_results.sort(key=lambda x: x['composite_score'], reverse=True)
+
+        return scored_results
+
+    def query_rating(
+        self,
+        ticker: str,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Query analyst rating(s) for a ticker using dual-layer architecture.
 
         Routes to Signal Store (<1s) if available, otherwise falls back to LightRAG (~12s).
+        Now supports date range filtering for temporal queries.
 
         Args:
             ticker: Stock ticker symbol (e.g., 'NVDA', 'AAPL')
+            start_date: Optional ISO format start date (e.g., '2024-01-01T00:00:00Z')
+            end_date: Optional ISO format end date (e.g., '2024-06-30T23:59:59Z')
 
         Returns:
             Dict with rating data:
             {
                 'ticker': 'NVDA',
-                'rating': 'BUY',
+                'rating': 'BUY',  # or 'ratings' list if date range specified
                 'firm': 'Goldman Sachs',
                 'analyst': 'John Doe',
                 'confidence': 0.87,
@@ -1184,8 +2294,11 @@ class ICESimplified:
             }
 
         Examples:
-            >>> ice.query_rating('NVDA')
+            >>> ice.query_rating('NVDA')  # Latest rating
             {'ticker': 'NVDA', 'rating': 'BUY', 'source': 'signal_store', 'latency_ms': 45}
+
+            >>> ice.query_rating('NVDA', '2024-04-01', '2024-06-30')  # Q2 2024 ratings
+            {'ticker': 'NVDA', 'ratings': [...], 'count': 5, 'source': 'signal_store', ...}
         """
         import time
         start_time = time.time()
@@ -1195,13 +2308,50 @@ class ICESimplified:
         # Try Signal Store first (if enabled)
         if self.query_router and self.ingester.signal_store:
             try:
-                rating_data = self.ingester.signal_store.get_latest_rating(ticker)
-                latency_ms = int((time.time() - start_time) * 1000)
+                # Use date range method if dates provided
+                if start_date or end_date:
+                    # Default to wide range if only one date provided
+                    if not start_date:
+                        start_date = '1970-01-01T00:00:00Z'
+                    if not end_date:
+                        from datetime import datetime
+                        end_date = datetime.now().isoformat()
+
+                    rating_data = self.ingester.signal_store.get_ratings_by_date_range(
+                        ticker, start_date, end_date
+                    )
+                    latency_ms = int((time.time() - start_time) * 1000)
+
+                    if rating_data:
+                        # Rank ratings by composite score
+                        ranked_ratings = self.rank_results_by_composite_score(rating_data)
+
+                        result = {
+                            'ticker': ticker,
+                            'ratings': ranked_ratings,  # Now sorted by composite score
+                            'count': len(ranked_ratings),
+                            'date_range': {'start': start_date, 'end': end_date},
+                            'source': 'signal_store',
+                            'latency_ms': latency_ms,
+                            'best_rating': ranked_ratings[0] if ranked_ratings else None
+                        }
+                        logger.info(f"✅ Signal Store date range query: {ticker} → {len(ranked_ratings)} ratings ranked by composite score ({latency_ms}ms)")
+                        return result
+                else:
+                    # Use existing latest rating method
+                    rating_data = self.ingester.signal_store.get_latest_rating(ticker)
+                    latency_ms = int((time.time() - start_time) * 1000)
 
                 if rating_data:
+                    # Calculate composite score for single rating
+                    confidence = rating_data.get('confidence', 0.5)
+                    freshness = rating_data.get('freshness_score', 0.5)
+                    composite_score = self.calculate_composite_score(confidence, freshness, 1.0)
+
+                    rating_data['composite_score'] = composite_score
                     rating_data['source'] = 'signal_store'
                     rating_data['latency_ms'] = latency_ms
-                    logger.info(f"✅ Signal Store rating query: {ticker} → {rating_data['rating']} ({latency_ms}ms)")
+                    logger.info(f"✅ Signal Store rating query: {ticker} → {rating_data['rating']} (composite: {composite_score:.2f}, {latency_ms}ms)")
                     return rating_data
 
                 logger.debug(f"No Signal Store data for {ticker}, falling back to LightRAG")
@@ -1216,6 +2366,25 @@ class ICESimplified:
 
             latency_ms = int((time.time() - start_time) * 1000)
 
+            # Estimate relevance score for LightRAG result
+            relevance_score = self.estimate_relevance_score(
+                query,
+                str(lightrag_result),
+                ticker
+            )
+
+            # For LightRAG, we estimate confidence and freshness
+            # These could be enhanced with actual metadata extraction
+            estimated_confidence = 0.6  # Medium confidence for semantic extraction
+            estimated_freshness = 0.5   # Unknown freshness without timestamp
+
+            # Calculate composite score
+            composite_score = self.calculate_composite_score(
+                estimated_confidence,
+                estimated_freshness,
+                relevance_score
+            )
+
             # Parse LightRAG response for rating information
             # (This is a simplified parser - real implementation would use LLM extraction)
             rating_info = {
@@ -1223,10 +2392,12 @@ class ICESimplified:
                 'rating': 'UNKNOWN',  # Would extract from lightrag_result
                 'source': 'lightrag',
                 'latency_ms': latency_ms,
+                'relevance_score': relevance_score,
+                'composite_score': composite_score,
                 'raw_response': lightrag_result
             }
 
-            logger.info(f"LightRAG rating query: {ticker} ({latency_ms}ms)")
+            logger.info(f"LightRAG rating query: {ticker} (relevance: {relevance_score:.2f}, composite: {composite_score:.2f}, {latency_ms}ms)")
             return rating_info
 
         except Exception as e:
@@ -1243,24 +2414,29 @@ class ICESimplified:
         self,
         ticker: str,
         metric_type: str,
-        period: Optional[str] = None
+        period: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None
     ) -> Dict[str, Any]:
         """
-        Query financial metric for a ticker using dual-layer architecture.
+        Query financial metric(s) for a ticker using dual-layer architecture.
 
         Routes to Signal Store (<1s) if available, otherwise falls back to LightRAG (~12s).
+        Now supports date range filtering for temporal analysis.
 
         Args:
             ticker: Stock ticker symbol (e.g., 'NVDA', 'AAPL')
             metric_type: Type of financial metric (e.g., 'Operating Margin', 'Revenue', 'EPS')
-            period: Optional time period filter (e.g., 'Q2 2024', 'FY2024', 'TTM')
+            period: Optional specific period filter (e.g., 'Q2 2024', 'FY2024', 'TTM')
+            start_date: Optional ISO format start date for range queries
+            end_date: Optional ISO format end date for range queries
 
         Returns:
             Dict with metric data:
             {
                 'ticker': 'NVDA',
                 'metric_type': 'Operating Margin',
-                'metric_value': '62.3%',
+                'metric_value': '62.3%',  # or 'metrics' list if date range specified
                 'period': 'Q2 2024',
                 'confidence': 0.95,
                 'source': 'signal_store' | 'lightrag',
@@ -1273,6 +2449,9 @@ class ICESimplified:
 
             >>> ice.query_metric('NVDA', 'Revenue', period='Q2 2024')
             {'ticker': 'NVDA', 'metric_type': 'Revenue', 'metric_value': '$26.97B', ...}
+
+            >>> ice.query_metric('NVDA', 'Revenue', start_date='2024-01-01', end_date='2024-06-30')
+            {'ticker': 'NVDA', 'metrics': [...], 'count': 2, 'date_range': {...}, ...}
         """
         import time
         start_time = time.time()
@@ -1282,12 +2461,43 @@ class ICESimplified:
         # Try Signal Store first (if enabled)
         if self.query_router and self.ingester.signal_store:
             try:
-                metric_data = self.ingester.signal_store.get_metric(
-                    ticker=ticker,
-                    metric_type=metric_type,
-                    period=period
-                )
-                latency_ms = int((time.time() - start_time) * 1000)
+                # Use date range method if dates provided
+                if start_date or end_date:
+                    # Default to wide range if only one date provided
+                    if not start_date:
+                        start_date = '1970-01-01T00:00:00Z'
+                    if not end_date:
+                        from datetime import datetime
+                        end_date = datetime.now().isoformat()
+
+                    metric_data = self.ingester.signal_store.get_metrics_by_date_range(
+                        ticker=ticker,
+                        metric_type=metric_type,
+                        start_date=start_date,
+                        end_date=end_date
+                    )
+                    latency_ms = int((time.time() - start_time) * 1000)
+
+                    if metric_data:
+                        result = {
+                            'ticker': ticker,
+                            'metric_type': metric_type,
+                            'metrics': metric_data,
+                            'count': len(metric_data),
+                            'date_range': {'start': start_date, 'end': end_date},
+                            'source': 'signal_store',
+                            'latency_ms': latency_ms
+                        }
+                        logger.info(f"✅ Signal Store date range metric query: {ticker} {metric_type} → {len(metric_data)} metrics ({latency_ms}ms)")
+                        return result
+                else:
+                    # Use existing single metric method
+                    metric_data = self.ingester.signal_store.get_metric(
+                        ticker=ticker,
+                        metric_type=metric_type,
+                        period=period
+                    )
+                    latency_ms = int((time.time() - start_time) * 1000)
 
                 if metric_data:
                     metric_data['source'] = 'signal_store'
@@ -1332,6 +2542,225 @@ class ICESimplified:
                 'error': str(e),
                 'source': 'none',
                 'latency_ms': int((time.time() - start_time) * 1000)
+            }
+
+    def query_calendar_events(
+        self,
+        ticker: str,
+        event_type: Optional[str] = None,
+        is_future: Optional[bool] = None,
+        days_range: int = 90
+    ) -> Dict[str, Any]:
+        """
+        Query upcoming/past calendar events from Signal Store.
+
+        Routes directly to Signal Store for structured calendar data (earnings,
+        dividends, ex-dividend dates). This is the Phase 2.7B Option 5 handler
+        for completing the STRUCTURED_CALENDAR query pathway.
+
+        Args:
+            ticker: Stock ticker symbol (e.g., 'NVDA', 'AAPL')
+            event_type: Optional filter ('earnings', 'dividend', 'ex-dividend')
+            is_future: True=upcoming only, False=past only, None=both
+            days_range: Number of days to look back (default 90)
+
+        Returns:
+            Dict with calendar event data:
+            {
+                'status': 'success' | 'error',
+                'ticker': 'NVDA',
+                'events': [...],  # List of calendar events
+                'count': 5,
+                'next_event': {...},  # Nearest future event (if any)
+                'source': 'signal_store'
+            }
+
+        Examples:
+            >>> ice.query_calendar_events('NVDA', event_type='earnings')
+            {'ticker': 'NVDA', 'events': [...], 'next_event': {...}, ...}
+
+            >>> ice.query_calendar_events('AAPL', is_future=True)
+            {'ticker': 'AAPL', 'events': [...upcoming events...], ...}
+        """
+        from datetime import datetime, timedelta
+
+        ticker = ticker.upper()
+        today = datetime.now().strftime('%Y-%m-%d')
+        start_date = (datetime.now() - timedelta(days=days_range)).strftime('%Y-%m-%d')
+        end_date = (datetime.now() + timedelta(days=365)).strftime('%Y-%m-%d')
+
+        # Validate Signal Store availability
+        if not hasattr(self, 'ingester') or not self.ingester or not self.ingester.signal_store:
+            logger.warning("Signal Store not available for calendar query")
+            return {
+                'status': 'error',
+                'message': 'Signal Store not available',
+                'ticker': ticker,
+                'source': 'none'
+            }
+
+        try:
+            events = self.ingester.signal_store.get_events_in_date_range(
+                ticker=ticker,
+                start_date=start_date,
+                end_date=end_date,
+                event_type=event_type,
+                is_future=is_future
+            )
+
+            # Find next upcoming event (first event with date >= today)
+            next_event = None
+            for e in events:
+                event_date = e.get('event_date', '')
+                if event_date >= today:
+                    next_event = e
+                    break
+
+            logger.info(f"Calendar query: {ticker} → {len(events)} events found")
+            return {
+                'status': 'success',
+                'ticker': ticker,
+                'events': events,
+                'count': len(events),
+                'next_event': next_event,
+                'source': 'signal_store'
+            }
+
+        except Exception as e:
+            logger.error(f"Calendar query failed for {ticker}: {e}")
+            return {
+                'status': 'error',
+                'message': str(e),
+                'ticker': ticker,
+                'source': 'none'
+            }
+
+    def query_price(
+        self,
+        ticker: str,
+        include_history: bool = False
+    ) -> Dict[str, Any]:
+        """
+        Query price targets from Signal Store.
+
+        Routes directly to Signal Store for structured price target data.
+        This is the Phase 2.8 handler for STRUCTURED_PRICE query pathway.
+
+        Args:
+            ticker: Stock ticker symbol (e.g., 'NVDA', 'AAPL')
+            include_history: If True, include historical price targets
+
+        Returns:
+            Dict with price target data:
+            {
+                'status': 'success' | 'error',
+                'ticker': 'NVDA',
+                'latest_price_target': {...},  # Most recent target
+                'price_target_history': [...],  # List of targets (if include_history)
+                'source': 'signal_store'
+            }
+        """
+        ticker = ticker.upper()
+
+        # Validate Signal Store availability
+        if not hasattr(self, 'ingester') or not self.ingester or not self.ingester.signal_store:
+            logger.warning("Signal Store not available for price query")
+            return {
+                'status': 'error',
+                'message': 'Signal Store not available',
+                'ticker': ticker,
+                'source': 'none'
+            }
+
+        try:
+            latest = self.ingester.signal_store.get_latest_price_target(ticker)
+            history = []
+
+            if include_history:
+                history = self.ingester.signal_store.get_price_target_history(ticker, limit=10)
+
+            logger.info(f"Price query: {ticker} → target found: {latest is not None}")
+            return {
+                'status': 'success',
+                'ticker': ticker,
+                'latest_price_target': latest,
+                'price_target_history': history,
+                'count': len(history) if history else (1 if latest else 0),
+                'source': 'signal_store'
+            }
+
+        except Exception as e:
+            logger.error(f"Price query failed for {ticker}: {e}")
+            return {
+                'status': 'error',
+                'message': str(e),
+                'ticker': ticker,
+                'source': 'none'
+            }
+
+    def query_pricing_history(
+        self,
+        ticker: str,
+        query_type: str = 'recent',
+        days: int = 30
+    ) -> Dict[str, Any]:
+        """
+        Query historical prices and 52-week high/low from Signal Store.
+
+        Routes directly to Signal Store for structured OHLCV data.
+        This is the Phase 2.8 handler for STRUCTURED_PRICING_HISTORY pathway.
+
+        Args:
+            ticker: Stock ticker symbol (e.g., 'NVDA', 'AAPL')
+            query_type: 'recent' for recent prices, '52_week' for high/low stats
+            days: Number of days of history (default 30)
+
+        Returns:
+            Dict with pricing history data:
+            {
+                'status': 'success' | 'error',
+                'ticker': 'NVDA',
+                '52_week_stats': {...},  # 52-week high/low/current
+                'recent_prices': [...],  # Recent OHLCV data
+                'source': 'signal_store'
+            }
+        """
+        ticker = ticker.upper()
+
+        # Validate Signal Store availability
+        if not hasattr(self, 'ingester') or not self.ingester or not self.ingester.signal_store:
+            logger.warning("Signal Store not available for pricing history query")
+            return {
+                'status': 'error',
+                'message': 'Signal Store not available',
+                'ticker': ticker,
+                'source': 'none'
+            }
+
+        try:
+            week_52 = self.ingester.signal_store.get_52_week_high_low(ticker)
+            recent_prices = self.ingester.signal_store.get_price_history(
+                ticker,
+                limit=days
+            )
+
+            logger.info(f"Pricing history: {ticker} → {len(recent_prices)} days, 52wk stats: {week_52 is not None}")
+            return {
+                'status': 'success',
+                'ticker': ticker,
+                '52_week_stats': week_52,
+                'recent_prices': recent_prices,
+                'count': len(recent_prices),
+                'source': 'signal_store'
+            }
+
+        except Exception as e:
+            logger.error(f"Pricing history query failed for {ticker}: {e}")
+            return {
+                'status': 'error',
+                'message': str(e),
+                'ticker': ticker,
+                'source': 'none'
             }
 
     def query_with_router(self, query: str, mode: str = 'hybrid') -> Dict[str, Any]:
@@ -1411,18 +2840,93 @@ class ICESimplified:
                         'raw_data': metric_data
                     }
 
+            # Handle structured calendar queries (Phase 2.7B Option 5)
+            elif query_type == QueryType.STRUCTURED_CALENDAR:
+                ticker = self.query_router.extract_ticker(query)
+                if ticker:
+                    event_type, is_future = self.query_router.extract_event_info(query)
+                    calendar_data = self.query_calendar_events(
+                        ticker=ticker,
+                        event_type=event_type,
+                        is_future=is_future
+                    )
+
+                    if calendar_data.get('status') == 'success':
+                        formatted_answer = self.query_router.format_calendar_result(calendar_data, query)
+                        return {
+                            'query': query,
+                            'answer': formatted_answer,
+                            'query_type': query_type.value,
+                            'source': 'signal_store',
+                            'confidence': confidence,
+                            'latency_ms': int((time.time() - start_time) * 1000),
+                            'raw_data': calendar_data
+                        }
+
+            # Handle structured price target queries (Phase 2.8)
+            elif query_type == QueryType.STRUCTURED_PRICE:
+                ticker = self.query_router.extract_ticker(query)
+                if ticker:
+                    price_data = self.query_price(ticker, include_history=True)
+
+                    if price_data.get('status') == 'success':
+                        formatted_answer = self.query_router.format_price_target_result(price_data, query)
+                        return {
+                            'query': query,
+                            'answer': formatted_answer,
+                            'query_type': query_type.value,
+                            'source': 'signal_store',
+                            'confidence': confidence,
+                            'latency_ms': int((time.time() - start_time) * 1000),
+                            'raw_data': price_data
+                        }
+
+            # Handle structured pricing history queries (Phase 2.8)
+            elif query_type == QueryType.STRUCTURED_PRICING_HISTORY:
+                ticker = self.query_router.extract_ticker(query)
+                if ticker:
+                    pricing_data = self.query_pricing_history(ticker)
+
+                    if pricing_data.get('status') == 'success':
+                        formatted_answer = self.query_router.format_pricing_history_result(pricing_data, query)
+                        return {
+                            'query': query,
+                            'answer': formatted_answer,
+                            'query_type': query_type.value,
+                            'source': 'signal_store',
+                            'confidence': confidence,
+                            'latency_ms': int((time.time() - start_time) * 1000),
+                            'raw_data': pricing_data
+                        }
+
             # Handle semantic queries (route to LightRAG)
             elif query_type in (QueryType.SEMANTIC_WHY, QueryType.SEMANTIC_HOW, QueryType.SEMANTIC_EXPLAIN):
-                lightrag_result = self.core.query(query, mode=mode)
+                # Call ICESystemManager directly to avoid infinite recursion
+                # (self.core.query() now routes through query_with_router)
+                lightrag_result = self.core._system_manager.query_ice(query, mode=mode, use_graph_context=False)
 
-                return {
+                # BUG FIX: Extract answer string from lightrag_result dict (same issue as fallback path)
+                answer_text = lightrag_result.get('answer', lightrag_result.get('result', ''))
+                result = {
                     'query': query,
-                    'answer': lightrag_result,
+                    'answer': answer_text,  # Primary field (semantic clarity)
+                    'result': answer_text,  # Backward compatibility alias (required by add_footnote_citations)
                     'query_type': query_type.value,
                     'source': 'lightrag',
-                    'confidence': confidence,
+                    'confidence': lightrag_result.get('confidence', confidence),  # Use LightRAG's confidence
                     'latency_ms': int((time.time() - start_time) * 1000)
                 }
+
+                # Preserve parsed_context if available (required by add_footnote_citations)
+                if 'parsed_context' in lightrag_result:
+                    result['parsed_context'] = lightrag_result['parsed_context']
+
+                # Preserve other useful metadata (including 'status' for notebook compatibility)
+                for key in ['status', 'sources', 'context', 'references', 'engine', 'mode']:
+                    if key in lightrag_result:
+                        result[key] = lightrag_result[key]
+
+                return result
 
             # Handle hybrid queries (both layers)
             elif query_type == QueryType.HYBRID:
@@ -1450,8 +2954,11 @@ class ICESimplified:
                             else:
                                 signal_store_data = metric_data
 
-                # Get semantic context from LightRAG
-                lightrag_result = self.core.query(query, mode=mode)
+                # Get semantic context from LightRAG (call directly to avoid recursion)
+                lightrag_result = self.core._system_manager.query_ice(query, mode=mode, use_graph_context=False)
+
+                # BUG FIX: Extract answer string from lightrag_result dict
+                lightrag_answer = lightrag_result.get('answer', lightrag_result.get('result', ''))
 
                 # Combine results
                 combined_answer = f"**Structured Data:**\n"
@@ -1466,11 +2973,12 @@ class ICESimplified:
                 else:
                     combined_answer += "No structured data found"
 
-                combined_answer += f"\n\n**Semantic Analysis:**\n{lightrag_result}"
+                combined_answer += f"\n\n**Semantic Analysis:**\n{lightrag_answer}"
 
-                return {
+                result = {
                     'query': query,
-                    'answer': combined_answer,
+                    'answer': combined_answer,  # Primary field (semantic clarity)
+                    'result': combined_answer,  # Backward compatibility alias (required by add_footnote_citations)
                     'query_type': query_type.value,
                     'source': 'hybrid',
                     'confidence': confidence,
@@ -1478,18 +2986,46 @@ class ICESimplified:
                     'signal_store_data': signal_store_data
                 }
 
+                # Preserve parsed_context from LightRAG result (required by add_footnote_citations)
+                if 'parsed_context' in lightrag_result:
+                    result['parsed_context'] = lightrag_result['parsed_context']
+
+                # Preserve other useful metadata from LightRAG (including 'status' for notebook compatibility)
+                for key in ['status', 'sources', 'context', 'references', 'engine', 'mode']:
+                    if key in lightrag_result:
+                        result[key] = lightrag_result[key]
+
+                return result
+
         # Fallback: No router available, use LightRAG only
         logger.debug("Query router not available, using LightRAG only")
-        lightrag_result = self.core.query(query, mode=mode)
+        # Call ICESystemManager directly to avoid recursion
+        lightrag_result = self.core._system_manager.query_ice(query, mode=mode, use_graph_context=False)
 
-        return {
+        # BUG FIX: Extract answer string from lightrag_result dict (it returns full response structure)
+        # lightrag_result is a dict like: {"answer": "text...", "parsed_context": {...}, ...}
+        # Preserve all metadata while ensuring answer field is a string
+        answer_text = lightrag_result.get('answer', lightrag_result.get('result', ''))
+        result = {
             'query': query,
-            'answer': lightrag_result,
+            'answer': answer_text,  # Primary field (semantic clarity)
+            'result': answer_text,  # Backward compatibility alias (required by add_footnote_citations)
             'query_type': 'semantic_explain',
             'source': 'lightrag',
-            'confidence': 0.50,
+            'confidence': lightrag_result.get('confidence', 0.50),  # Use LightRAG's confidence
             'latency_ms': int((time.time() - start_time) * 1000)
         }
+
+        # Preserve parsed_context if available (required by add_footnote_citations)
+        if 'parsed_context' in lightrag_result:
+            result['parsed_context'] = lightrag_result['parsed_context']
+
+        # Preserve other useful metadata (including 'status' for notebook compatibility)
+        for key in ['status', 'sources', 'context', 'references', 'engine', 'mode']:
+            if key in lightrag_result:
+                result[key] = lightrag_result[key]
+
+        return result
 
     def ingest_historical_data(self, holdings: List[str], years: int = 2,
                                 email_limit: int = 71,
@@ -1498,7 +3034,8 @@ class ICESimplified:
                                 market_limit: int = 1,
                                 sec_limit: int = 2,
                                 research_limit: int = 0,
-                                email_files: Optional[List[str]] = None) -> Dict[str, Any]:
+                                email_files: Optional[List[str]] = None,
+                                api_source_config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Ingest historical data for portfolio holdings (building workflow method)
 
@@ -1513,6 +3050,9 @@ class ICESimplified:
             research_limit: Maximum number of research documents per symbol (default: 0 - on-demand)
             email_files: Optional list of specific .eml filenames to process (e.g., ['email1.eml'])
                         If provided, only these files are processed. If None, all files are processed.
+            api_source_config: Optional dict with granular API switches
+                              Keys: api_source_enabled, newsapi_enabled, benzinga_enabled, etc.
+                              If None, all APIs with keys are enabled (backward compatible)
 
         Returns:
             Historical ingestion results with metrics
@@ -1520,6 +3060,29 @@ class ICESimplified:
         from datetime import datetime, timedelta
 
         start_time = datetime.now()
+
+        # Apply API source configuration if provided
+        if api_source_config and hasattr(self.ingester, 'set_api_source_config'):
+            self.ingester.set_api_source_config(api_source_config)
+            logger.info(f"✅ Applied granular API source configuration")
+
+            # Debug logging to verify config was applied
+            if hasattr(self.ingester, 'api_config'):
+                enabled_count = sum(1 for k, v in self.ingester.api_config.items()
+                                  if k.endswith('_enabled') and k != 'api_source_enabled' and v)
+                logger.debug(f"🔍 Config verification: {enabled_count} APIs enabled after config application")
+        elif api_source_config:
+            logger.warning(f"⚠️ API source config provided but ingester doesn't support it")
+        else:
+            # Check if ingester already has config before warning
+            if hasattr(self.ingester, 'api_config') and self.ingester.api_config:
+                # Config already set from previous call, no warning needed
+                enabled_count = sum(1 for k, v in self.ingester.api_config.items()
+                                  if k.endswith('_enabled') and k != 'api_source_enabled' and v)
+                logger.debug(f"🔍 Using existing API config: {enabled_count} APIs enabled")
+            else:
+                # Warning when no config provided and no existing config - helps detect missing parameter pass from Cell 31
+                logger.warning(f"⚠️ No API source configuration provided - using defaults (all APIs with keys enabled)")
         results = {
             'status': 'success',
             'holdings_processed': [],
@@ -1566,31 +3129,39 @@ class ICESimplified:
         for symbol in holdings:
             try:
                 print(f"  ⏳ Fetching {symbol} data...")
-                news_docs = self.ingester.fetch_company_news(symbol, news_limit)
+                news_docs = self.ingester.fetch_company_news(symbol, limit=news_limit, context='portfolio')  # Smart source prioritization
                 financial_docs = self.ingester.fetch_financial_fundamentals(symbol, financial_limit)
                 market_docs = self.ingester.fetch_market_data(symbol, market_limit)
                 sec_docs = self.ingester.fetch_sec_filings(symbol, limit=sec_limit)
+
+                # SEC Company Facts: Free XBRL financial metrics
+                sec_facts_docs = []
+                if self.config.sec_facts_enabled:
+                    sec_facts_docs = self.ingester.fetch_sec_company_facts(symbol)
+
                 research_docs = []  # Research is on-demand, not auto-fetched
                 if research_limit > 0:
                     try:
                         research_docs = self.ingester.research_company_deep(symbol, symbol, topics=None, include_competitors=False)[:research_limit]
-                    except:
-                        pass  # Research failures are non-critical
+                    except Exception as e:
+                        # Research failures are non-critical but should be logged for visibility
+                        logger.warning(f"⚠️ {symbol}: research_company_deep FAILED (non-critical): {type(e).__name__}: {e}")
 
                 prefetched_data['tickers'][symbol] = {
                     'news': news_docs,
                     'financial': financial_docs,
                     'market': market_docs,
                     'sec': sec_docs,
+                    'sec_facts': sec_facts_docs,
                     'research': research_docs
                 }
-                ticker_total = len(news_docs) + len(financial_docs) + len(market_docs) + len(sec_docs) + len(research_docs)
+                ticker_total = len(news_docs) + len(financial_docs) + len(market_docs) + len(sec_docs) + len(sec_facts_docs) + len(research_docs)
                 total_all_docs += ticker_total
-                print(f"     ✓ Found {ticker_total} documents (news: {len(news_docs)}, financial: {len(financial_docs)}, market: {len(market_docs)}, SEC: {len(sec_docs)}, research: {len(research_docs)})")
+                print(f"     ✓ Found {ticker_total} documents (news: {len(news_docs)}, financial: {len(financial_docs)}, market: {len(market_docs)}, SEC: {len(sec_docs)}, SEC Facts: {len(sec_facts_docs)}, research: {len(research_docs)})")
             except Exception as e:
                 logger.warning(f"⚠️ {symbol} pre-fetch failed: {e}")
                 print(f"     ⚠️ {symbol} fetch failed: {e}")
-                prefetched_data['tickers'][symbol] = {'news': [], 'financial': [], 'market': [], 'sec': [], 'research': []}
+                prefetched_data['tickers'][symbol] = {'news': [], 'financial': [], 'market': [], 'sec': [], 'sec_facts': [], 'research': []}
 
         logger.info(f"📊 Total documents to process: {total_all_docs}")
         print(f"\n📊 Total documents to process: {total_all_docs}")
@@ -1623,7 +3194,7 @@ class ICESimplified:
                     self.core._print_document_progress(
                         doc_index=cumulative_doc_count,
                         total_docs=total_all_docs,  # Fixed: use total across all sources
-                        doc_content=doc_dict['content'],
+                        doc_dict=doc_dict,  # Pass full dict for metadata-first detection
                         symbol='PORTFOLIO'
                     )
 
@@ -1659,28 +3230,48 @@ class ICESimplified:
                 # Category 2: News
                 for doc_dict in news_docs:
                     content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
-                    doc_list.append({'content': content_with_marker})
+                    doc_list.append({
+                        'content': content_with_marker,
+                        'file_path': doc_dict.get('file_path'),  # PRESERVE file_path for source attribution
+                        'type': 'news'
+                    })
 
                 # Category 3: Financial fundamentals
                 for doc_dict in financial_docs:
                     content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
-                    doc_list.append({'content': content_with_marker})
+                    doc_list.append({
+                        'content': content_with_marker,
+                        'file_path': doc_dict.get('file_path'),  # PRESERVE file_path for source attribution
+                        'type': 'financial'
+                    })
 
                 # Category 4: Market data
                 for doc_dict in market_docs:
                     content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
-                    doc_list.append({'content': content_with_marker})
+                    doc_list.append({
+                        'content': content_with_marker,
+                        'file_path': doc_dict.get('file_path'),  # PRESERVE file_path for source attribution
+                        'type': 'market'
+                    })
 
                 # Category 5: SEC filings
                 for doc_dict in sec_docs:
                     content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
-                    doc_list.append({'content': content_with_marker})
+                    doc_list.append({
+                        'content': content_with_marker,
+                        'file_path': doc_dict.get('file_path'),  # PRESERVE file_path for source attribution
+                        'type': 'regulatory'
+                    })
 
                 # Category 6: Research (if any)
                 for doc_dict in research_docs:
                     if isinstance(doc_dict, dict) and 'source' in doc_dict:
                         content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
-                        doc_list.append({'content': content_with_marker})
+                        doc_list.append({
+                            'content': content_with_marker,
+                            'file_path': doc_dict.get('file_path'),  # PRESERVE file_path for source attribution
+                            'type': 'research'
+                        })
 
                 if doc_list:
                     # Print progress for each document (using total_all_docs for accurate count)
@@ -1689,9 +3280,12 @@ class ICESimplified:
                         self.core._print_document_progress(
                             doc_index=cumulative_doc_count,
                             total_docs=total_all_docs,  # Fixed: use total across all sources
-                            doc_content=doc_dict['content'],
+                            doc_dict=doc_dict,  # Pass full dict for metadata-first detection
                             symbol=symbol
                         )
+
+                    # Apply universal content deduplication before adding to graph
+                    doc_list = self.filter_new_documents(doc_list, source_type='api', ticker=symbol)
 
                     batch_result = self.core.add_documents_batch(doc_list)
 
@@ -1799,7 +3393,7 @@ class ICESimplified:
                 # Fetch ticker-specific data (not emails, to prevent duplication)
                 logger.info(f"💰 {symbol}: Fetching recent data (last {days} days)...")
                 financial_docs = self.ingester.fetch_company_financials(symbol, limit=5)  # Returns List[Dict]
-                news_docs = self.ingester.fetch_company_news(symbol, limit=5)  # Returns List[Dict]
+                news_docs = self.ingester.fetch_company_news(symbol, limit=5, context='portfolio')  # Returns List[Dict] with smart source prioritization
                 sec_docs = self.ingester.fetch_sec_filings(symbol, limit=2)  # Returns List[Dict]
 
                 # Build document list with SOURCE markers
@@ -1809,17 +3403,32 @@ class ICESimplified:
                 doc_list = []
                 for doc_dict in financial_docs:
                     content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
-                    doc_list.append({'content': content_with_marker})
+                    doc_list.append({
+                        'content': content_with_marker,
+                        'file_path': doc_dict.get('file_path'),  # PRESERVE file_path for source attribution
+                        'type': 'financial'
+                    })
 
                 for doc_dict in news_docs:
                     content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
-                    doc_list.append({'content': content_with_marker})
+                    doc_list.append({
+                        'content': content_with_marker,
+                        'file_path': doc_dict.get('file_path'),  # PRESERVE file_path for source attribution
+                        'type': 'news'
+                    })
 
                 for doc_dict in sec_docs:
                     content_with_marker = f"[SOURCE:{doc_dict['source'].upper()}|SYMBOL:{symbol}|DATE:{retrieval_timestamp}]\n{doc_dict['content']}"
-                    doc_list.append({'content': content_with_marker})
+                    doc_list.append({
+                        'content': content_with_marker,
+                        'file_path': doc_dict.get('file_path'),  # PRESERVE file_path for source attribution
+                        'type': 'regulatory'
+                    })
 
                 if doc_list:
+                    # Apply universal content deduplication before adding to graph
+                    doc_list = self.filter_new_documents(doc_list, source_type='api', ticker=symbol)
+
                     batch_result = self.core.add_documents_to_existing_graph(doc_list)
 
                     if batch_result.get('status') == 'success':
@@ -1866,7 +3475,8 @@ class ICESimplified:
                             market_limit: int = 1,
                             sec_limit: int = 2,
                             research_limit: int = 0,
-                            email_files: Optional[List[str]] = None) -> Dict[str, Any]:
+                            email_files: Optional[List[str]] = None,
+                            api_source_config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Intelligent incremental ingestion using manifest to prevent duplicates.
 
@@ -1885,6 +3495,9 @@ class ICESimplified:
             sec_limit: SEC filings per ticker
             research_limit: Research docs per ticker
             email_files: Specific email files to process
+            api_source_config: Optional dict with granular API switches
+                              Keys: api_source_enabled, newsapi_enabled, benzinga_enabled, etc.
+                              If None, all APIs with keys are enabled (backward compatible)
 
         Returns:
             Ingestion results with deduplication metrics
@@ -1892,6 +3505,29 @@ class ICESimplified:
         from datetime import datetime, timedelta
 
         start_time = datetime.now()
+
+        # Apply API source configuration if provided
+        if api_source_config and hasattr(self.ingester, 'set_api_source_config'):
+            self.ingester.set_api_source_config(api_source_config)
+            logger.info(f"✅ Applied granular API source configuration")
+
+            # Debug logging to verify config was applied
+            if hasattr(self.ingester, 'api_config'):
+                enabled_count = sum(1 for k, v in self.ingester.api_config.items()
+                                  if k.endswith('_enabled') and k != 'api_source_enabled' and v)
+                logger.debug(f"🔍 Config verification: {enabled_count} APIs enabled after config application")
+        elif api_source_config:
+            logger.warning(f"⚠️ API source config provided but ingester doesn't support it")
+        else:
+            # Check if ingester already has config before warning
+            if hasattr(self.ingester, 'api_config') and self.ingester.api_config:
+                # Config already set from previous call, no warning needed
+                enabled_count = sum(1 for k, v in self.ingester.api_config.items()
+                                  if k.endswith('_enabled') and k != 'api_source_enabled' and v)
+                logger.debug(f"🔍 Using existing API config: {enabled_count} APIs enabled")
+            else:
+                # Warning when no config provided and no existing config - helps detect missing parameter pass from Cell 31
+                logger.warning(f"⚠️ No API source configuration provided - using defaults (all APIs with keys enabled)")
 
         # Calculate portfolio delta
         portfolio_delta = self.manifest.get_portfolio_delta(holdings)
@@ -1903,6 +3539,10 @@ class ICESimplified:
             'skipped_duplicates': 0,
             'updated_documents': 0,
             'new_tickers_data': {},
+            # Notebook compatibility: match ingest_historical_data response structure
+            'holdings_processed': holdings.copy(),  # All holdings attempted (manifest tracks individually)
+            'total_documents': 0,  # Will be set to new_documents count before return
+            'failed_holdings': [],  # Track any failures during ingestion
             'metrics': {
                 'processing_time': 0.0,
                 'manifest_entries': len(self.manifest.manifest['documents']),
@@ -1997,12 +3637,16 @@ class ICESimplified:
                 try:
                     # Fetch all data types for new ticker
                     if news_limit > 0:
-                        news_docs = self.ingester.fetch_company_news(ticker, news_limit)
+                        news_docs = self.ingester.fetch_company_news(ticker, limit=news_limit, context='portfolio')  # Smart source prioritization
                         for doc in news_docs:
-                            doc_id = self.manifest.get_document_id('api_news', f"{ticker}_{len(ticker_docs)}")
+                            # Use content hash for stable ID (prevents duplicates on re-fetch)
+                            content = doc.get('content', str(doc))
+                            content_hash = self.manifest.compute_content_hash(content)[:8]
+                            doc_id = self.manifest.get_document_id('api_news', f"{ticker}_{content_hash}")
+
                             if not self.manifest.is_document_ingested(doc_id):
                                 ticker_docs.append(doc)
-                                self.manifest.add_document(doc_id, doc.get('content', str(doc)), {
+                                self.manifest.add_document(doc_id, content, {
                                     'source_type': 'api_news',
                                     'ticker': ticker
                                 })
@@ -2010,10 +3654,14 @@ class ICESimplified:
                     if financial_limit > 0:
                         financial_docs = self.ingester.fetch_financial_fundamentals(ticker, financial_limit)
                         for doc in financial_docs:
-                            doc_id = self.manifest.get_document_id('api_financial', f"{ticker}_{len(ticker_docs)}")
+                            # Use content hash for stable ID
+                            content = doc.get('content', str(doc))
+                            content_hash = self.manifest.compute_content_hash(content)[:8]
+                            doc_id = self.manifest.get_document_id('api_financial', f"{ticker}_{content_hash}")
+
                             if not self.manifest.is_document_ingested(doc_id):
                                 ticker_docs.append(doc)
-                                self.manifest.add_document(doc_id, doc.get('content', str(doc)), {
+                                self.manifest.add_document(doc_id, content, {
                                     'source_type': 'api_financial',
                                     'ticker': ticker
                                 })
@@ -2021,10 +3669,14 @@ class ICESimplified:
                     if sec_limit > 0:
                         sec_docs = self.ingester.fetch_sec_filings(ticker, limit=sec_limit)
                         for doc in sec_docs:
-                            doc_id = self.manifest.get_document_id('sec', f"{ticker}_{len(ticker_docs)}")
+                            # Use content hash for stable ID
+                            content = doc.get('content', str(doc))
+                            content_hash = self.manifest.compute_content_hash(content)[:8]
+                            doc_id = self.manifest.get_document_id('sec', f"{ticker}_{content_hash}")
+
                             if not self.manifest.is_document_ingested(doc_id):
                                 ticker_docs.append(doc)
-                                self.manifest.add_document(doc_id, doc.get('content', str(doc)), {
+                                self.manifest.add_document(doc_id, content, {
                                     'source_type': 'sec',
                                     'ticker': ticker
                                 })
@@ -2039,15 +3691,24 @@ class ICESimplified:
                             logger.info(f"✅ {ticker}: Added {len(ticker_docs)} documents")
 
                     # Update API coverage in manifest
+                    # Track how many documents of each type were actually fetched
+                    news_count = len([d for d in ticker_docs if d.get('source', '').lower().startswith('newsapi')])
+                    financial_count = len([d for d in ticker_docs if 'financial' in d.get('source', '').lower()])
+                    sec_count = len([d for d in ticker_docs if 'sec' in d.get('source', '').lower()])
+
                     self.manifest.update_api_coverage(ticker, {
-                        'news': min(news_limit, len([d for d in ticker_docs if isinstance(d, str) and 'news' in d.lower()])),
-                        'financial': min(financial_limit, len([d for d in ticker_docs if isinstance(d, str) and 'financial' in d.lower()])),
-                        'sec': min(sec_limit, len([d for d in ticker_docs if isinstance(d, str) and 'sec' in d.lower()]))
+                        'news': news_count,
+                        'financial': financial_count,
+                        'sec': sec_count
                     })
 
                 except Exception as e:
                     logger.error(f"Failed to fetch data for {ticker}: {e}")
                     results['status'] = 'partial'
+                    results['failed_holdings'].append({
+                        'symbol': ticker,
+                        'error': str(e)
+                    })
 
         # STEP 3: Update portfolio in manifest
         self.manifest.update_portfolio(holdings)
@@ -2059,6 +3720,7 @@ class ICESimplified:
         processing_time = (datetime.now() - start_time).total_seconds()
         results['metrics']['processing_time'] = processing_time
         results['skipped_duplicates'] = skipped_count
+        results['total_documents'] = results['new_documents']  # Set for notebook compatibility
 
         # Calculate deduplication rate
         total_checked = results['new_documents'] + skipped_count
@@ -2086,26 +3748,26 @@ class ICESimplified:
         """
         Calculate document relevance to portfolio.
 
-        Score 0.0-1.0 based on:
-        - Direct ticker mentions (primary)
-        - Competitor/supply chain mentions (secondary)
-        - Sector relevance (tertiary)
+        3-tier scoring system:
+        - 1.0: Primary holdings (direct portfolio members)
+        - 0.7: Ecosystem players (competitors, suppliers, customers)
+        - 0.3: Peripheral entities (market context, broader trends)
         """
         content_upper = content.upper()
 
-        # Check primary holdings
+        # Check primary holdings (1.0)
         primary_count = sum(1 for ticker in holdings if ticker.upper() in content_upper)
         if primary_count > 0:
-            return min(1.0, 0.8 + (primary_count * 0.1))  # 0.8-1.0 for primary
+            return 1.0  # Primary holdings always 1.0
 
-        # Check ecosystem (simplified - in production, would use graph traversal)
-        ecosystem_keywords = ['semiconductor', 'supply chain', 'competitor', 'customer']
+        # Check ecosystem (0.7)
+        ecosystem_keywords = ['semiconductor', 'supply chain', 'competitor', 'customer', 'supplier', 'partner']
         ecosystem_count = sum(1 for keyword in ecosystem_keywords if keyword.upper() in content_upper)
         if ecosystem_count > 0:
-            return min(0.7, 0.4 + (ecosystem_count * 0.1))  # 0.4-0.7 for ecosystem
+            return 0.7  # Ecosystem always 0.7
 
-        # Default low relevance
-        return 0.2
+        # Peripheral (0.3)
+        return 0.3  # Default peripheral relevance
 
     def _format_progress_bar(self, count: int, total: int, width: int = 30) -> str:
         """
